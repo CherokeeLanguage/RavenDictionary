@@ -1,0 +1,120 @@
+plugins {
+  id "us.kirchmeier.capsule" version "1.0-rc1"
+}
+
+apply plugin: 'java'
+apply plugin: 'eclipse-wtp'
+
+sourceCompatibility = 1.8
+compileJava.options.encoding = 'UTF-8'
+
+def RTJAR = '/usr/lib/jvm/java-8-openjdk-amd64/jre/lib/rt.jar';
+if (new File(RTJAR).exists()) {
+	compileJava.options.bootClasspath=RTJAR
+}
+
+version = '1.0'
+
+tasks.eclipseWtp.dependsOn(cleanEclipseWtp)
+
+task fatjar(type: FatCapsule) {
+	//-Dfile.encoding=UTF-8
+  	archiveName 'RavenDictionary.jar'
+	applicationClass 'com.cherokeelessons.raven.Main'
+	capsuleManifest {
+    	jvmArgs = ['-Dfile.encoding=UTF-8']
+	}
+}
+
+repositories {
+    jcenter()
+	mavenCentral()
+	mavenLocal()
+}
+
+configurations {
+  provided
+}
+
+dependencies {
+	//compile project(':ResearcherInstituteShared')
+	compile 'org.apache.commons:commons-lang3:+'
+}
+ 
+sourceSets {
+  main {
+    compileClasspath += configurations.provided
+  }
+  test {
+    compileClasspath += configurations.provided
+    runtimeClasspath += configurations.provided
+  }
+}
+
+task "create-dirs" << {
+	sourceSets*.java.srcDirs*.each { it.mkdirs() }
+	sourceSets*.resources.srcDirs*.each { it.mkdirs() }
+}
+
+eclipseJdt << {
+    File f = file('.settings/org.eclipse.core.resources.prefs')
+    f.write('eclipse.preferences.version=1\n')
+    f.append('encoding/<project>=utf-8')
+    f = file('.settings/org.eclipse.core.runtime.prefs')
+    f.write('eclipse.preferences.version=1\n')
+    f.append('line.separator=\\n\n')
+}
+
+project.afterEvaluate {
+	// use jre lib matching version used by project, not the workspace default
+	if (sourceCompatibility != null) {
+		def target = project.sourceCompatibility.toString()
+		def containerPrefix = "org.eclipse.jdt.launching.JRE_CONTAINER"
+		def containerSuffix
+		if (target =~ /1.[4-5]/) {
+			containerSuffix = '/org.eclipse.jdt.internal.debug.ui.launcher.StandardVMType/J2SE-' + target
+		} else if (target =~ /1.[6-8]/) {
+			containerSuffix = '/org.eclipse.jdt.internal.debug.ui.launcher.StandardVMType/JavaSE-' + target
+		}
+		if (containerSuffix != null) {
+			project.eclipse.classpath {
+				containers.removeAll { it.startsWith(containerPrefix) }
+				containers.add(containerPrefix + containerSuffix)
+			}
+		}
+	}
+}
+
+eclipse {
+	project {
+		name = 'RavenDictionary'
+		comment = 'The Raven Dictionary Project'
+		natures 'org.springsource.ide.eclipse.gradle.core.nature'
+//		referencedProjects 'SHARED-POJOS', 'SHARED-SERVER'
+		//webAppDirName = 'src/main/webapp'
+	}
+
+	classpath {
+		plusConfigurations += [configurations.provided]
+		noExportConfigurations += [configurations.provided]
+		downloadSources = true
+		downloadJavadoc = true
+	}
+
+	jdt {
+		sourceCompatibility=1.8
+		targetCompatibility=1.8
+	}
+
+	wtp {
+		facet {
+			facets = []
+			facet name: 'jst.java', version: '1.8'
+			/*facet name: 'jst.web', version: '3.0'*/
+		}
+	}
+}
+
+task wrapper(type: Wrapper) {
+    gradleVersion = '2.4'
+}

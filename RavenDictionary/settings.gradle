@@ -1,0 +1,9 @@
+/*
+ * The following ASSUMES that your folder structure matches .../git/PROJECTFOLDER/PROJECTFOLDER/build.gradle
+ */
+ 
+rootProject.name = 'RavenDictionary'
+
+//include ":SHARED-POJOS"
+//project(":SHARED-POJOS").projectDir=new File(settingsDir,"../../SHARED-POJOS/SHARED-POJOS")
+
