@@ -20,7 +20,7 @@ public class Main {
 			
 			@Override
 			public String getApptitle() {
-				return "Researcher Insitute Loader";
+				return "Raven Dictionary Rebuilder";
 			}
 			
 			@Override
