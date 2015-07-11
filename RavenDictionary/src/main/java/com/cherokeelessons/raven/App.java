@@ -1,9 +1,16 @@
 package com.cherokeelessons.raven;
 
+import java.io.File;
+
 public class App extends Thread {
 
+	@Override
+	public void run() {
+		File in = new File("/home/mjoyner/Sync/Cherokee/CherokeeReferenceMaterial/Raven-Dictionary-Output/raven-cherokee-dictionary.lyx");
+		new ParseDictionary(in).run();
+	}
+	
 	public App(String[] args) {
-		// TODO Auto-generated constructor stub
 	}
 
 	public static void info() {
