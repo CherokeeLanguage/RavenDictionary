@@ -39,6 +39,8 @@ configurations {
 dependencies {
 	//compile project(':ResearcherInstituteShared')
 	compile 'org.apache.commons:commons-lang3:+'
+	compile 'com.fasterxml.jackson.core:jackson-databind:+'
+	
 }
  
 sourceSets {
