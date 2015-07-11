@@ -48,7 +48,10 @@ public class PresetEntry implements IEntry {
 
 	private final List<String> pronunciations=new ArrayList<String>();
 	public void addPronunciation(String pro) {
-		pronunciations.add(pro);
+		if (pro == null) {
+			App.err("BAD PRONUNCIATION FOR: "+getDef());
+		}
+		pronunciations.add(StringUtils.defaultString(pro));
 	}
 	/* (non-Javadoc)
 	 * @see com.cherokeelessons.raven.IEntry#getPronunciations()
@@ -104,7 +107,10 @@ public class PresetEntry implements IEntry {
 	}
 	private final ArrayList<String> syllabary = new ArrayList<>();
 	public void addSyllabary(String syllabary) {
-		this.syllabary.add(syllabary);
+		if (syllabary == null) {
+			App.err("BAD SYLLABARY FOR: "+getDef());
+		}
+		this.syllabary.add(StringUtils.defaultString(syllabary));
 	}
 
 	@Override

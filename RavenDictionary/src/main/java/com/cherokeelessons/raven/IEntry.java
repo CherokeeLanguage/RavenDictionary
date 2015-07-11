@@ -2,7 +2,7 @@ package com.cherokeelessons.raven;
 
 import java.util.List;
 
-public interface IEntry {
+public interface IEntry extends Comparable<IEntry> {
 
 	public int compareTo(IEntry o);
 

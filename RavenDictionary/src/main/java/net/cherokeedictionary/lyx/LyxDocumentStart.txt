@@ -212,7 +212,7 @@ __AUTHOR__
 \end_layout
 
 \begin_layout Standard
-Cherokee Language Dictionary
+Raven's Place Cherokee Language Dictionary
 \end_layout
 
 \begin_layout Standard

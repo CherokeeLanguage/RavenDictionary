@@ -6,8 +6,14 @@ public class App extends Thread {
 
 	@Override
 	public void run() {
-		File in = new File("/home/mjoyner/Sync/Cherokee/CherokeeReferenceMaterial/Raven-Dictionary-Output/raven-cherokee-dictionary.lyx");
-		new ParseDictionary(in).run();
+		File in = new File("/home/mjoyner/Sync/Cherokee/CherokeeReferenceMaterial/Raven-Dictionary-Output/raven-cherokee-dictionary-tlw.lyx");
+		File destfile = new File("/home/mjoyner/Sync/Cherokee/CherokeeReferenceMaterial/Raven-Dictionary-Output/raven-cherokee-dictionary-REGENERATED-DO-NOT-EDIT.lyx");
+		ParseDictionary parseDictionary = new ParseDictionary(in);
+		App.info("parsing...");
+		parseDictionary.run();
+		App.info("creating new lyx file...");
+		new LyxExportFile(parseDictionary.getEntries(), destfile.getAbsolutePath()).start();
+		App.info("done.");
 	}
 	
 	public App(String[] args) {

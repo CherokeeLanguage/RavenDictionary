@@ -6,12 +6,9 @@ import java.io.FileReader;
 import java.io.Reader;
 import java.util.ArrayList;
 import java.util.Arrays;
+import java.util.Collections;
 import java.util.Iterator;
 import java.util.List;
-
-import net.cherokeedictionary.lyx.DefinitionLine;
-import net.cherokeedictionary.lyx.LyxEntry;
-import net.cherokeedictionary.lyx.LyxEntry.OtherEntry;
 
 import org.apache.commons.io.LineIterator;
 import org.apache.commons.lang3.StringEscapeUtils;
@@ -27,13 +24,13 @@ public class ParseDictionary implements Runnable {
 	private final File in;
 	public ParseDictionary(File in) {
 		this.in=in;
-		entries = new ArrayList<LyxEntry>();
+		entries = new ArrayList<IEntry>();
 	}
 	
-	private final List<LyxEntry> entries;
+	private final List<IEntry> entries;
 	
 
-	public List<LyxEntry> getEntries() {
+	public List<IEntry> getEntries() {
 		return entries;
 	}
 
@@ -44,6 +41,7 @@ public class ParseDictionary implements Runnable {
 		} catch (FileNotFoundException e) {
 			throw new RuntimeException(e);
 		}
+		Collections.sort(entries);
 	}
 
 	private void _run() throws FileNotFoundException {
@@ -74,8 +72,7 @@ public class ParseDictionary implements Runnable {
 			if (line.startsWith("\\begin_layout Description")){
 				if (entry.length()>0) {
 					String string = entry.toString();
-					App.info(fixup(string));
-					parse(fixup(string));
+					entries.add(parse(fixup(string)));
 				}
 				entry.setLength(0);
 				entry.append(parse(line, li, state));
@@ -87,8 +84,7 @@ public class ParseDictionary implements Runnable {
 		}
 		if (entry.length()>0) {
 			String string = entry.toString();
-			App.info(fixup(string));
-			parse(fixup(string));
+			entries.add(parse(fixup(string)));
 		}
 	}
 
@@ -97,8 +93,8 @@ public class ParseDictionary implements Runnable {
 		string = string.replace("<li class=\"li_dt chr\"><span class=\"dt\">", "");
 		string = string.replace("</span></li><li class=\"li_dd chr\">", " ");
 		string = string.replace("\\phantomsection{}", "");
-		string = string.replace("&rdquo;", "\"");
-		string = string.replace("&ldquo;", "\"");
+		string = string.replace("&rdquo;", "|}");
+		string = string.replace("&ldquo;", "{|");
 		string = string.replace("</span>", "");
 		if (string.endsWith("</li>")){
 			string = StringUtils.substringBeforeLast(string, "</li>");
@@ -110,7 +106,7 @@ public class ParseDictionary implements Runnable {
 	
 	private IEntry parse(String definition) {
 		Iterator<String> ilines = Arrays.asList(StringUtils.split(definition, "\n")).iterator();
-		String line = ilines.next();
+		String line = StringUtils.strip(ilines.next());
 		String pos = StringUtils.substringBetween(definition, "(", ")");
 		if (StringUtils.isBlank(pos)) {
 			pos="";
@@ -119,13 +115,25 @@ public class ParseDictionary implements Runnable {
 		String syllabary = StringUtils.substringBefore(line, " [");
 		String pronounce = StringUtils.substringBetween(line, "[", "]");
 		String type = StringUtils.substringBetween(line, "(", ")");
-		String def = StringUtils.substringAfter(line, "\"");
-		def=StringUtils.substringBeforeLast(def, "\"");
+		String def = StringUtils.substringAfter(line, "{|");
+		def=StringUtils.substringBeforeLast(def, "|}");
+		def=StringEscapeUtils.unescapeHtml4(def);
 		entry.addSyllabary(syllabary);
 		entry.addPronunciation(pronounce);
 		entry.setType(StringUtils.defaultString(type));
 		entry.setDef(def);
 		while (ilines.hasNext()) {
+			line=StringUtils.strip(ilines.next());
+			if (line.startsWith("-")){
+				entry.addSyllabary("-");
+				entry.addPronunciation("");
+				continue;
+			}
+			if (line.startsWith("IRR")){
+				entry.addSyllabary("IRR");
+				entry.addPronunciation("");
+				continue;
+			}
 			syllabary = StringUtils.substringBefore(line, " [");
 			pronounce = StringUtils.substringBetween(line, "[", "]");
 			entry.addSyllabary(syllabary);
