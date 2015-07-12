@@ -100,33 +100,33 @@ public class VerbEntry extends LyxEntry implements HasStemmedForms {
 	public List<StemEntry> getStems() {
 		NormalizedVerbEntry e=new NormalizedVerbEntry();
 		
-		e.pres3 = StringUtils.strip(present3rd.syllabary);
+		e.pres3 = StringUtils.strip(present3rd.syllabary.replaceAll("[^Ꭰ-Ᏼ]", ""));
 		if (e.pres3.contains(",")) {
 			e.pres3 = StringUtils.substringBefore(e.pres3, ",");
 			e.pres3 = StringUtils.strip(e.pres3);
 		}
-		e.pres1 = StringUtils.strip(present1st.syllabary);
+		e.pres1 = StringUtils.strip(present1st.syllabary.replaceAll("[^Ꭰ-Ᏼ]", ""));
 		if (e.pres1.contains(",")) {
 			e.pres1 = StringUtils.substringAfterLast(e.pres1, ",");
 			e.pres1 = StringUtils.strip(e.pres1);
 		}
-		e.past = StringUtils.strip(remotepast.syllabary);
+		e.past = StringUtils.strip(remotepast.syllabary.replaceAll("[^Ꭰ-Ᏼ]", ""));
 		if (e.past.contains(",")) {
 			e.past = StringUtils.substringBefore(e.past, ",");
 			e.past = StringUtils.strip(e.past);
 		}
-		e.habit = StringUtils.strip(habitual.syllabary);
+		e.habit = StringUtils.strip(habitual.syllabary.replaceAll("[^Ꭰ-Ᏼ]", ""));
 		if (e.habit.contains(",")) {
 			e.habit = StringUtils.substringBefore(e.habit, ",");
 			e.habit = StringUtils.strip(e.habit);
 		}
-		e.imp = StringUtils.strip(imperative.syllabary);
+		e.imp = StringUtils.strip(imperative.syllabary.replaceAll("[^Ꭰ-Ᏼ]", ""));
 		if (e.imp.contains(",")) {
 			e.imp = StringUtils.substringAfterLast(e.imp, ",");
 			e.imp = StringUtils.strip(e.imp);
 		}
-		e.imp = fixImperativeSuffix(e.imp);
-		e.inf = StringUtils.strip(infinitive.syllabary);
+		e.imp = fixImperativeSuffix(e.imp.replaceAll("[^Ꭰ-Ᏼ]", ""));
+		e.inf = StringUtils.strip(infinitive.syllabary.replaceAll("[^Ꭰ-Ᏼ]", ""));
 		if (e.inf.contains(",")) {
 			e.inf = StringUtils.substringBefore(e.inf, ",");
 			e.inf = StringUtils.strip(e.inf);

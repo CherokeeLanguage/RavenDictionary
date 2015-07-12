@@ -82,7 +82,7 @@ public class LyxExportFile extends Thread {
 
 	private final List<IEntry> entries;
 
-	private boolean doWordForms = false;
+	private boolean doWordForms = true;
 
 	public LyxExportFile(List<IEntry> entries, String destfile) {
 		this.entries = entries;
