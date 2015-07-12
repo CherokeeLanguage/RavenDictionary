@@ -160,6 +160,29 @@ public class LyxExportFile extends Thread {
 		}
 
 		Collections.sort(definitions);
+		
+		/*
+		 * Any duplicates?
+		 */
+		Iterator<LyxEntry> ientry = definitions.iterator();
+		LyxEntry d1=ientry.next();
+		while (ientry.hasNext()) {
+			LyxEntry d2=ientry.next();
+			if (!d1.getSyllabary().get(0).equals(d2.getSyllabary().get(0))) {
+				d1=d2;
+				continue;
+			}
+			if (!d1.getPronunciations().get(0).equals(d2.getPronunciations().get(0))){
+				d1=d2;
+				continue;
+			}
+			if (!d1.definition.equals(d2.definition)){
+				d1=d2;
+				continue;
+			}
+			App.info("Removing Duplicate: "+d2.getSyllabary().get(0)+" "+d2.definition);
+			ientry.remove();
+		}
 
 		/*
 		 * Extract English Definitions
