@@ -51,7 +51,7 @@ public class NormalizedVerbEntry {
 		if (e.habit.startsWith("Ꭲ")){
 			e.habit=chop(e.habit);
 		}
-		if (e.imp.startsWith("Ꭲ")){
+		if (e.imp.startsWith("Ꮵ")||e.imp.startsWith("Ꭲ")){
 			e.imp=chop(e.imp);
 		}
 		if (e.inf.startsWith("Ꭵ")){

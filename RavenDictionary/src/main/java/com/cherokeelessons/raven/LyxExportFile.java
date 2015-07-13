@@ -172,15 +172,16 @@ public class LyxExportFile extends Thread {
 				d1=d2;
 				continue;
 			}
-			if (!d1.getPronunciations().get(0).equals(d2.getPronunciations().get(0))){
-				d1=d2;
-				continue;
-			}
 			if (!d1.definition.equals(d2.definition)){
 				d1=d2;
 				continue;
 			}
-			App.info("Removing Duplicate: "+d2.getSyllabary().get(0)+" "+d2.definition);
+			if (!d1.getPronunciations().get(0).equals(d2.getPronunciations().get(0))){
+				App.info("Likely Duplicate: "+d2.getSyllabary().get(0)+" "+d2.definition);
+				d1=d2;
+				continue;
+			}
+			App.info("Likely Duplicate: "+d2.getSyllabary().get(0)+" "+d2.definition);
 			ientry.remove();
 		}
 
