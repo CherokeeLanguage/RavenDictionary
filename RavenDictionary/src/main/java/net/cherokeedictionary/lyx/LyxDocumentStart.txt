@@ -176,7 +176,7 @@ height "1pt"
 \begin_inset Newline newline
 \end_inset
 
-Raven's Place Cherokee Language Dictionary
+Raven Rock Cherokee Language Dictionary
 \end_layout
 
 \begin_layout Author
@@ -212,7 +212,7 @@ __AUTHOR__
 \end_layout
 
 \begin_layout Standard
-Raven's Place Cherokee Language Dictionary
+Raven Rock Cherokee Language Dictionary
 \end_layout
 
 \begin_layout Standard

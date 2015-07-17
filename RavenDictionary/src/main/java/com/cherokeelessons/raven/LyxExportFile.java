@@ -164,6 +164,7 @@ public class LyxExportFile extends Thread {
 		/*
 		 * Any duplicates?
 		 */
+		List<String> maybe_dupe=new ArrayList<>();
 		Iterator<LyxEntry> ientry = definitions.iterator();
 		LyxEntry d1=ientry.next();
 		while (ientry.hasNext()) {
@@ -173,6 +174,7 @@ public class LyxExportFile extends Thread {
 				continue;
 			}
 			if (!d1.definition.equals(d2.definition)){
+				maybe_dupe.add("Possible Duplicate: "+d2.getSyllabary().get(0)+" | "+d1.definition+" | "+d2.definition);
 				d1=d2;
 				continue;
 			}
@@ -183,6 +185,9 @@ public class LyxExportFile extends Thread {
 			}
 			App.info("Likely Duplicate: "+d2.getSyllabary().get(0)+" "+d2.definition);
 			ientry.remove();
+		}
+		for (String e: maybe_dupe) {
+			App.info(e);
 		}
 
 		/*

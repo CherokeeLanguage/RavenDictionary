@@ -7,7 +7,7 @@ public class App extends Thread {
 	@Override
 	public void run() {
 		File in = new File("/home/mjoyner/Sync/Cherokee/CherokeeReferenceMaterial/Raven-Dictionary-Output/raven-cherokee-dictionary-tlw.lyx");
-		File destfile = new File("/home/mjoyner/Sync/Cherokee/CherokeeReferenceMaterial/Raven-Dictionary-Output/raven-cherokee-dictionary-REGENERATED-DO-NOT-EDIT.lyx");
+		File destfile = new File("/home/mjoyner/Sync/Cherokee/CherokeeReferenceMaterial/Raven-Dictionary-Output/raven-rock-cherokee-dictionary-DO-NOT-EDIT.lyx");
 		ParseDictionary parseDictionary = new ParseDictionary(in);
 		App.info("parsing...");
 		parseDictionary.run();
