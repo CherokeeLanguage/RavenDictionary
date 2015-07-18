@@ -1,6 +1,7 @@
 package com.cherokeelessons.raven;
 
 import java.io.File;
+import java.util.List;
 
 public class App extends Thread {
 
@@ -12,7 +13,9 @@ public class App extends Thread {
 		App.info("parsing...");
 		parseDictionary.run();
 		App.info("creating new lyx file...");
-		new LyxExportFile(parseDictionary.getEntries(), destfile.getAbsolutePath()).start();
+		List<IEntry> entries = parseDictionary.getEntries();
+		new LyxExportFile(entries, destfile.getAbsolutePath()).start();
+		
 		App.info("done.");
 	}
 	
