@@ -522,7 +522,10 @@ public class LyxExportFile extends Thread {
 				while (isyl.hasNext()) {
 					List<DefSyl> tmp_def=new ArrayList<>();
 					String tmp = subdef;
-					String str_syl = isyl.next();
+					String str_syl = StringUtils.strip(isyl.next());
+					if (!str_syl.matches("^[Ꭰ-Ᏼ ]+$")){
+						continue;
+					}
 					pos++;
 					if (pos == 2 && !entry.pos.startsWith("v")) {
 						break;
