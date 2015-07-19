@@ -41,6 +41,8 @@ dependencies {
 	compile 'org.apache.commons:commons-lang3:+'
 	compile 'com.fasterxml.jackson.core:jackson-databind:+'
 	compile 'commons-io:commons-io:+'
+	compile 'org.languagetool:language-en:3.0'
+	compile 'org.languagetool:languagetool-core:3.0'
 }
  
 sourceSets {
@@ -98,7 +100,7 @@ eclipse {
 
 	classpath {
 		plusConfigurations += [configurations.provided]
-		noExportConfigurations += [configurations.provided]
+		//noExportConfigurations += [configurations.provided]
 		downloadSources = true
 		downloadJavadoc = true
 	}
