@@ -608,8 +608,8 @@ public class LyxExportFile extends Thread {
 						tmp_def.add(new DefSyl(str_syl+"-ᎡᎪᎢ", "goes to be "+subdef));
 						tmp_def.add(new DefSyl(str_syl+"-ᎥᏒᎢ", "came to be "+subdef));
 						tmp_def.add(new DefSyl(str_syl+"-ᎥᏒᎢ", "went to be "+subdef));
-						tmp_def.add(new DefSyl("Ꮣ-" + str_syl+" -ᎡᏏ", "will come to be "+subdef));
-						tmp_def.add(new DefSyl("Ꮣ-" + str_syl+" -ᎡᏏ", "will go to be "+subdef));
+						tmp_def.add(new DefSyl("Ꮣ-" + str_syl+"-ᎡᏏ", "will come to be "+subdef));
+						tmp_def.add(new DefSyl("Ꮣ-" + str_syl+"-ᎡᏏ", "will go to be "+subdef));
 						tmp_def.add(new DefSyl(str_syl+"-ᎥᏍᏗ", "to come to be "+subdef));
 						tmp_def.add(new DefSyl(str_syl+"-ᎥᏍᏗ", "to go to be "+subdef));
 						//going and doing
