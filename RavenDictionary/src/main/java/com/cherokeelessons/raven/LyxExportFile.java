@@ -485,7 +485,15 @@ public class LyxExportFile extends Thread {
 		List<String> mdef = new ArrayList<>();
 		Set<String> already = new HashSet<>();
 		already.clear();
+		int count = definitions.size();
+		int percent = -1;
+		int counter=0;
 		for (LyxEntry entry : definitions) {
+			counter++;
+			if (counter*100/count != percent) {
+				percent = counter*100/count;
+				System.out.print(percent+"% ");
+			}
 			mdef.clear();
 			mdef.addAll(Arrays.asList(StringUtils.split(entry.definition, ";")));
 			ListIterator<String> ldef = mdef.listIterator();
@@ -523,14 +531,14 @@ public class LyxExportFile extends Thread {
 					List<DefSyl> tmp_def=new ArrayList<>();
 					String tmp = subdef;
 					String str_syl = StringUtils.strip(isyl.next());
-					if (!str_syl.matches("^[Ꭰ-Ᏼ ]+$")){
-						continue;
-					}
 					pos++;
 					if (pos == 2 && !entry.pos.startsWith("v")) {
 						break;
 					}
 					if (str_syl.startsWith("-") || StringUtils.isBlank(str_syl)) {
+						continue;
+					}
+					if (!str_syl.matches("^[Ꭰ-Ᏼ ]+$")){
 						continue;
 					}
 					switch (pos) {
@@ -729,6 +737,7 @@ public class LyxExportFile extends Thread {
 				}
 			}
 		}
+		System.out.println();
 		FileUtils.writeStringToFile(new File("output/corpus_chr.txt"),
 				corpus_chr.toString());
 		FileUtils.writeStringToFile(new File("output/corpus_en.txt"),
