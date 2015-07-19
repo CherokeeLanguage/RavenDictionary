@@ -517,6 +517,17 @@ public class LyxExportFile extends Thread {
 				subdef = subdef.replace("They are ", "");
 				subdef = subdef.replace("His ", "");
 				subdef = subdef.replace("Her ", "");
+				/*
+				 * hide classifiers
+				 */
+				subdef = subdef.replace("something solid", "it");
+				subdef = subdef.replace("something flexible", "it");
+				subdef = subdef.replace("something alive", "it");
+				subdef = subdef.replace("something liquid", "it");
+				subdef = subdef.replace("something long", "it");
+				subdef = subdef.replace("something in", "it in");
+				subdef = subdef.replace("something thrown or chased", "it");
+				subdef = subdef.replace("something for", "it for");
 				Iterator<String> isyl = entry.getSyllabary().iterator();
 				/*
 				 * pos 1 = 3rd person continous, pos 2 = 1st person continuous,
