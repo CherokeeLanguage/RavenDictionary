@@ -562,9 +562,9 @@ public class LyxExportFile extends Thread {
 						tmp_def.add(new DefSyl(str_syl.replaceAll("Ꭲ$", ""), rpast));
 						
 						tmp_def.add(new DefSyl("Ꮒ-"+str_syl+"-ᎣᎢ", "had already "+rpast));
-						tmp_def.add(new DefSyl("Ꮒ-"+str_syl+"-ᎥᎾ", "without "+rpast));
-						tmp_def.add(new DefSyl("Ꮒ-"+str_syl+"-ᎥᎾ ᎨᏎ", "was without "+rpast));
-						tmp_def.add(new DefSyl("Ꮒ-"+str_syl+"-ᎥᎾ ᎨᏎᏍᏗ", "will be without "+rpast));
+						tmp_def.add(new DefSyl("Ꮒ-"+str_syl+"-ᎥᎾ", "without "+subdef));
+						tmp_def.add(new DefSyl("Ꮒ-"+str_syl+"-ᎥᎾ ᎨᏎ", "was without "+subdef));
+						tmp_def.add(new DefSyl("Ꮒ-"+str_syl+"-ᎥᎾ ᎨᏎᏍᏗ", "will be without "+subdef));
 						
 						tmp_def.add(new DefSyl(str_syl.replaceAll("Ꭲ$","²Ꭲ"), "later let be "+subdef));
 						
