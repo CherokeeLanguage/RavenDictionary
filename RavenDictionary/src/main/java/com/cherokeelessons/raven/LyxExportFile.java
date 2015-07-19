@@ -431,6 +431,49 @@ public class LyxExportFile extends Thread {
 		FileUtils.writeStringToFile(new File(lyxfile), sb.toString(), "UTF-8",
 				false);
 
+		corpusWriter(definitions);
+		
+		/*
+		 * Save out wordforms+defs into a special lookup file for use by other
+		 * softwares.
+		 */
+		Map<Integer, LyxEntry> defmap = new HashMap<>();
+		for (LyxEntry entry : definitions) {
+			defmap.put(entry.id, entry);
+		}
+		Map<Integer, EnglishCherokee> engmap = new HashMap<>();
+		for (EnglishCherokee entry : english) {
+			for (Reference ref : entry.refs) {
+				engmap.put(ref.toLabel, entry);
+			}
+		}
+		StringBuilder sbwf = new StringBuilder();
+		for (WordForm wordform : wordforms) {
+			if (wordform.stemEntry.syllabary.contains(" ")) {
+				continue;
+			}
+			sbwf.append(wordform.stemEntry.syllabary);
+			sbwf.append("\t");
+			sbwf.append(wordform.stemEntry.stemtype.name());
+			for (int ix = 0; ix < wordform.references.size(); ix++) {
+				sbwf.append("\t");
+				Reference ref = wordform.references.get(ix);
+				sbwf.append(ref.syllabary);
+				EnglishCherokee eng = engmap.get(ref.toLabel);
+				if (eng != null) {
+					sbwf.append(":");
+					sbwf.append(eng.getDefinition());
+				}
+			}
+			sbwf.append("\n");
+		}
+		FileUtils.writeStringToFile(new File("output/wordforms.txt"),
+				sbwf.toString(), "UTF-8");
+		System.out.println("Wrote wordforms.txt");
+	}
+
+	private void corpusWriter(final List<LyxEntry> definitions)
+			throws IOException {
 		/*
 		 * CORPUS WRITER FOR MAT
 		 */
@@ -546,19 +589,19 @@ public class LyxExportFile extends Thread {
 						tmp = subdef.replaceAll("^(.*?)is ([a-zA-Z]+ing)\\b(.*?)", "For $1to do again $2$3");
 						tmp_def.add(new DefSyl(str_syl+" -ᎢᏐᏗ", tmp));
 						//BENEFACTIVE
-						tmp = subdef.replaceAll("^(.*?)is ([a-zA-Z]+ing)\\b(.*?)", "$1is doing $2$3 for");
+						tmp = subdef.replaceAll("^(.*?)is ([a-zA-Z]+ing)\\b(.*?)", "$1is $2$3 for another");
 						tmp_def.add(new DefSyl(str_syl+" -ᎡᎭ", tmp));
-						tmp = subdef.replaceAll("^(.*?)is ([a-zA-Z]+ing)\\b(.*?)", "let $1be doing $2$3 for");
+						tmp = subdef.replaceAll("^(.*?)is ([a-zA-Z]+ing)\\b(.*?)", "let $1be $2$3 for another");
 						tmp_def.add(new DefSyl(str_syl+" -Ꮟ", tmp));
-						tmp = subdef.replaceAll("^(.*?)is ([a-zA-Z]+ing)\\b(.*?)", "$1is just now doing $2$3 for");
+						tmp = subdef.replaceAll("^(.*?)is ([a-zA-Z]+ing)\\b(.*?)", "$1is just now $2$3 for another");
 						tmp_def.add(new DefSyl(str_syl+" -ᎡᎵ²", tmp));
-						tmp = subdef.replaceAll("^(.*?)is ([a-zA-Z]+ing)\\b(.*?)", "$1is often $2$3 for");
+						tmp = subdef.replaceAll("^(.*?)is ([a-zA-Z]+ing)\\b(.*?)", "$1is often $2$3 for another");
 						tmp_def.add(new DefSyl(str_syl+" -ᎡᎰᎢ", tmp));
-						tmp = subdef.replaceAll("^(.*?)is ([a-zA-Z]+ing)\\b(.*?)", "$1did $2$3 for");
+						tmp = subdef.replaceAll("^(.*?)is ([a-zA-Z]+ing)\\b(.*?)", "$1did $2$3 for another");
 						tmp_def.add(new DefSyl(str_syl+" -ᎡᎸᎢ", tmp));
-						tmp = subdef.replaceAll("^(.*?)is ([a-zA-Z]+ing)\\b(.*?)", "$1will do $2$3 for");
+						tmp = subdef.replaceAll("^(.*?)is ([a-zA-Z]+ing)\\b(.*?)", "$1will be $2$3 for another");
 						tmp_def.add(new DefSyl("Ꮣ- " + str_syl+" -ᎡᎵ", tmp));
-						tmp = subdef.replaceAll("^(.*?)is ([a-zA-Z]+ing)\\b(.*?)", "For $1to do $2$3 for");
+						tmp = subdef.replaceAll("^(.*?)is ([a-zA-Z]+ing)\\b(.*?)", "For $1to do $2$3 for another");
 						tmp_def.add(new DefSyl(str_syl+" -ᎡᏗ", tmp));
 						//going to do
 						tmp = subdef.replaceAll("^(.*?)is ([a-zA-Z]+ing)\\b(.*?)", "$1is going there to be $2$3");
@@ -657,6 +700,10 @@ public class LyxExportFile extends Thread {
 					for (DefSyl def: tmp_def) {
 						def.def=def.def.replace("Let He ", "Let him ");
 						def.def=def.def.replace("Let She ", "Let her ");
+						def.def=def.def.replace("Later let He ", "Later let him ");
+						def.def=def.def.replace("Later let She ", "Later let her ");
+						def.def=def.def.replace("For He to ", "For him to ");
+						def.def=def.def.replace("For She to ", "For her to ");
 						List<RuleMatch> lt = langTool.check(def.def);
 						for (RuleMatch match:lt) {
 							int from = match.getFromPos();
@@ -687,44 +734,6 @@ public class LyxExportFile extends Thread {
 		corpus_eng.setLength(0);
 		System.out.println("Finished CORPUS text.");
 		System.out.println();
-		
-		/*
-		 * Save out wordforms+defs into a special lookup file for use by other
-		 * softwares.
-		 */
-		Map<Integer, LyxEntry> defmap = new HashMap<>();
-		for (LyxEntry entry : definitions) {
-			defmap.put(entry.id, entry);
-		}
-		Map<Integer, EnglishCherokee> engmap = new HashMap<>();
-		for (EnglishCherokee entry : english) {
-			for (Reference ref : entry.refs) {
-				engmap.put(ref.toLabel, entry);
-			}
-		}
-		StringBuilder sbwf = new StringBuilder();
-		for (WordForm wordform : wordforms) {
-			if (wordform.stemEntry.syllabary.contains(" ")) {
-				continue;
-			}
-			sbwf.append(wordform.stemEntry.syllabary);
-			sbwf.append("\t");
-			sbwf.append(wordform.stemEntry.stemtype.name());
-			for (int ix = 0; ix < wordform.references.size(); ix++) {
-				sbwf.append("\t");
-				Reference ref = wordform.references.get(ix);
-				sbwf.append(ref.syllabary);
-				EnglishCherokee eng = engmap.get(ref.toLabel);
-				if (eng != null) {
-					sbwf.append(":");
-					sbwf.append(eng.getDefinition());
-				}
-			}
-			sbwf.append("\n");
-		}
-		FileUtils.writeStringToFile(new File("output/wordforms.txt"),
-				sbwf.toString(), "UTF-8");
-		System.out.println("Wrote wordforms.txt");
 	}
 
 	private Collection<? extends DefSyl> pronouns_transitive_a(String str_syl,
