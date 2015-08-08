@@ -1,7 +1,13 @@
 package com.cherokeelessons.raven;
 
 import java.io.File;
+import java.io.IOException;
+import java.util.ArrayList;
+import java.util.Iterator;
 import java.util.List;
+
+import org.apache.commons.io.FileUtils;
+import org.apache.commons.lang3.StringEscapeUtils;
 
 public class App extends Thread {
 
@@ -15,6 +21,31 @@ public class App extends Thread {
 		App.info("creating new lyx file...");
 		List<IEntry> entries = parseDictionary.getEntries();
 		new LyxExportFile(entries, destfile.getAbsolutePath()).start();
+		
+		App.info("creating new csv file...");
+		entries = parseDictionary.getEntries();
+		Iterator<IEntry> iterator = entries.iterator();
+		List<String> csvlist = new ArrayList<>();
+		while (iterator.hasNext()) {
+			IEntry next = iterator.next();
+			String def = next.getDef();
+			def = def.replace("He is ",  "");
+			def = def.replace("She is ",  "");
+			List<String> syll = next.getSyllabary();
+			String main = syll.get(0);
+			for (String s: syll) {
+				if (!s.matches(".*[Ꭰ-Ᏼ].*")){
+					continue;
+				}
+				csvlist.add(StringEscapeUtils.escapeCsv(s)+","+StringEscapeUtils.escapeCsv(def+" ("+main+") [raven]"));
+			}
+		}
+		
+		try {
+			FileUtils.writeLines(new File("/home/mjoyner/Sync/Cherokee/CherokeeReferenceMaterial/Raven-Dictionary-Output/dictionary.csv"), csvlist);
+		} catch (IOException e) {
+			e.printStackTrace();
+		}
 		
 		App.info("done.");
 	}
