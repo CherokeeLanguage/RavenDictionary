@@ -94,10 +94,22 @@ public class LyxExportFile extends Thread {
 
 	private boolean doWordForms = true;
 
+	private boolean docorpus=false;
+
+	public boolean isDocorpus() {
+		return docorpus;
+	}
+
+	public void setDocorpus(boolean docorpus) {
+		this.docorpus = docorpus;
+	}
+
 	public LyxExportFile(List<IEntry> entries, String destfile) {
 		this.entries = entries;
 		this.lyxfile = destfile;
 	}
+	
+	public final List<String> maybe_dupe = new ArrayList<>();
 
 	@Override
 	public void run() {
@@ -174,7 +186,6 @@ public class LyxExportFile extends Thread {
 		/*
 		 * Any duplicates?
 		 */
-		List<String> maybe_dupe = new ArrayList<>();
 		Iterator<LyxEntry> ientry = definitions.iterator();
 		LyxEntry d1 = ientry.next();
 		while (ientry.hasNext()) {
@@ -431,7 +442,9 @@ public class LyxExportFile extends Thread {
 		FileUtils.writeStringToFile(new File(lyxfile), sb.toString(), "UTF-8",
 				false);
 
-		corpusWriter(definitions);
+		if (docorpus) {
+			corpusWriter(definitions);
+		}
 		
 		/*
 		 * Save out wordforms+defs into a special lookup file for use by other

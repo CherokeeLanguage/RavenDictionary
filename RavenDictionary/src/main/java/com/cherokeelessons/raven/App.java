@@ -13,15 +13,22 @@ public class App extends Thread {
 
 	@Override
 	public void run() {
-		File in = new File("/home/mjoyner/Sync/Cherokee/CherokeeReferenceMaterial/Raven-Dictionary-Output/raven-cherokee-dictionary-tlw.lyx");
-		File destfile = new File("/home/mjoyner/Sync/Cherokee/CherokeeReferenceMaterial/Raven-Dictionary-Output/raven-rock-cherokee-dictionary-DO-NOT-EDIT.lyx");
+		final String DIR = "/home/mjoyner/Sync/Cherokee/CherokeeReferenceMaterial/Raven-Dictionary-Output/";
+		File in = new File(DIR + "raven-cherokee-dictionary-tlw-2015-11-29.lyx");
+		File destfile = new File(DIR + "raven-rock-cherokee-dictionary-DO-NOT-EDIT.lyx");
 		ParseDictionary parseDictionary = new ParseDictionary(in);
 		App.info("parsing...");
 		parseDictionary.run();
 		App.info("creating new lyx file...");
 		List<IEntry> entries = parseDictionary.getEntries();
-		new LyxExportFile(entries, destfile.getAbsolutePath()).start();
-		
+		LyxExportFile lyxExportFile = new LyxExportFile(entries, destfile.getAbsolutePath());
+		lyxExportFile.setDocorpus(false);
+		lyxExportFile.run();
+		try {
+			FileUtils.writeLines(new File(DIR+"raven-possible-duplications.odt"), lyxExportFile.maybe_dupe);
+		} catch (IOException e1) {
+			e1.printStackTrace();
+		}
 		App.info("creating new csv file...");
 		entries = parseDictionary.getEntries();
 		Iterator<IEntry> iterator = entries.iterator();
@@ -29,27 +36,28 @@ public class App extends Thread {
 		while (iterator.hasNext()) {
 			IEntry next = iterator.next();
 			String def = next.getDef();
-			def = def.replace("He is ",  "");
-			def = def.replace("She is ",  "");
+			def = def.replace("He is ", "");
+			def = def.replace("She is ", "");
 			List<String> syll = next.getSyllabary();
 			String main = syll.get(0);
-			for (String s: syll) {
-				if (!s.matches(".*[Ꭰ-Ᏼ].*")){
+			for (String s : syll) {
+				if (!s.matches(".*[Ꭰ-Ᏼ].*")) {
 					continue;
 				}
-				csvlist.add(StringEscapeUtils.escapeCsv(s)+","+StringEscapeUtils.escapeCsv(def+" ("+main+") [raven]"));
+				csvlist.add(StringEscapeUtils.escapeCsv(s) + ","
+						+ StringEscapeUtils.escapeCsv(def + " (" + main + ") [raven]"));
 			}
 		}
-		
+
 		try {
-			FileUtils.writeLines(new File("/home/mjoyner/Sync/Cherokee/CherokeeReferenceMaterial/Raven-Dictionary-Output/dictionary.csv"), csvlist);
+			FileUtils.writeLines(new File(DIR + "dictionary.csv"), csvlist);
 		} catch (IOException e) {
 			e.printStackTrace();
 		}
-		
+
 		App.info("done.");
 	}
-	
+
 	public App(String[] args) {
 	}
 
