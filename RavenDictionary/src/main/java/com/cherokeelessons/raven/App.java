@@ -14,7 +14,7 @@ public class App extends Thread {
 	@Override
 	public void run() {
 		final String DIR = "/home/mjoyner/Sync/Cherokee/CherokeeReferenceMaterial/Raven-Dictionary-Output/";
-		File in = new File(DIR + "raven-cherokee-dictionary-tlw-2015-11-29.lyx");
+		File in = new File(DIR + "raven-cherokee-dictionary-tlw.lyx");
 		File destfile = new File(DIR + "raven-rock-cherokee-dictionary-DO-NOT-EDIT.lyx");
 		ParseDictionary parseDictionary = new ParseDictionary(in);
 		App.info("parsing...");

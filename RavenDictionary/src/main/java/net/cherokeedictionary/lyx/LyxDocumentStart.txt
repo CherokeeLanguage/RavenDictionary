@@ -180,7 +180,11 @@ Raven Rock Cherokee Language Dictionary
 \end_layout
 
 \begin_layout Author
-__AUTHOR__
+Michael Joyner
+\begin_inset Newline newline
+\end_inset
+
+TommyLee Whitlock
 \end_layout
 
 \begin_layout Standard
@@ -220,7 +224,7 @@ Raven Rock Cherokee Language Dictionary
 status collapsed
 
 \begin_layout Standard
-Published by __AUTHOR__ at Smashwords
+Published by Michael Joyner, TommyLee Whitlock at Smashwords
 \end_layout
 
 \end_inset
@@ -229,7 +233,7 @@ Published by __AUTHOR__ at Smashwords
 \end_layout
 
 \begin_layout Standard
-Copyright 2015, __AUTHOR__
+Copyright 2015, Michael Joyner, TommyLee Whitlock
 \end_layout
 
 \begin_layout Standard
@@ -305,67 +309,65 @@ pagestyle{plain}
 \end_layout
 
 \begin_layout Chapter
-Forward
+Preface
 \end_layout
 
 \begin_layout Standard
-xxx
-\end_layout
-
-\begin_layout Section*
-Contributors
+This dictionary was derived from the raw list of word roots and affixes
+ collected by Dr.
+ Duane King in his dissertation of 1975.
+ The word lists in Dr.
+ King’s dissertation provided word roots and basic affixes in a printout
+ from his work on IBM computer punch cards which were created for a program
+ that he describes in his dissertation.
+ This program was devised as a way to generate complete verb forms for the
+ major tenses.
+ 
 \end_layout
 
 \begin_layout Standard
-
+Based on these entries and the phonetic rules that Dr.
+ King painstakingly derived and documented in his dissertation, in 1975
+ Bruce Delaney generated a punch card program that, sadly, no longer appears
+ to exist.
+ However, computer technology has made dramatic advances since 1975 and
+ we no longer use punch card technology.
+ The major hurdle was entering the data by hand from the barely legible
+ copy of the printout.
+ The raw data was scrutinized and manually entered into a database created
+ for generating this dictionary which follows the format of Dr.
+ Durbin Feeling’s well known work-horse 
 \emph on
-Being listed as a contributor does not indicate endorsement.
+Cherokee-English Dictionary
+\emph default
+.
+ This format was chosen because of the widespread use and familiarity of
+ Dr.
+ Feeling’s dictionary.
+ The inscrutable academic phonetics of the 1970’s have been transcribed
+ to a more readily accessible and more familiar form and syllabary forms
+ have been generated, as well.
+ 
 \end_layout
 
 \begin_layout Standard
-\begin_inset ERT
-status collapsed
-
-\begin_layout Plain Layout
-
-
-\backslash
-begin{multicols}{2}
-\end_layout
-
-\end_inset
-
-
-\end_layout
-
-\begin_layout Subsection*
-Original Dictionary Committee
-\end_layout
-
-\begin_layout Subsection*
-Data Entry
-\end_layout
-
-\begin_layout Subsection*
-Programming
-\end_layout
-
-\begin_layout Subsection*
-Book and eBook Layout
+It is our sincere hope that this dictionary will help preserve and promote
+ the Eastern Cherokee dialect spoken on the Qualla Boundary and it is presented
+ in the spirit of of openness, gratitude to the ancestors and the people
+ who made the original work possible, and especially in the spirit of ᎦᏚᎩ
+ (community cooperation).
+ It is also our hope that this dictionary will not only expand and contribute
+ to the preservation and growth of the Eastern dialects of the Cherokee
+ language, but also be a resource that fills in gaps to other resources
+ as it includes many words that are not in the 
+\emph on
+Cherokee-English Dictionary
+\emph default
+ or other sources.
 \end_layout
 
 \begin_layout Standard
-\begin_inset ERT
-status collapsed
-
-\begin_layout Plain Layout
-
-
-\backslash
-end{multicols}
-\end_layout
-
-\end_inset
-
-
+\noindent
+\align right
+-TommyLee Whitlock
 \end_layout
