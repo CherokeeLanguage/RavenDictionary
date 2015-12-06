@@ -72,7 +72,13 @@ public class ParseDictionary implements Runnable {
 			if (line.startsWith("\\begin_layout Description")){
 				if (entry.length()>0) {
 					String string = entry.toString();
-					entries.add(parse(fixup(string)));
+					if (!string.contains("&rdquo;")||!string.contains("&ldquo")){
+						System.err.println("BAD ENTRY: "+string);
+						throw new RuntimeException("BAD ENTRY: "+string);
+					}
+					String fixup = fixup(string);
+					IEntry parse = parse(fixup);
+					entries.add(parse);
 				}
 				entry.setLength(0);
 				entry.append(parse(line, li, state));
