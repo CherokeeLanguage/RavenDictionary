@@ -69,24 +69,22 @@ public class ParseDictionary implements Runnable {
 			if (line.startsWith("\\begin_layout Chapter")) {
 				break;
 			}
+			
 			if (line.startsWith("\\begin_layout Description")){
 				if (entry.length()>0) {
 					String string = entry.toString();
-					if (!string.contains("&rdquo;")||!string.contains("&ldquo")){
+					if ((!string.contains("&rdquo;")||!string.contains("&ldquo"))){
 						System.err.println("BAD ENTRY: "+string);
 						throw new RuntimeException("BAD ENTRY: "+string);
 					}
 					String fixup = fixup(string);
-					if (fixup.contains("walking")){
-						System.out.println(string);
-						System.out.println(fixup);
-					}
 					IEntry parse = parse(fixup);
 					entries.add(parse);
 				}
 				entry.setLength(0);
 				entry.append(parse(line, li, state));
 			}
+			
 			if (line.startsWith("\\begin_deeper")){
 				entry.append(parseUntil("\\end_deeper", li, state));
 			}
@@ -100,6 +98,7 @@ public class ParseDictionary implements Runnable {
 
 	private String fixup(String string) {
 		string = string.replace("<ul class=\"ul_dl\">", "");
+		string = string.replace("</ul><!-- description -->", "");
 		string = string.replace("<li class=\"li_dt chr\"><span class=\"dt\">", "");
 		string = string.replace("</span></li><li class=\"li_dd chr\">", " ");
 		string = string.replace("\\phantomsection{}", "");
@@ -134,6 +133,9 @@ public class ParseDictionary implements Runnable {
 		entry.setDef(def);
 		while (ilines.hasNext()) {
 			line=StringUtils.strip(ilines.next());
+			if (StringUtils.isBlank(line)) {
+				continue;
+			}
 			if (line.startsWith("-")){
 				entry.addSyllabary("-");
 				entry.addPronunciation("");
@@ -144,8 +146,15 @@ public class ParseDictionary implements Runnable {
 				entry.addPronunciation("");
 				continue;
 			}
-			if (line.startsWith("<div class=")){
-				String tmp = StringUtils.substringAfter(line, ">");
+			if (line.startsWith("<div class=\"Standard\">")){
+				String tmp = line;
+				tmp = tmp.replaceAll(" (\\\\noun [a-z]+) ", "\n$1\n");
+				tmp = tmp.replaceAll(" (\\\\series [a-z]+) ", "\n$1\n");
+				tmp = tmp.replaceAll(" (\\\\emph [a-z]+) ", "\n$1\n");
+				tmp = tmp.replaceAll(" (\\\\bar [a-z]+) ", "\n$1\n");
+				
+				tmp = tmp.replaceAll("<!--.*?-->", "");
+				tmp = StringUtils.substringAfter(tmp, ">");
 				tmp = StringUtils.substringBeforeLast(tmp, "<");
 				entry.addNote(tmp);
 				continue;
@@ -350,6 +359,7 @@ public class ParseDictionary implements Runnable {
 			String group_itemize = "</ul><!-- itemize -->";
 			String group_description = "</ul><!-- description -->";
 			String group_enumerate = "</ol><!-- enumerate -->";
+			
 			if (line.startsWith("\\begin_layout Enumerate")) {
 				if (!state.isActiveGroup(group_enumerate)) {
 					while (state.containsGroup(group_itemize)) {
@@ -464,6 +474,30 @@ public class ParseDictionary implements Runnable {
 			}
 			while (line.startsWith("\\change_inserted")) {
 				line=iline.next();
+			}
+			if (line.startsWith("\\bar")){
+				tmp.append(" ");
+				tmp.append(line);
+				tmp.append(" ");
+				break whichparsing;
+			}
+			if (line.startsWith("\\series")){
+				tmp.append(" ");
+				tmp.append(line);
+				tmp.append(" ");
+				break whichparsing;
+			}
+			if (line.startsWith("\\emph")){
+				tmp.append(" ");
+				tmp.append(line);
+				tmp.append(" ");
+				break whichparsing;
+			}
+			if (line.startsWith("\\noun")){
+				tmp.append(" ");
+				tmp.append(line);
+				tmp.append(" ");
+				break whichparsing;
 			}
 			/*
 			 * FAILSAFE DIE

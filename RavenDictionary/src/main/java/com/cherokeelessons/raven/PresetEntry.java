@@ -64,6 +64,7 @@ public class PresetEntry implements IEntry {
 	public void addPronunciation(String pro) {
 		if (pro == null) {
 			App.err("BAD PRONUNCIATION FOR: "+getDef());
+			throw new RuntimeException("BAD PRONUNCIATION FOR: "+getDef());
 		}
 		pronunciations.add(StringUtils.defaultString(pro));
 	}

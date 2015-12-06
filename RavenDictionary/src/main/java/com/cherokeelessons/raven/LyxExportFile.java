@@ -272,6 +272,11 @@ public class LyxExportFile extends Thread {
 		}
 		App.info("Post-combined English to Cherokee entries: "
 				+ nf.format(english.size()));
+		
+		/**
+		 * Blacklisted entries.
+		 */
+		english.removeIf(entry->entry.getDefinition().startsWith("Genus: All Varieties"));
 
 		/*
 		 * Build up word forms reference
@@ -374,7 +379,8 @@ public class LyxExportFile extends Thread {
 				sb.append(syll);
 				sb.append("\\end_layout\n");
 			}
-			sb.append(entry.getLyxCode().replace("\\n", " "));
+			//sb.append(entry.getLyxCode().replace("\\n", " "));
+			sb.append(entry.getLyxCode());
 			if (entry.examples.size() != 0) {
 				sb.append("\\begin_deeper\n");
 				for (ExampleEntry ee : entry.examples) {
