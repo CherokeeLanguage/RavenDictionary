@@ -32,7 +32,6 @@ public class JsonConverter {
 		mapper.enable(SerializationFeature.ORDER_MAP_ENTRIES_BY_KEYS);
 		mapper.enable(SerializationFeature.WRITE_DATE_KEYS_AS_TIMESTAMPS);
 		mapper.enable(SerializationFeature.WRITE_DATES_AS_TIMESTAMPS);
-		mapper.enable(SerializationFeature.WRITE_BIGDECIMAL_AS_PLAIN);
 		mapper.disable(SerializationFeature.WRITE_ENUMS_USING_TO_STRING);
 		mapper.disable(SerializationFeature.WRITE_CHAR_ARRAYS_AS_JSON_ARRAYS);
 		mapper.disable(SerializationFeature.WRITE_NULL_MAP_VALUES);
@@ -68,7 +67,7 @@ public class JsonConverter {
 			return null;
 		T result = null;
 		ObjectReader reader;
-		reader = mapper.reader(classOfT);
+		reader = mapper.readerFor(classOfT);
 		try {
 			result = reader.readValue(json);
 		} catch (JsonProcessingException e) {
