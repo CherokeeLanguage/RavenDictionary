@@ -280,4 +280,19 @@ public class Entry implements IEntry {
 		}
 		return sb.toString();
 	}
+	
+	private List<String> notes=new ArrayList<>();
+	
+	@Override
+	public void addNote(String note) {
+		notes.add(note);
+	}
+	@Override
+	public void clearNotes() {
+		notes.clear();
+	}
+	@Override
+	public List<String> getNotes() {
+		return new ArrayList<>(notes);
+	}
 }

@@ -15,6 +15,13 @@ import java.util.ListIterator;
 import java.util.Map;
 import java.util.Set;
 
+import org.apache.commons.io.FileUtils;
+import org.apache.commons.io.IOUtils;
+import org.apache.commons.lang3.StringUtils;
+import org.languagetool.JLanguageTool;
+import org.languagetool.language.AmericanEnglish;
+import org.languagetool.rules.RuleMatch;
+
 import net.cherokeedictionary.lyx.CrossReference;
 import net.cherokeedictionary.lyx.DefinitionLine;
 import net.cherokeedictionary.lyx.EnglishCherokee;
@@ -27,13 +34,6 @@ import net.cherokeedictionary.lyx.VerbEntry;
 import net.cherokeedictionary.lyx.WordForm;
 import net.cherokeedictionary.shared.StemEntry;
 import net.cherokeedictionary.shared.StemType;
-
-import org.apache.commons.io.FileUtils;
-import org.apache.commons.io.IOUtils;
-import org.apache.commons.lang3.StringUtils;
-import org.languagetool.JLanguageTool;
-import org.languagetool.language.AmericanEnglish;
-import org.languagetool.rules.RuleMatch;
 
 public class LyxExportFile extends Thread {
 	private static final String sloppy_begin = "\\begin_layout Standard\n"
@@ -159,6 +159,11 @@ public class LyxExportFile extends Thread {
 				v.habitual.syllabary = isyll.next();
 				v.imperative.syllabary = isyll.next();
 				v.infinitive.syllabary = isyll.next();
+				
+				if (entry.getNotes().size()!=0) {
+					entry.getNotes().stream().forEach(note->v.addNote(note));
+				}
+				
 				definitions.add(v);
 				continue;
 			}
@@ -172,6 +177,9 @@ public class LyxExportFile extends Thread {
 				def.pronounce = ilatin.next();
 				def.syllabary = isyll.next();
 				multi.addDefinition(def);
+			}
+			if (entry.getNotes().size()!=0) {
+				entry.getNotes().stream().forEach(note->multi.addNote(note));
 			}
 			definitions.add(multi);
 		}

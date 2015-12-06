@@ -8,6 +8,20 @@ import org.apache.commons.lang3.StringUtils;
 import org.apache.commons.lang3.text.WordUtils;
 
 public class PresetEntry implements IEntry {
+	
+	private List<String> notes=new ArrayList<>();
+	
+	public void clearNotes(){
+		notes.clear();
+	}
+	
+	public void addNote(String note) {
+		notes.add(note);
+	}
+	
+	public List<String> getNotes(){
+		return new ArrayList<>(notes);
+	}
 
 	private String def = "";
 	@Override

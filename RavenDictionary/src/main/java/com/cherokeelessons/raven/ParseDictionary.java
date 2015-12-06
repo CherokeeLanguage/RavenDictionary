@@ -77,6 +77,10 @@ public class ParseDictionary implements Runnable {
 						throw new RuntimeException("BAD ENTRY: "+string);
 					}
 					String fixup = fixup(string);
+					if (fixup.contains("walking")){
+						System.out.println(string);
+						System.out.println(fixup);
+					}
 					IEntry parse = parse(fixup);
 					entries.add(parse);
 				}
@@ -138,6 +142,12 @@ public class ParseDictionary implements Runnable {
 			if (line.startsWith("IRR")){
 				entry.addSyllabary("IRR");
 				entry.addPronunciation("");
+				continue;
+			}
+			if (line.startsWith("<div class=")){
+				String tmp = StringUtils.substringAfter(line, ">");
+				tmp = StringUtils.substringBeforeLast(tmp, "<");
+				entry.addNote(tmp);
 				continue;
 			}
 			syllabary = StringUtils.substringBefore(line, " [");
