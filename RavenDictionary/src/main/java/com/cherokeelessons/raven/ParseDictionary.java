@@ -156,6 +156,11 @@ public class ParseDictionary implements Runnable {
 				tmp = tmp.replaceAll("<!--.*?-->", "");
 				tmp = StringUtils.substringAfter(tmp, ">");
 				tmp = StringUtils.substringBeforeLast(tmp, "<");
+				
+				tmp = tmp.replace("{|", "“");
+				tmp = tmp.replace("|}", "”");
+				tmp = tmp.replace("<br/>", "\n\\begin_inset Newline newline\n\\end_inset\n");
+				
 				entry.addNote(tmp);
 				continue;
 			}
