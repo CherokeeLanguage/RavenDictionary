@@ -23,6 +23,7 @@ public class VerbEntry extends LyxEntry implements HasStemmedForms {
 
 	@Override
 	public String getLyxCode() {
+		boolean let_it=present1st==null||StringUtils.isBlank(present1st.syllabary)||present1st.syllabary.startsWith("-");
 		StringBuilder sb = new StringBuilder();
 		sb.append(lyxSyllabaryPronounceDefinition(id, present3rd,
 				pos, definition));
@@ -30,9 +31,23 @@ public class VerbEntry extends LyxEntry implements HasStemmedForms {
 		sb.append(lyxSyllabaryPronounce(present1st));
 		sb.append(lyxSyllabaryPronounce(remotepast));
 		sb.append(lyxSyllabaryPronounce(habitual));
-		sb.append(lyxSyllabaryPronounce(imperative));
+		if (let_it) {
+			sb.append(lyxSyllabaryPronounceDefinition(0, imperative,
+					"", "Let it \\SpecialChar \\ldots{}"));
+		} else {
+			sb.append(lyxSyllabaryPronounce(imperative));
+		}
 		sb.append(lyxSyllabaryPronounce(infinitive));
 		sb.append("\\end_deeper\n");
+		if (getNotes().size()!=0) {
+			sb.append("\n\\begin_deeper\n");
+			getNotes().stream().forEach(note->{
+				sb.append("\n\\begin_layout Standard\n");
+				sb.append(note);
+				sb.append("\n\\end_layout\n");
+			});
+			sb.append("\n\\end_deeper\n");
+		}
 		return sb.toString();
 	}
 
