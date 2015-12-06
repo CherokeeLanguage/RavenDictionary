@@ -14,6 +14,18 @@ import com.cherokeelessons.raven.App;
 import com.cherokeelessons.raven.JsonConverter;
 
 public abstract class LyxEntry implements Comparable<LyxEntry> {
+	
+	private List<String> notes = new ArrayList<>();
+	public void clearNotes(){
+		notes.clear();
+	}
+	public void addNote(String note){
+		notes.add(note);
+	}
+	public List<String> getNotes(){
+		return new ArrayList<>(notes);
+	}
+	
 	public static boolean disable_hyphenation = true;
 	private static final String LyxSoftHyphen = "\\SpecialChar \\-\n";
 
@@ -513,6 +525,15 @@ public abstract class LyxEntry implements Comparable<LyxEntry> {
 		public String getLyxCode() {
 			StringBuilder sb = new StringBuilder();
 			sb.append(lyxSyllabaryPronounceDefinition(id, interj, pos, definition));
+			if (getNotes().size()!=0) {
+				sb.append("\n\\begin_deeper\n");
+				getNotes().stream().forEach(note->{
+					sb.append("\n\\begin_layout Standard\n");
+					sb.append(note);
+					sb.append("\n\\end_layout\n");
+				});
+				sb.append("\n\\end_deeper\n");
+			}
 			return sb.toString();
 		}
 
@@ -563,6 +584,15 @@ public abstract class LyxEntry implements Comparable<LyxEntry> {
 			StringBuilder sb = new StringBuilder();
 			sb.append(lyxSyllabaryPronounceDefinition(id, conjunction,
 					pos, definition));
+			if (getNotes().size()!=0) {
+				sb.append("\n\\begin_deeper\n");
+				getNotes().stream().forEach(note->{
+					sb.append("\n\\begin_layout Standard\n");
+					sb.append(note);
+					sb.append("\n\\end_layout\n");
+				});
+				sb.append("\n\\end_deeper\n");
+			}
 			return sb.toString();
 		}
 
@@ -605,6 +635,15 @@ public abstract class LyxEntry implements Comparable<LyxEntry> {
 		public String getLyxCode() {
 			StringBuilder sb = new StringBuilder();
 			sb.append(lyxSyllabaryPronounceDefinition(id, pronoun, pos, definition));
+			if (getNotes().size()!=0) {
+				sb.append("\n\\begin_deeper\n");
+				getNotes().stream().forEach(note->{
+					sb.append("\n\\begin_layout Standard\n");
+					sb.append(note);
+					sb.append("\n\\end_layout\n");
+				});
+				sb.append("\n\\end_deeper\n");
+			}
 			return sb.toString();
 		}
 
@@ -652,6 +691,15 @@ public abstract class LyxEntry implements Comparable<LyxEntry> {
 		public String getLyxCode() {
 			StringBuilder sb = new StringBuilder();
 			sb.append(lyxSyllabaryPronounceDefinition(id, post, pos, definition));
+			if (getNotes().size()!=0) {
+				sb.append("\n\\begin_deeper\n");
+				getNotes().stream().forEach(note->{
+					sb.append("\n\\begin_layout Standard\n");
+					sb.append(note);
+					sb.append("\n\\end_layout\n");
+				});
+				sb.append("\n\\end_deeper\n");
+			}
 			return sb.toString();
 		}
 
@@ -719,6 +767,15 @@ public abstract class LyxEntry implements Comparable<LyxEntry> {
 				}
 				sb.append("\\end_deeper\n");
 			}
+			if (getNotes().size()!=0) {
+				sb.append("\n\\begin_deeper\n");
+				getNotes().stream().forEach(note->{
+					sb.append("\n\\begin_layout Standard\n");
+					sb.append(note);
+					sb.append("\n\\end_layout\n");
+				});
+				sb.append("\n\\end_deeper\n");
+			}
 			return sb.toString();
 		}
 
@@ -779,6 +836,15 @@ public abstract class LyxEntry implements Comparable<LyxEntry> {
 		public String getLyxCode() {
 			StringBuilder sb = new StringBuilder();
 			sb.append(lyxSyllabaryPronounceDefinition(id, other, pos, definition));
+			if (getNotes().size()!=0) {
+				sb.append("\n\\begin_deeper\n");
+				getNotes().stream().forEach(note->{
+					sb.append("\n\\begin_layout Standard\n");
+					sb.append(note);
+					sb.append("\n\\end_layout\n");
+				});
+				sb.append("\n\\end_deeper\n");
+			}
 			return sb.toString();
 		}
 
@@ -920,6 +986,9 @@ public abstract class LyxEntry implements Comparable<LyxEntry> {
 	}
 
 	private static String lyxLabel(int label) {
+		if (label<1) {
+			return "";
+		}
 		StringBuilder sb = new StringBuilder();
 		sb.append("\\begin_inset ERT\n" + 
 				"status closed\n" + 
