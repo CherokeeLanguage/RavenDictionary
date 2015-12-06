@@ -52,6 +52,15 @@ public class MultiEntry extends LyxEntry {
 			}
 			sb.append("\\end_deeper\n");
 		}
+		if (getNotes().size()!=0) {
+			sb.append("\n\\begin_deeper\n");
+			getNotes().stream().forEach(note->{
+				sb.append("\n\\begin_layout Standard\n");
+				sb.append(note);
+				sb.append("\n\\end_layout\n");
+			});
+			sb.append("\n\\end_deeper\n");
+		}
 		return sb.toString();
 	}
 
