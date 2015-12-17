@@ -116,14 +116,10 @@ public class ParseDictionary implements Runnable {
 	private IEntry parse(String definition) {
 		Iterator<String> ilines = Arrays.asList(StringUtils.split(definition, "\n")).iterator();
 		String line = StringUtils.strip(ilines.next());
-		String pos = StringUtils.substringBetween(definition, "(", ")");
-		if (StringUtils.isBlank(pos)) {
-			pos="";
-		}
 		PresetEntry entry = new PresetEntry();
 		String syllabary = StringUtils.substringBefore(line, " [");
 		String pronounce = StringUtils.substringBetween(line, "[", "]");
-		String type = StringUtils.substringBetween(line, "(", ")");
+		String type = StringUtils.substringBetween(line, "] (", ")");
 		String def = StringUtils.substringAfter(line, "{|");
 		def=StringUtils.substringBeforeLast(def, "|}");
 		def=StringEscapeUtils.unescapeHtml4(def);
