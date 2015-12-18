@@ -110,6 +110,8 @@ public class ParseDictionary implements Runnable {
 		}
 		string = string.replace("</li>", "\n\t");
 		string = string.replace("&nbsp;", " ");
+		//remove soft hyphens
+		string = string.replace("\\SpecialChar \\-", "");
 		return string;
 	}
 	
@@ -148,6 +150,7 @@ public class ParseDictionary implements Runnable {
 				tmp = tmp.replaceAll(" (\\\\series [a-z]+) ", "\n$1\n");
 				tmp = tmp.replaceAll(" (\\\\emph [a-z]+) ", "\n$1\n");
 				tmp = tmp.replaceAll(" (\\\\bar [a-z]+) ", "\n$1\n");
+				tmp = tmp.replaceAll(" (\\\\size [a-z]+) ", "\n$1\n");
 				
 				tmp = tmp.replaceAll("<!--.*?-->", "");
 				tmp = StringUtils.substringAfter(tmp, ">");
@@ -495,6 +498,24 @@ public class ParseDictionary implements Runnable {
 				break whichparsing;
 			}
 			if (line.startsWith("\\noun")){
+				tmp.append(" ");
+				tmp.append(line);
+				tmp.append(" ");
+				break whichparsing;
+			}
+			if (line.equals("\\size larger")){
+				tmp.append(" ");
+				tmp.append(line);
+				tmp.append(" ");
+				break whichparsing;
+			}
+			if (line.equals("\\size default")){
+				tmp.append(" ");
+				tmp.append(line);
+				tmp.append(" ");
+				break whichparsing;
+			}
+			if (line.equals("\\size footnotesize")){
 				tmp.append(" ");
 				tmp.append(line);
 				tmp.append(" ");

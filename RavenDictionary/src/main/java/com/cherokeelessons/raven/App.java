@@ -143,16 +143,7 @@ public class App extends Thread {
 			
 			if (inotes.hasNext()) {
 				String note = inotes.next();
-				//\series bold
-				//\series default
-				note=note.replace("\n\\series bold\n", "<strong>");
-				note=note.replace("\n\\series default\n", "</strong>");
-				note=note.replace("\n\\emph on\n", "<emph>");
-				note=note.replace("\n\\emph default\n", "</emph>");
-				note=note.replace("\n\\bar under\n", "<u>");
-				note=note.replace("\n\\bar default\n", "</u>");
-				note=note.replace("\n\\begin_inset Newline newline\n\\end_inset\n", "\n");
-				note=note.replaceAll("\n+", "\n");
+				note=unlatexFormat(note);
 				Iterator<String> inote = Arrays.asList(StringUtils.split(note, "\n")).iterator();
 				columns.add(StringEscapeUtils.escapeCsv(inote.next()));
 				if (inote.hasNext()) {
@@ -172,14 +163,7 @@ public class App extends Thread {
 			}
 			if (inotes.hasNext()) {
 				String note = StringUtils.join(inotes,"<br/>");
-				note=note.replace("\n\\series bold\n", "<strong>");
-				note=note.replace("\n\\series default\n", "</strong>");
-				note=note.replace("\n\\emph on\n", "<emph>");
-				note=note.replace("\n\\emph default\n", "</emph>");
-				note=note.replace("\n\\bar under\n", "<u>");
-				note=note.replace("\n\\bar default\n", "</u>");
-				note=note.replace("\n\\begin_inset Newline newline\n\\end_inset\n", "<br/>");
-				note=note.replace("\n", "");
+				note=unlatexFormat(note);
 				columns.add(StringEscapeUtils.escapeCsv(note));
 			} else {
 				columns.add("");
@@ -194,6 +178,29 @@ public class App extends Thread {
 		}
 		
 		App.info("done.");
+	}
+	
+	public String unlatexFormat(String note) {
+//		note=note.replace("\n\\size larger\n", "<span class='cap'>");
+//		note=note.replace("\n\\size default\n", "</span>");
+		note=note.replace("\n\\size larger\n", "");
+		note=note.replace("\n\\size default\n", "");
+		note=note.replace("\n\\size footnotesize\n", "");
+		note=note.replace("\n\\series bold\n", "<strong>");
+		note=note.replace("\n\\series default\n", "</strong>");
+		note=note.replace("\n\\emph on\n", "<emph>");
+		note=note.replace("\n\\emph default\n", "</emph>");
+		note=note.replace("\n\\noun on\n", "<emph>");
+		note=note.replace("\n\\noun default\n", "</emph>");
+		note=note.replace("\n\\bar under\n", "<u>");
+		note=note.replace("\n\\bar default\n", "</u>");
+		note=note.replace("\n\\begin_inset Newline newline\n\\end_inset\n", "\n");
+		note=note.replace("\\SpecialChar \\-", "");
+		note=note.replaceAll("\n+", "\n");
+		if (note.contains("\\")){
+			System.err.println("*** WARNING - BACKSLASH REMAINS: "+note);
+		}
+		return note;
 	}
 	
 	/*
