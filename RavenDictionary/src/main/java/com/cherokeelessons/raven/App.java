@@ -19,7 +19,7 @@ public class App extends Thread {
 	public void run() {
 		final String DIR = "/home/mjoyner/Sync/Cherokee/CherokeeReferenceMaterial/Raven-Dictionary-Output/";
 		File in = new File(DIR + DICTIONARY_SRC_LYX);
-		File destfile = new File(DIR + "raven-rock-cherokee-dictionary-DO-NOT-EDIT.lyx");
+		File destfile = new File(DIR + "raven-rock-cherokee-dictionary-output.lyx");
 		ParseDictionary parseDictionary = new ParseDictionary(in);
 		App.info("parsing...");
 		parseDictionary.run();
