@@ -120,14 +120,22 @@ public class LyxExportFile extends Thread {
 		}
 	}
 
+	private String preface;
+	private String grammar;
 	public void _run() throws IOException {
 		final List<LyxEntry> definitions = new ArrayList<LyxEntry>();
 
 		String start = IOUtils.toString(getClass().getResourceAsStream(
 				"/net/cherokeedictionary/lyx/LyxDocumentStart.txt"));
-
+		start=start.replace("__preface__", preface);
+		start=start.replace("__REVISION__", revisionNumber);
+		start=start.replace("__DATE__", dateModified);
+		start=start.replace("ISBN: 978-x-xxx-xxxxx-x", formattedIsbn);
+		start=start.replace("__AUTHOR__", author);
+		
 		String end = IOUtils.toString(getClass().getResourceAsStream(
 				"/net/cherokeedictionary/lyx/LyxDocumentEnd.txt"));
+		end=end.replace("__grammar__", grammar);
 
 		for (IEntry entry : entries) {
 			if (entry.getType().equals("v")) {
@@ -722,6 +730,14 @@ public class LyxExportFile extends Thread {
 
 	private final String lyxfile;
 
+	private String dateModified;
+
+	private String revisionNumber;
+
+	private String formattedIsbn;
+
+	private String author;
+
 	/*
 	 * is this a "splittable" definition?
 	 */
@@ -757,5 +773,29 @@ public class LyxExportFile extends Thread {
 			this.syl=syl;
 			this.def=def;
 		}
+	}
+
+	public void setPreface(String preface_raw_lyx) {
+		this.preface=preface_raw_lyx;
+	}
+
+	public void setGrammar(String grammar_raw_lyx) {
+		this.grammar=grammar_raw_lyx;
+	}
+
+	public void setRevision(String revisionNumber) {
+		this.revisionNumber = revisionNumber;
+	}
+
+	public void setDateModified(String dateModified) {
+		this.dateModified=dateModified;
+	}
+
+	public void setIsbn(String formattedIsbn) {
+		this.formattedIsbn=formattedIsbn;
+	}
+
+	public void setAuthor(String author) {
+		this.author=author;
 	}
 }

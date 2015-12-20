@@ -13,10 +13,12 @@ import org.apache.commons.lang3.StringUtils;
 
 public class App extends Thread {
 
+	private static final String DICTIONARY_SRC_LYX = "raven-cherokee-dictionary-tlw.lyx";
+
 	@Override
 	public void run() {
 		final String DIR = "/home/mjoyner/Sync/Cherokee/CherokeeReferenceMaterial/Raven-Dictionary-Output/";
-		File in = new File(DIR + "raven-cherokee-dictionary-tlw.lyx");
+		File in = new File(DIR + DICTIONARY_SRC_LYX);
 		File destfile = new File(DIR + "raven-rock-cherokee-dictionary-DO-NOT-EDIT.lyx");
 		ParseDictionary parseDictionary = new ParseDictionary(in);
 		App.info("parsing...");
@@ -25,6 +27,39 @@ public class App extends Thread {
 		List<IEntry> entries = parseDictionary.getEntries();
 		LyxExportFile lyxExportFile = new LyxExportFile(entries, destfile.getAbsolutePath());
 		lyxExportFile.setDocorpus(false);
+		try {
+			String preface = FileUtils.readFileToString(new File(DIR+"includes/preface.lyx"));
+			lyxExportFile.setPreface(StringUtils.substringBetween(preface, "\\begin_body", "\\end_body"));
+		} catch (IOException e2) {
+			throw new RuntimeException(e2);
+		}
+		try {
+			String grammar = FileUtils.readFileToString(new File(DIR+"grammar.lyx"));
+			lyxExportFile.setGrammar(StringUtils.substringBetween(grammar, "\\begin_body", "\\end_body"));
+		} catch (IOException e2) {
+			throw new RuntimeException(e2);
+		}
+		
+		String revision;
+		try {
+			revision = FileUtils.readFileToString(new File(DIR + DICTIONARY_SRC_LYX));
+			revision = StringUtils.substringBetween(revision, "$Revision", "$");
+			lyxExportFile.setRevision("$Revision"+revision+"$");
+		} catch (IOException e2) {
+			throw new RuntimeException(e2);
+		}
+		String dateModified;
+		try {
+			dateModified = FileUtils.readFileToString(new File(DIR + DICTIONARY_SRC_LYX));
+			dateModified = StringUtils.substringBetween(dateModified, "$Date", "$ UTC");
+			lyxExportFile.setDateModified("$Date"+dateModified+"$ UTC");
+		} catch (IOException e2) {
+			throw new RuntimeException(e2);
+		}
+		
+		lyxExportFile.setAuthor("Michael Joyner, TommyLee Whitlock");
+		lyxExportFile.setIsbn("978-x-xxx-xxxxx-x");
+		
 		lyxExportFile.run();
 		try {
 			FileUtils.writeLines(new File(DIR+"raven-possible-duplications.odt"), lyxExportFile.maybe_dupe);
