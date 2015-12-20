@@ -46,7 +46,7 @@ fixltx2e
 \pdf_bookmarksopenlevel 0
 \pdf_breaklinks true
 \pdf_pdfborder true
-\pdf_colorlinks true
+\pdf_colorlinks false
 \pdf_backref page
 \pdf_pdfusetitle true
 \pdf_quoted_options "unicode=true,baseurl=http://www.Cherokee.org/,pdfpagelayout=OneColumn,plainpages=false,pdfpagelabels"
