@@ -90,6 +90,30 @@ public class App extends Thread {
 			e.printStackTrace();
 		}
 		
+		App.info("creating new csv file for use by example hunter script ...");
+		csvlist.clear();
+		entries = parseDictionary.getEntries();
+		entries.stream().filter(entry->entry.getNotes().size()==0).forEach(entry->{
+			String def = entry.getDef();
+			def = def.replace("He is ", "");
+			def = def.replace("She is ", "");
+			List<String> syll = entry.getSyllabary();
+			String main = syll.get(0);
+			for (String s : syll) {
+				if (!s.matches(".*[Ꭰ-Ᏼ].*")) {
+					continue;
+				}
+				csvlist.add(StringEscapeUtils.escapeCsv(s) + ","
+						+ StringEscapeUtils.escapeCsv(def + " (" + main + ") [raven]"));
+			}
+		});
+
+		try {
+			FileUtils.writeLines(new File(DIR + "needs-examples.csv"), csvlist);
+		} catch (IOException e) {
+			e.printStackTrace();
+		}
+		
 		csvlist.clear();
 		App.info("creating new csv file for use by cherokeedictionary.net ...");
 		List<String> columns = new ArrayList<>();

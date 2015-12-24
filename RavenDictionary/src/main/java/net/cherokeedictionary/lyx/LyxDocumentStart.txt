@@ -97,7 +97,7 @@ fixltx2e
 \bullet 1 0 0 5
 \bullet 2 0 6 5
 \bullet 3 0 10 5
-\tracking_changes true
+\tracking_changes false
 \output_changes false
 \html_math_output 0
 \html_css_as_file 0

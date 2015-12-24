@@ -36,65 +36,44 @@ import net.cherokeedictionary.shared.StemEntry;
 import net.cherokeedictionary.shared.StemType;
 
 public class LyxExportFile extends Thread {
-	private static final String sloppy_begin = "\\begin_layout Standard\n"
-			+ "\\begin_inset ERT\n" + "status collapsed\n" + "\n"
-			+ "\\begin_layout Plain Layout\n" + "\n" + "\n" + "\\backslash\n"
-			+ "begin{sloppy}\n" + "\\end_layout\n" + "\n" + "\\end_inset\n"
-			+ "\n" + "\n" + "\\end_layout\n\n";
+	private static final String sloppy_begin = "\\begin_layout Standard\n" + "\\begin_inset ERT\n"
+			+ "status collapsed\n" + "\n" + "\\begin_layout Plain Layout\n" + "\n" + "\n" + "\\backslash\n"
+			+ "begin{sloppy}\n" + "\\end_layout\n" + "\n" + "\\end_inset\n" + "\n" + "\n" + "\\end_layout\n\n";
 
-	private static final String sloppy_end = "\\begin_layout Standard\n"
-			+ "\\begin_inset ERT\n" + "status collapsed\n" + "\n"
-			+ "\\begin_layout Plain Layout\n" + "\n" + "\n" + "\\backslash\n"
-			+ "end{sloppy}\n" + "\\end_layout\n" + "\n" + "\\end_inset\n"
-			+ "\n" + "\n" + "\\end_layout\n\n";
+	private static final String sloppy_end = "\\begin_layout Standard\n" + "\\begin_inset ERT\n" + "status collapsed\n"
+			+ "\n" + "\\begin_layout Plain Layout\n" + "\n" + "\n" + "\\backslash\n" + "end{sloppy}\n"
+			+ "\\end_layout\n" + "\n" + "\\end_inset\n" + "\n" + "\n" + "\\end_layout\n\n";
 
-	private static final String columnsep_large = "\\begin_layout Standard\n"
-			+ "\\begin_inset ERT\n" + "status open\n" + "\n"
-			+ "\\begin_layout Plain Layout\n" + "\n" + "\n" + "\\backslash\n"
-			+ "setlength{\n" + "\\backslash\n" + "columnsep}{20pt}\n"
-			+ "\\end_layout\n" + "\n" + "\\end_inset\n" + "\n" + "\n"
-			+ "\\end_layout\n" + "\n";
-	private static final String columnsep_normal = "\\begin_layout Standard\n"
-			+ "\\begin_inset ERT\n" + "status open\n" + "\n"
-			+ "\\begin_layout Plain Layout\n" + "\n" + "\n" + "\\backslash\n"
-			+ "setlength{\n" + "\\backslash\n" + "columnsep}{10pt}\n"
-			+ "\\end_layout\n" + "\n" + "\\end_inset\n" + "\n" + "\n"
-			+ "\\end_layout\n" + "\n";
-	private static final String seprule_on = "\\begin_layout Standard\n"
-			+ "\\begin_inset ERT\n" + "status open\n" + "\n"
-			+ "\\begin_layout Plain Layout\n" + "\n" + "\n" + "\\backslash\n"
-			+ "setlength{\n" + "\\backslash\n" + "columnseprule}{0.5pt}\n"
-			+ "\\end_layout\n" + "\n" + "\\end_inset\n" + "\n" + "\n"
+	private static final String columnsep_large = "\\begin_layout Standard\n" + "\\begin_inset ERT\n" + "status open\n"
+			+ "\n" + "\\begin_layout Plain Layout\n" + "\n" + "\n" + "\\backslash\n" + "setlength{\n" + "\\backslash\n"
+			+ "columnsep}{20pt}\n" + "\\end_layout\n" + "\n" + "\\end_inset\n" + "\n" + "\n" + "\\end_layout\n" + "\n";
+	private static final String columnsep_normal = "\\begin_layout Standard\n" + "\\begin_inset ERT\n" + "status open\n"
+			+ "\n" + "\\begin_layout Plain Layout\n" + "\n" + "\n" + "\\backslash\n" + "setlength{\n" + "\\backslash\n"
+			+ "columnsep}{10pt}\n" + "\\end_layout\n" + "\n" + "\\end_inset\n" + "\n" + "\n" + "\\end_layout\n" + "\n";
+	private static final String seprule_on = "\\begin_layout Standard\n" + "\\begin_inset ERT\n" + "status open\n"
+			+ "\n" + "\\begin_layout Plain Layout\n" + "\n" + "\n" + "\\backslash\n" + "setlength{\n" + "\\backslash\n"
+			+ "columnseprule}{0.5pt}\n" + "\\end_layout\n" + "\n" + "\\end_inset\n" + "\n" + "\n" + "\\end_layout\n";
+	private static final String seprule_off = "\\begin_layout Standard\n" + "\\begin_inset ERT\n" + "status open\n"
+			+ "\n" + "\\begin_layout Plain Layout\n" + "\n" + "\n" + "\\backslash\n" + "setlength{\n" + "\\backslash\n"
+			+ "columnseprule}{0pt}\n" + "\\end_layout\n" + "\n" + "\\end_inset\n" + "\n" + "\n" + "\\end_layout\n";
+	private static final String MULTICOLS_END = "\\begin_layout Standard\n" + "\\begin_inset ERT\n"
+			+ "status collapsed\n" + "\n" + "\\begin_layout Plain Layout\n" + "\n" + "\n" + "\\backslash\n"
+			+ "end{multicols}\n" + "\\end_layout\n" + "\n" + "\\end_inset\n" + "\n" + "\n" + "\\end_layout\n";
+	private static final String MULTICOLS_BEGIN = "\\begin_layout Standard\n" + "\n" + "\\lang english\n"
+			+ "\\begin_inset ERT\n" + "status collapsed\n" + "\n" + "\\begin_layout Plain Layout\n" + "\n" + "\n"
+			+ "\\backslash\n" + "begin{multicols}{2}\n" + "\\end_layout\n" + "\n" + "\\end_inset\n" + "\n" + "\n"
 			+ "\\end_layout\n";
-	private static final String seprule_off = "\\begin_layout Standard\n"
-			+ "\\begin_inset ERT\n" + "status open\n" + "\n"
-			+ "\\begin_layout Plain Layout\n" + "\n" + "\n" + "\\backslash\n"
-			+ "setlength{\n" + "\\backslash\n" + "columnseprule}{0pt}\n"
-			+ "\\end_layout\n" + "\n" + "\\end_inset\n" + "\n" + "\n"
+	private static final String Chapter_Dictionary = "\\begin_layout Chapter\n" + "Dictionary\n" + "\\end_layout\n";
+	private static final String Chapter_WordForms = "\\begin_layout Chapter\n" + "Word Form Lookup\n"
 			+ "\\end_layout\n";
-	private static final String MULTICOLS_END = "\\begin_layout Standard\n"
-			+ "\\begin_inset ERT\n" + "status collapsed\n" + "\n"
-			+ "\\begin_layout Plain Layout\n" + "\n" + "\n" + "\\backslash\n"
-			+ "end{multicols}\n" + "\\end_layout\n" + "\n" + "\\end_inset\n"
-			+ "\n" + "\n" + "\\end_layout\n";
-	private static final String MULTICOLS_BEGIN = "\\begin_layout Standard\n"
-			+ "\n" + "\\lang english\n" + "\\begin_inset ERT\n"
-			+ "status collapsed\n" + "\n" + "\\begin_layout Plain Layout\n"
-			+ "\n" + "\n" + "\\backslash\n" + "begin{multicols}{2}\n"
-			+ "\\end_layout\n" + "\n" + "\\end_inset\n" + "\n" + "\n"
+	private static final String Chapter_English = "\\begin_layout Chapter\n" + "English to Cherokee Lookup\n"
 			+ "\\end_layout\n";
-	private static final String Chapter_Dictionary = "\\begin_layout Chapter\n"
-			+ "Dictionary\n" + "\\end_layout\n";
-	private static final String Chapter_WordForms = "\\begin_layout Chapter\n"
-			+ "Word Form Lookup\n" + "\\end_layout\n";
-	private static final String Chapter_English = "\\begin_layout Chapter\n"
-			+ "English to Cherokee Lookup\n" + "\\end_layout\n";
 
 	private final List<IEntry> entries;
 
 	private boolean doWordForms = true;
 
-	private boolean docorpus=false;
+	private boolean docorpus = false;
 
 	public boolean isDocorpus() {
 		return docorpus;
@@ -108,7 +87,7 @@ public class LyxExportFile extends Thread {
 		this.entries = entries;
 		this.lyxfile = destfile;
 	}
-	
+
 	public final List<String> maybe_dupe = new ArrayList<>();
 
 	@Override
@@ -122,20 +101,20 @@ public class LyxExportFile extends Thread {
 
 	private String preface;
 	private String grammar;
+
 	public void _run() throws IOException {
 		final List<LyxEntry> definitions = new ArrayList<LyxEntry>();
 
-		String start = IOUtils.toString(getClass().getResourceAsStream(
-				"/net/cherokeedictionary/lyx/LyxDocumentStart.txt"));
-		start=start.replace("__preface__", preface);
-		start=start.replace("__REVISION__", revisionNumber);
-		start=start.replace("__DATE__", dateModified);
-		start=start.replace("ISBN: 978-x-xxx-xxxxx-x", formattedIsbn);
-		start=start.replace("__AUTHOR__", author);
-		
-		String end = IOUtils.toString(getClass().getResourceAsStream(
-				"/net/cherokeedictionary/lyx/LyxDocumentEnd.txt"));
-		end=end.replace("__grammar__", grammar);
+		String start = IOUtils
+				.toString(getClass().getResourceAsStream("/net/cherokeedictionary/lyx/LyxDocumentStart.txt"));
+		start = start.replace("__preface__", preface);
+		start = start.replace("__REVISION__", revisionNumber);
+		start = start.replace("__DATE__", dateModified);
+		start = start.replace("ISBN: 978-x-xxx-xxxxx-x", formattedIsbn);
+		start = start.replace("__AUTHOR__", author);
+
+		String end = IOUtils.toString(getClass().getResourceAsStream("/net/cherokeedictionary/lyx/LyxDocumentEnd.txt"));
+		end = end.replace("__grammar__", grammar);
 
 		for (IEntry entry : entries) {
 			if (entry.getType().equals("v")) {
@@ -167,11 +146,11 @@ public class LyxExportFile extends Thread {
 				v.habitual.syllabary = isyll.next();
 				v.imperative.syllabary = isyll.next();
 				v.infinitive.syllabary = isyll.next();
-				
-				if (entry.getNotes().size()!=0) {
-					entry.getNotes().stream().forEach(note->v.addNote(note));
+
+				if (entry.getNotes().size() != 0) {
+					entry.getNotes().stream().forEach(note -> v.addNote(note));
 				}
-				
+
 				definitions.add(v);
 				continue;
 			}
@@ -186,8 +165,8 @@ public class LyxExportFile extends Thread {
 				def.syllabary = isyll.next();
 				multi.addDefinition(def);
 			}
-			if (entry.getNotes().size()!=0) {
-				entry.getNotes().stream().forEach(note->multi.addNote(note));
+			if (entry.getNotes().size() != 0) {
+				entry.getNotes().stream().forEach(note -> multi.addNote(note));
 			}
 			definitions.add(multi);
 		}
@@ -211,21 +190,17 @@ public class LyxExportFile extends Thread {
 				continue;
 			}
 			if (!d1.definition.equals(d2.definition)) {
-				maybe_dupe.add("Possible Duplicate: "
-						+ d2.getSyllabary().get(0) + " | " + d1.definition
-						+ " | " + d2.definition);
-				d1 = d2;
-				continue;
-			}
-			if (!d1.getPronunciations().get(0)
-					.equals(d2.getPronunciations().get(0))) {
-				App.info("Likely Duplicate: " + d2.getSyllabary().get(0) + " "
+				maybe_dupe.add("Possible Duplicate: " + d2.getSyllabary().get(0) + " | " + d1.definition + " | "
 						+ d2.definition);
 				d1 = d2;
 				continue;
 			}
-			App.info("Likely Duplicate: " + d2.getSyllabary().get(0) + " "
-					+ d2.definition);
+			if (!d1.getPronunciations().get(0).equals(d2.getPronunciations().get(0))) {
+				App.info("Likely Duplicate: " + d2.getSyllabary().get(0) + " " + d2.definition);
+				d1 = d2;
+				continue;
+			}
+			App.info("Likely Duplicate: " + d2.getSyllabary().get(0) + " " + d2.definition);
 			ientry.remove();
 		}
 		for (String e : maybe_dupe) {
@@ -258,16 +233,14 @@ public class LyxExportFile extends Thread {
 		}
 		Collections.sort(english);
 		NumberFormat nf = NumberFormat.getInstance();
-		App.info("Pre-combined English to Cherokee entries: "
-				+ nf.format(english.size()));
+		App.info("Pre-combined English to Cherokee entries: " + nf.format(english.size()));
 		for (int ix = 1; ix < english.size(); ix++) {
 			if (english.get(ix - 1).equals(english.get(ix))) {
 				english.remove(ix);
 				ix--;
 			}
 		}
-		App.info("Deduped English to Cherokee entries: "
-				+ nf.format(english.size()));
+		App.info("Deduped English to Cherokee entries: " + nf.format(english.size()));
 		for (int ix = 1; ix < english.size(); ix++) {
 			EnglishCherokee e1 = english.get(ix - 1);
 			EnglishCherokee e2 = english.get(ix);
@@ -278,13 +251,12 @@ public class LyxExportFile extends Thread {
 				continue;
 			}
 		}
-		App.info("Post-combined English to Cherokee entries: "
-				+ nf.format(english.size()));
-		
+		App.info("Post-combined English to Cherokee entries: " + nf.format(english.size()));
+
 		/**
 		 * Blacklisted entries.
 		 */
-		english.removeIf(entry->entry.getDefinition().startsWith("Genus: All Varieties"));
+		english.removeIf(entry -> entry.getDefinition().startsWith("Genus: All Varieties"));
 
 		/*
 		 * Build up word forms reference
@@ -297,13 +269,11 @@ public class LyxExportFile extends Thread {
 				List<String> list = next.getSyllabary();
 				String primary_entry = list.get(0);
 				if (primary_entry.contains(",")) {
-					primary_entry = StringUtils.substringBefore(primary_entry,
-							",");
+					primary_entry = StringUtils.substringBefore(primary_entry, ",");
 				}
 				primary_entry = StringUtils.strip(primary_entry);
 				if (next instanceof HasStemmedForms) {
-					List<StemEntry> stems = (((HasStemmedForms) next)
-							.getStems());
+					List<StemEntry> stems = (((HasStemmedForms) next).getStems());
 					if (stems.size() != 0) {
 						list.clear();
 					}
@@ -311,13 +281,11 @@ public class LyxExportFile extends Thread {
 					 * add stems directly to wordforms list
 					 */
 					for (StemEntry entry : stems) {
-						if (StringUtils.isBlank(entry.syllabary.replaceAll(
-								"[^Ꭰ-Ᏼ]", ""))) {
+						if (StringUtils.isBlank(entry.syllabary.replaceAll("[^Ꭰ-Ᏼ]", ""))) {
 							continue;
 						}
 						WordForm wf = new WordForm();
-						wf.references.add(new Reference(primary_entry, "",
-								next.id));
+						wf.references.add(new Reference(primary_entry, "", next.id));
 						wf.stemEntry = new StemEntry(entry);
 						wordforms.add(wf);
 					}
@@ -334,22 +302,19 @@ public class LyxExportFile extends Thread {
 				while (isyl.hasNext()) {
 					for (String syllabary : StringUtils.split(isyl.next(), ",")) {
 						syllabary = StringUtils.strip(syllabary);
-						if (StringUtils.isBlank(syllabary.replaceAll("[^Ꭰ-Ᏼ]",
-								""))) {
+						if (StringUtils.isBlank(syllabary.replaceAll("[^Ꭰ-Ᏼ]", ""))) {
 							continue;
 						}
 						WordForm wf = new WordForm();
 						wf.stemEntry.syllabary = syllabary;
-						wf.references.add(new Reference(primary_entry, "",
-								next.id));
+						wf.references.add(new Reference(primary_entry, "", next.id));
 						wf.stemEntry = new StemEntry(syllabary, StemType.Other);
 						wordforms.add(wf);
 					}
 				}
 			}
 			Collections.sort(wordforms);
-			App.info("Pre-combined and pre-deduped Wordform entries: "
-					+ nf.format(wordforms.size()));
+			App.info("Pre-combined and pre-deduped Wordform entries: " + nf.format(wordforms.size()));
 			for (int ix = 1; ix < wordforms.size(); ix++) {
 				WordForm e1 = wordforms.get(ix - 1);
 				WordForm e2 = wordforms.get(ix);
@@ -362,8 +327,7 @@ public class LyxExportFile extends Thread {
 					continue;
 				}
 			}
-			App.info("Post-combined Wordform entries: "
-					+ nf.format(wordforms.size()));
+			App.info("Post-combined Wordform entries: " + nf.format(wordforms.size()));
 		}
 
 		StringBuilder sb = new StringBuilder();
@@ -375,44 +339,48 @@ public class LyxExportFile extends Thread {
 		/*
 		 * Cherokee Dictionary
 		 */
-		sb.append(Chapter_Dictionary + columnsep_large + seprule_on
-				+ MULTICOLS_BEGIN + sloppy_begin);
+		sb.append(Chapter_Dictionary + columnsep_large + seprule_on + MULTICOLS_BEGIN + sloppy_begin);
 		String prevSection = "";
 		for (LyxEntry entry : definitions) {
-			String syll = StringUtils.left(
-					entry.getLyxCode().replaceAll("[^Ꭰ-Ᏼ]", ""), 1);
+			String syll = StringUtils.left(entry.getLyxCode().replaceAll("[^Ꭰ-Ᏼ]", ""), 1);
 			if (!syll.equals(prevSection)) {
 				prevSection = syll;
 				sb.append("\\begin_layout Section\n");
 				sb.append(syll);
 				sb.append("\\end_layout\n");
 			}
-			//sb.append(entry.getLyxCode().replace("\\n", " "));
-			sb.append(entry.getLyxCode());
-			if (entry.examples.size() != 0) {
-				sb.append("\\begin_deeper\n");
-				for (ExampleEntry ee : entry.examples) {
-					sb.append(ee.getLyxCode());
+			// sb.append(entry.getLyxCode().replace("\\n", " "));
+			{
+				sb.append(insetBoxFramelessStart());
+				// TODO: startbox
+				sb.append(entry.getLyxCode());
+				if (entry.examples.size() != 0) {
+					sb.append("\\begin_deeper\n");
+					for (ExampleEntry ee : entry.examples) {
+						sb.append(ee.getLyxCode());
+					}
+					sb.append("\\end_deeper\n");
 				}
-				sb.append("\\end_deeper\n");
-			}
-			Iterator<CrossReference> icross = entry.crossrefs.iterator();
-			if (icross.hasNext()) {
-				sb.append("\\begin_deeper\n");
-				StringBuilder sb1 = new StringBuilder();
-				sb1.append("\\begin_layout Standard\n");
-				sb1.append("\\noindent\n");
-				sb1.append("\\align left\n");
-				sb1.append("\\emph on\n");
-				sb1.append("cf: ");
-				sb1.append("\\emph default\n");
-				// sb1.append("\\end_layout\n");
-				sb.append(sb1.toString());
-				sb.append(icross.next().getLyxCode(true));
-				while (icross.hasNext()) {
-					sb.append(", " + icross.next().getLyxCode(true));
+				Iterator<CrossReference> icross = entry.crossrefs.iterator();
+				if (icross.hasNext()) {
+					sb.append("\\begin_deeper\n");
+					StringBuilder sb1 = new StringBuilder();
+					sb1.append("\\begin_layout Standard\n");
+					sb1.append("\\noindent\n");
+					sb1.append("\\align left\n");
+					sb1.append("\\emph on\n");
+					sb1.append("cf: ");
+					sb1.append("\\emph default\n");
+					// sb1.append("\\end_layout\n");
+					sb.append(sb1.toString());
+					sb.append(icross.next().getLyxCode(true));
+					while (icross.hasNext()) {
+						sb.append(", " + icross.next().getLyxCode(true));
+					}
+					sb.append("\\end_deeper\n");
 				}
-				sb.append("\\end_deeper\n");
+				sb.append(insetBoxFramelessEnd());
+				// TODO: endbox
 			}
 		}
 		sb.append(sloppy_end + MULTICOLS_END + seprule_off + columnsep_normal);
@@ -420,12 +388,10 @@ public class LyxExportFile extends Thread {
 		/*
 		 * English to Cherokee
 		 */
-		sb.append(Chapter_English + columnsep_large + seprule_on
-				+ MULTICOLS_BEGIN + sloppy_begin);
+		sb.append(Chapter_English + columnsep_large + seprule_on + MULTICOLS_BEGIN + sloppy_begin);
 		prevSection = "";
 		for (EnglishCherokee entry : english) {
-			String eng = StringUtils.left(entry.getDefinition(), 1)
-					.toUpperCase();
+			String eng = StringUtils.left(entry.getDefinition(), 1).toUpperCase();
 			if (!eng.equals(prevSection)) {
 				prevSection = eng;
 				sb.append("\\begin_layout Section\n");
@@ -440,8 +406,7 @@ public class LyxExportFile extends Thread {
 		 * Wordform Lookup
 		 */
 		if (doWordForms) {
-			sb.append(Chapter_WordForms + columnsep_large + seprule_on
-					+ MULTICOLS_BEGIN + sloppy_begin);
+			sb.append(Chapter_WordForms + columnsep_large + seprule_on + MULTICOLS_BEGIN + sloppy_begin);
 			prevSection = "";
 			for (WordForm entry : wordforms) {
 				if (entry.stemEntry.syllabary.contains(" ")) {
@@ -456,18 +421,16 @@ public class LyxExportFile extends Thread {
 				}
 				sb.append(entry.getLyxCode());
 			}
-			sb.append(sloppy_end + MULTICOLS_END + seprule_off
-					+ columnsep_normal);
+			sb.append(sloppy_end + MULTICOLS_END + seprule_off + columnsep_normal);
 		}
 
 		sb.append(end);
-		FileUtils.writeStringToFile(new File(lyxfile), sb.toString(), "UTF-8",
-				false);
+		FileUtils.writeStringToFile(new File(lyxfile), sb.toString(), "UTF-8", false);
 
 		if (docorpus) {
 			corpusWriter(definitions);
 		}
-		
+
 		/*
 		 * Save out wordforms+defs into a special lookup file for use by other
 		 * softwares.
@@ -502,13 +465,34 @@ public class LyxExportFile extends Thread {
 			}
 			sbwf.append("\n");
 		}
-		FileUtils.writeStringToFile(new File("output/wordforms.txt"),
-				sbwf.toString(), "UTF-8");
+		FileUtils.writeStringToFile(new File("output/wordforms.txt"), sbwf.toString(), "UTF-8");
 		System.out.println("Wrote wordforms.txt");
 	}
 
-	private void corpusWriter(final List<LyxEntry> definitions)
-			throws IOException {
+	private String insetBoxFramelessStart() {
+		return "\\begin_layout Standard\n" + 
+				"\\begin_inset Box Frameless\n" + 
+				"position \"t\"\n" + 
+				"hor_pos \"c\"\n" + 
+				"has_inner_box 1\n" + 
+				"inner_pos \"t\"\n" + 
+				"use_parbox 0\n" + 
+				"use_makebox 0\n" + 
+				"width \"100col%\"\n" + 
+				"special \"none\"\n" + 
+				"height \"1in\"\n" + 
+				"height_special \"totalheight\"\n" + 
+				"status open\n";
+	}
+	
+	private String insetBoxFramelessEnd(){
+		return "\\end_inset\n" + 
+				"\n" + 
+				"\n" + 
+				"\\end_layout\n";
+	}
+
+	private void corpusWriter(final List<LyxEntry> definitions) throws IOException {
 		/*
 		 * CORPUS WRITER FOR MAT
 		 */
@@ -522,12 +506,12 @@ public class LyxExportFile extends Thread {
 		already.clear();
 		int count = definitions.size();
 		int percent = -1;
-		int counter=0;
+		int counter = 0;
 		for (LyxEntry entry : definitions) {
 			counter++;
-			if (counter*100/count != percent) {
-				percent = counter*100/count;
-				System.out.print(percent+"% ");
+			if (counter * 100 / count != percent) {
+				percent = counter * 100 / count;
+				System.out.print(percent + "% ");
 			}
 			mdef.clear();
 			mdef.addAll(Arrays.asList(StringUtils.split(entry.definition, ";")));
@@ -543,7 +527,7 @@ public class LyxExportFile extends Thread {
 			ldef = mdef.listIterator();
 			while (ldef.hasNext()) {
 				String subdef = StringUtils.strip(ldef.next());
-				if (subdef.startsWith("It is (")){
+				if (subdef.startsWith("It is (")) {
 					subdef = subdef.replaceAll("It is (\\(.*?\\))\\s*(.*)", "$2 $1");
 				}
 				subdef = subdef.replace("She is ", "");
@@ -572,7 +556,7 @@ public class LyxExportFile extends Thread {
 				int pos = 0;
 				while (isyl.hasNext()) {
 					String tmp = subdef;
-					List<DefSyl> tmp_def=new ArrayList<>();
+					List<DefSyl> tmp_def = new ArrayList<>();
 					String str_syl = StringUtils.strip(isyl.next());
 					pos++;
 					if (pos == 2 && !entry.pos.startsWith("v")) {
@@ -581,114 +565,113 @@ public class LyxExportFile extends Thread {
 					if (str_syl.startsWith("-") || StringUtils.isBlank(str_syl)) {
 						continue;
 					}
-					if (!str_syl.matches("^[Ꭰ-Ᏼ ]+$")){
+					if (!str_syl.matches("^[Ꭰ-Ᏼ ]+$")) {
 						continue;
 					}
 					switch (pos) {
 					case 1:// 3rd continous
 						tmp_def.add(new DefSyl(str_syl, tmp));
-						if (!str_syl.matches("^[ᎤᏚ].*")){
+						if (!str_syl.matches("^[ᎤᏚ].*")) {
 							tmp_def.addAll(pronouns_intransitive_a(str_syl, subdef));
 							tmp_def.addAll(pronouns_transitive_a(str_syl, subdef));
 						}
 						break;
 					case 2:// 1st person
-//						tmp = subdef.replaceAll("^(He|She) is ", "I am ");
-//						tmp_def.add(new DefSyl(str_syl, tmp));
+						// tmp = subdef.replaceAll("^(He|She) is ", "I am ");
+						// tmp_def.add(new DefSyl(str_syl, tmp));
 						break;
-					case 3://remote past
+					case 3:// remote past
 						tmp_def.addAll(pronouns_intransitive_b(str_syl, subdef));
 						tmp_def.addAll(pronouns_transitive_b(str_syl, subdef));
-						
+
 						String rpast = subdef.replaceAll("^([a-zA-Z]+)ing\\b", "$1ed");
 						if (rpast.equals(subdef)) {
-							rpast = "was "+subdef;
+							rpast = "was " + subdef;
 						}
 						tmp_def.add(new DefSyl(str_syl, rpast));
 						tmp_def.add(new DefSyl(str_syl.replaceAll("Ꭲ$", ""), rpast));
-						
-						tmp_def.add(new DefSyl("Ꮒ-"+str_syl+"-ᎣᎢ", "had already "+rpast));
-						tmp_def.add(new DefSyl("Ꮒ-"+str_syl+"-ᎥᎾ", "without "+subdef));
-						tmp_def.add(new DefSyl("Ꮒ-"+str_syl+"-ᎥᎾ ᎨᏎ", "was without "+subdef));
-						tmp_def.add(new DefSyl("Ꮒ-"+str_syl+"-ᎥᎾ ᎨᏎᏍᏗ", "will be without "+subdef));
-						
-						tmp_def.add(new DefSyl(str_syl.replaceAll("Ꭲ$","²Ꭲ"), "later let be "+subdef));
-						
-						//AGAIN
-						tmp_def.add(new DefSyl(str_syl+"-ᎢᏏᎭ", "again is "+subdef));
-						tmp_def.add(new DefSyl(str_syl+"-ᎢᏌ", "let again be "+subdef));
-						tmp_def.add(new DefSyl(str_syl+"-ᎢᏌ²", "just now "+rpast));
-						tmp_def.add(new DefSyl(str_syl+"-ᎢᏏᏍᎪᎢ", "often is again "+subdef));
+
+						tmp_def.add(new DefSyl("Ꮒ-" + str_syl + "-ᎣᎢ", "had already " + rpast));
+						tmp_def.add(new DefSyl("Ꮒ-" + str_syl + "-ᎥᎾ", "without " + subdef));
+						tmp_def.add(new DefSyl("Ꮒ-" + str_syl + "-ᎥᎾ ᎨᏎ", "was without " + subdef));
+						tmp_def.add(new DefSyl("Ꮒ-" + str_syl + "-ᎥᎾ ᎨᏎᏍᏗ", "will be without " + subdef));
+
+						tmp_def.add(new DefSyl(str_syl.replaceAll("Ꭲ$", "²Ꭲ"), "later let be " + subdef));
+
+						// AGAIN
+						tmp_def.add(new DefSyl(str_syl + "-ᎢᏏᎭ", "again is " + subdef));
+						tmp_def.add(new DefSyl(str_syl + "-ᎢᏌ", "let again be " + subdef));
+						tmp_def.add(new DefSyl(str_syl + "-ᎢᏌ²", "just now " + rpast));
+						tmp_def.add(new DefSyl(str_syl + "-ᎢᏏᏍᎪᎢ", "often is again " + subdef));
 						tmp = subdef.replaceAll("^(.*?)is ([a-zA-Z]+ing)\\b(.*?)", "$1did again $2$3");
-						tmp_def.add(new DefSyl(str_syl+"-ᎢᏌᏅᎢ", rpast+" again"));
-						tmp_def.add(new DefSyl("Ꮣ-" + str_syl+"-ᎢᏌᏂ", "will be "+subdef+" again"));
-						tmp_def.add(new DefSyl(str_syl+"-ᎢᏐᏗ", "for "+subdef+" again"));
-						
-						//BENEFACTIVE
-						tmp_def.add(new DefSyl(str_syl+"-ᎡᎭ", subdef+" for another"));
-						tmp_def.add(new DefSyl(str_syl+"-Ꮟ", "let be "+subdef+" for another"));
-						tmp_def.add(new DefSyl(str_syl+"-ᎡᎵ²", "just now "+rpast+" for another"));
-						tmp_def.add(new DefSyl(str_syl+"-ᎡᎰᎢ", "usually "+subdef+" for another"));
-						tmp_def.add(new DefSyl(str_syl+"-ᎡᎸᎢ", rpast+" for another"));
-						tmp_def.add(new DefSyl("Ꮣ-" + str_syl+"-ᎡᎵ", "will be "+subdef+" for another"));
-						tmp_def.add(new DefSyl(str_syl+"-ᎡᏗ", "for "+subdef+" for another"));
-						//going to do
-						tmp_def.add(new DefSyl(str_syl+"-ᎡᎦ", "coming to be "+subdef));
-						tmp_def.add(new DefSyl(str_syl+"-ᎡᎦ", "going to be "+subdef));
-						tmp_def.add(new DefSyl(str_syl+"-ᎤᎦ", "let come to be "+subdef));
-						tmp_def.add(new DefSyl(str_syl+"-ᎤᎦ", "let go to be "+subdef));
-						tmp_def.add(new DefSyl(str_syl+"-ᎤᎦ²", "just now came to be "+subdef));
-						tmp_def.add(new DefSyl(str_syl+"-ᎤᎦ²", "just now went to be "+subdef));
-						tmp_def.add(new DefSyl(str_syl+"-ᎡᎪᎢ", "comes to be "+subdef));
-						tmp_def.add(new DefSyl(str_syl+"-ᎡᎪᎢ", "goes to be "+subdef));
-						tmp_def.add(new DefSyl(str_syl+"-ᎥᏒᎢ", "came to be "+subdef));
-						tmp_def.add(new DefSyl(str_syl+"-ᎥᏒᎢ", "went to be "+subdef));
-						tmp_def.add(new DefSyl("Ꮣ-" + str_syl+"-ᎡᏏ", "will come to be "+subdef));
-						tmp_def.add(new DefSyl("Ꮣ-" + str_syl+"-ᎡᏏ", "will go to be "+subdef));
-						tmp_def.add(new DefSyl(str_syl+"-ᎥᏍᏗ", "to come to be "+subdef));
-						tmp_def.add(new DefSyl(str_syl+"-ᎥᏍᏗ", "to go to be "+subdef));
-						//going and doing
-						tmp_def.add(new DefSyl("Ᏹ-" + str_syl+"-ᎡᎾ", "when goes he is "+subdef));
-						tmp_def.add(new DefSyl(str_syl+"-ᎡᎾ", "went and "+rpast));
-						tmp_def.add(new DefSyl(str_syl+"-ᎡᎾ*", "will go and will be "+subdef));
+						tmp_def.add(new DefSyl(str_syl + "-ᎢᏌᏅᎢ", rpast + " again"));
+						tmp_def.add(new DefSyl("Ꮣ-" + str_syl + "-ᎢᏌᏂ", "will be " + subdef + " again"));
+						tmp_def.add(new DefSyl(str_syl + "-ᎢᏐᏗ", "for " + subdef + " again"));
+
+						// BENEFACTIVE
+						tmp_def.add(new DefSyl(str_syl + "-ᎡᎭ", subdef + " for another"));
+						tmp_def.add(new DefSyl(str_syl + "-Ꮟ", "let be " + subdef + " for another"));
+						tmp_def.add(new DefSyl(str_syl + "-ᎡᎵ²", "just now " + rpast + " for another"));
+						tmp_def.add(new DefSyl(str_syl + "-ᎡᎰᎢ", "usually " + subdef + " for another"));
+						tmp_def.add(new DefSyl(str_syl + "-ᎡᎸᎢ", rpast + " for another"));
+						tmp_def.add(new DefSyl("Ꮣ-" + str_syl + "-ᎡᎵ", "will be " + subdef + " for another"));
+						tmp_def.add(new DefSyl(str_syl + "-ᎡᏗ", "for " + subdef + " for another"));
+						// going to do
+						tmp_def.add(new DefSyl(str_syl + "-ᎡᎦ", "coming to be " + subdef));
+						tmp_def.add(new DefSyl(str_syl + "-ᎡᎦ", "going to be " + subdef));
+						tmp_def.add(new DefSyl(str_syl + "-ᎤᎦ", "let come to be " + subdef));
+						tmp_def.add(new DefSyl(str_syl + "-ᎤᎦ", "let go to be " + subdef));
+						tmp_def.add(new DefSyl(str_syl + "-ᎤᎦ²", "just now came to be " + subdef));
+						tmp_def.add(new DefSyl(str_syl + "-ᎤᎦ²", "just now went to be " + subdef));
+						tmp_def.add(new DefSyl(str_syl + "-ᎡᎪᎢ", "comes to be " + subdef));
+						tmp_def.add(new DefSyl(str_syl + "-ᎡᎪᎢ", "goes to be " + subdef));
+						tmp_def.add(new DefSyl(str_syl + "-ᎥᏒᎢ", "came to be " + subdef));
+						tmp_def.add(new DefSyl(str_syl + "-ᎥᏒᎢ", "went to be " + subdef));
+						tmp_def.add(new DefSyl("Ꮣ-" + str_syl + "-ᎡᏏ", "will come to be " + subdef));
+						tmp_def.add(new DefSyl("Ꮣ-" + str_syl + "-ᎡᏏ", "will go to be " + subdef));
+						tmp_def.add(new DefSyl(str_syl + "-ᎥᏍᏗ", "to come to be " + subdef));
+						tmp_def.add(new DefSyl(str_syl + "-ᎥᏍᏗ", "to go to be " + subdef));
+						// going and doing
+						tmp_def.add(new DefSyl("Ᏹ-" + str_syl + "-ᎡᎾ", "when goes he is " + subdef));
+						tmp_def.add(new DefSyl(str_syl + "-ᎡᎾ", "went and " + rpast));
+						tmp_def.add(new DefSyl(str_syl + "-ᎡᎾ*", "will go and will be " + subdef));
 						break;
 					case 4:
 						String rhabit = subdef.replaceAll("^([a-zA-Z]+)ing\\b", "$1es");
-						tmp_def.add(new DefSyl(str_syl, "often "+subdef));
-						tmp_def.add(new DefSyl(str_syl.replaceAll("Ꭲ$", ""), "often "+subdef));
-						tmp_def.add(new DefSyl(str_syl, "usually "+subdef));
+						tmp_def.add(new DefSyl(str_syl, "often " + subdef));
+						tmp_def.add(new DefSyl(str_syl.replaceAll("Ꭲ$", ""), "often " + subdef));
+						tmp_def.add(new DefSyl(str_syl, "usually " + subdef));
 						if (!rhabit.equals(subdef)) {
 							tmp_def.add(new DefSyl(str_syl, rhabit));
 							tmp_def.add(new DefSyl(str_syl.replaceAll("Ꭲ$", ""), rhabit));
 						}
 						tmp = subdef.replaceAll("\\bis ([a-zA-Z]+ing)\\b", "will already have been $1");
-						tmp_def.add(new DefSyl("Ꮒ-"+str_syl+"-ᎡᏍᏗ", "will already have been "+subdef));
+						tmp_def.add(new DefSyl("Ꮒ-" + str_syl + "-ᎡᏍᏗ", "will already have been " + subdef));
 						break;
 					case 5:
-						tmp_def.add(new DefSyl(str_syl+"²", "just was "+subdef));
-						tmp_def.add(new DefSyl(str_syl+"²", "recently was "+subdef));
-						tmp_def.add(new DefSyl(str_syl, "let be "+subdef));
+						tmp_def.add(new DefSyl(str_syl + "²", "just was " + subdef));
+						tmp_def.add(new DefSyl(str_syl + "²", "recently was " + subdef));
+						tmp_def.add(new DefSyl(str_syl, "let be " + subdef));
 						break;
 					case 6:
-						tmp_def.add(new DefSyl(str_syl, "to be "+subdef));
-						tmp_def.add(new DefSyl(str_syl, "for "+subdef));
+						tmp_def.add(new DefSyl(str_syl, "to be " + subdef));
+						tmp_def.add(new DefSyl(str_syl, "for " + subdef));
 						break;
 					}
-					for (DefSyl def: tmp_def) {
+					for (DefSyl def : tmp_def) {
 						List<RuleMatch> lt = langTool.check(def.def);
-						for (RuleMatch match:lt) {
+						for (RuleMatch match : lt) {
 							int from = match.getFromPos();
 							int to = match.getToPos();
-							if (match.getSuggestedReplacements().size()>0) {
-								def.def = StringUtils.left(def.def, from)
-										+ match.getSuggestedReplacements().get(0)
+							if (match.getSuggestedReplacements().size() > 0) {
+								def.def = StringUtils.left(def.def, from) + match.getSuggestedReplacements().get(0)
 										+ StringUtils.substring(def.def, to);
 							}
 						}
 						if (already.contains(def.syl + def.def)) {
 							continue;
 						}
-						already.add(def.syl+def.def);
+						already.add(def.syl + def.def);
 						corpus_chr.append(def.syl);
 						corpus_chr.append("\n");
 						corpus_eng.append(def.def);
@@ -698,33 +681,27 @@ public class LyxExportFile extends Thread {
 			}
 		}
 		System.out.println();
-		FileUtils.writeStringToFile(new File("output/corpus.chr3"),
-				corpus_chr.toString());
-		FileUtils.writeStringToFile(new File("output/corpus.en"),
-				corpus_eng.toString());
+		FileUtils.writeStringToFile(new File("output/corpus.chr3"), corpus_chr.toString());
+		FileUtils.writeStringToFile(new File("output/corpus.en"), corpus_eng.toString());
 		corpus_chr.setLength(0);
 		corpus_eng.setLength(0);
 		System.out.println("Finished CORPUS text.");
 		System.out.println();
 	}
 
-	private Collection<? extends DefSyl> pronouns_transitive_a(String str_syl,
-			String subdef) {
+	private Collection<? extends DefSyl> pronouns_transitive_a(String str_syl, String subdef) {
 		return new ArrayList<DefSyl>();
 	}
 
-	private Collection<? extends DefSyl> pronouns_intransitive_a(
-			String str_syl, String subdef) {
+	private Collection<? extends DefSyl> pronouns_intransitive_a(String str_syl, String subdef) {
 		return new ArrayList<DefSyl>();
 	}
 
-	private Collection<? extends DefSyl> pronouns_transitive_b(String str_syl,
-			String subdef) {
+	private Collection<? extends DefSyl> pronouns_transitive_b(String str_syl, String subdef) {
 		return new ArrayList<DefSyl>();
 	}
 
-	private Collection<? extends DefSyl> pronouns_intransitive_b(
-			String str_syl, String subdef) {
+	private Collection<? extends DefSyl> pronouns_intransitive_b(String str_syl, String subdef) {
 		return new ArrayList<DefSyl>();
 	}
 
@@ -763,24 +740,26 @@ public class LyxExportFile extends Thread {
 		}
 		return list;
 	}
-	
+
 	public static class DefSyl {
 		public String syl;
 		public String def;
+
 		public DefSyl() {
 		}
+
 		public DefSyl(String syl, String def) {
-			this.syl=syl;
-			this.def=def;
+			this.syl = syl;
+			this.def = def;
 		}
 	}
 
 	public void setPreface(String preface_raw_lyx) {
-		this.preface=preface_raw_lyx;
+		this.preface = preface_raw_lyx;
 	}
 
 	public void setGrammar(String grammar_raw_lyx) {
-		this.grammar=grammar_raw_lyx;
+		this.grammar = grammar_raw_lyx;
 	}
 
 	public void setRevision(String revisionNumber) {
@@ -788,14 +767,14 @@ public class LyxExportFile extends Thread {
 	}
 
 	public void setDateModified(String dateModified) {
-		this.dateModified=dateModified;
+		this.dateModified = dateModified;
 	}
 
 	public void setIsbn(String formattedIsbn) {
-		this.formattedIsbn=formattedIsbn;
+		this.formattedIsbn = formattedIsbn;
 	}
 
 	public void setAuthor(String author) {
-		this.author=author;
+		this.author = author;
 	}
 }
