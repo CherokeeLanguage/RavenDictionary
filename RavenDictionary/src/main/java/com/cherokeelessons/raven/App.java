@@ -230,6 +230,20 @@ public class App extends Thread {
 			csvlist.add(StringUtils.join(columns, ","));
 		});
 		
+		int withExamples=
+		entries.stream().mapToInt(e->{
+			List<String> n = e.getNotes();
+			if (n.size()==0) {
+				return 0;
+			}
+			if (!n.get(0).contains("[")){
+				return 0;
+			}
+			return 1;
+		}).sum();
+		
+		System.out.println("\t\tFound "+withExamples+" entries with examples.");
+		
 		try {
 			FileUtils.writeLines(new File(DIR + "raven-cherokeedictionary-net.csv"), csvlist);
 		} catch (IOException e) {
