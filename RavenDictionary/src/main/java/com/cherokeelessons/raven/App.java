@@ -27,6 +27,7 @@ public class App extends Thread {
 		List<IEntry> entries = parseDictionary.getEntries();
 		LyxExportFile lyxExportFile = new LyxExportFile(entries, destfile.getAbsolutePath());
 		lyxExportFile.setDocorpus(false);
+		lyxExportFile.setDoWordForms(false);
 		try {
 			String preface = FileUtils.readFileToString(new File(DIR+"includes/preface.lyx"));
 			lyxExportFile.setPreface(StringUtils.substringBetween(preface, "\\begin_body", "\\end_body"));

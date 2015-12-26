@@ -73,6 +73,14 @@ public class LyxExportFile extends Thread {
 
 	private boolean doWordForms = true;
 
+	public boolean isDoWordForms() {
+		return doWordForms;
+	}
+
+	public void setDoWordForms(boolean doWordForms) {
+		this.doWordForms = doWordForms;
+	}
+
 	private boolean docorpus = false;
 
 	public boolean isDocorpus() {
