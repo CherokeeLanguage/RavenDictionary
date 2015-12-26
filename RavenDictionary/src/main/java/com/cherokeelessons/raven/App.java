@@ -59,7 +59,7 @@ public class App extends Thread {
 		}
 		
 		lyxExportFile.setAuthor("Michael Joyner, TommyLee Whitlock");
-		lyxExportFile.setIsbn("978-x-xxx-xxxxx-x");
+		lyxExportFile.setIsbn("978-1-329-78831-2");
 		
 		lyxExportFile.run();
 		try {

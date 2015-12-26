@@ -118,7 +118,7 @@ public class LyxExportFile extends Thread {
 		start = start.replace("__preface__", preface);
 		start = start.replace("__REVISION__", revisionNumber);
 		start = start.replace("__DATE__", dateModified);
-		start = start.replace("ISBN: 978-x-xxx-xxxxx-x", formattedIsbn);
+		start = start.replace("ISBN: 978-x-xxx-xxxxx-x", "ISBN: "+formattedIsbn);
 		start = start.replace("__AUTHOR__", author);
 
 		String end = IOUtils.toString(getClass().getResourceAsStream("/net/cherokeedictionary/lyx/LyxDocumentEnd.txt"));
