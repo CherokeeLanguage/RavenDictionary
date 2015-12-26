@@ -165,7 +165,7 @@ public class App extends Thread {
 			Iterator<String> ipro = entry.getPronunciations().iterator();
 			String def = entry.formattedDefinition(); 
 			String part = entry.getType();
-			Iterator<String> inotes = entry.getNotes().iterator();
+			List<String> notes = entry.getNotes();
 			String genus = entry.getGenus();
 			
 			columns.add(StringEscapeUtils.escapeCsv(isyl.next()));
@@ -200,8 +200,8 @@ public class App extends Thread {
 				columns.add("");
 			}
 			
-			if (inotes.hasNext()) {
-				String note = inotes.next();
+			if (!notes.isEmpty()&&notes.get(0).contains("[")) {
+				String note = notes.remove(0);
 				note=unlatexFormat(note);
 				Iterator<String> inote = Arrays.asList(StringUtils.split(note, "\n")).iterator();
 				columns.add(StringEscapeUtils.escapeCsv(inote.next()));
@@ -220,8 +220,8 @@ public class App extends Thread {
 				columns.add("");
 				columns.add("");
 			}
-			if (inotes.hasNext()) {
-				String note = StringUtils.join(inotes,"<br/>");
+			if (!notes.isEmpty()) {
+				String note = StringUtils.join(notes,"<br/>");
 				note=unlatexFormat(note);
 				columns.add(StringEscapeUtils.escapeCsv(note));
 			} else {
@@ -267,11 +267,73 @@ public class App extends Thread {
 		note=note.replace("\n\\noun default\n", "</emph>");
 		note=note.replace("\n\\bar under\n", "<u>");
 		note=note.replace("\n\\bar default\n", "</u>");
-		note=note.replace("\n\\begin_inset Newline newline\n\\end_inset\n", "\n");
 		note=note.replace("\\SpecialChar \\-", "");
+		note=note.replace("\n\\begin_inset Newline newline\n\\end_inset\n", "\n");
 		note=note.replaceAll("\n+", "\n");
 		if (note.contains("\\")){
 			System.err.println("*** WARNING - BACKSLASH REMAINS: "+note);
+		}
+		
+		/*
+		 * simple uncross any easy fix crossed-up spans
+		 */
+		note=note.replace("<emph></u>", "</u><emph>");
+		note=note.replace("<u></emph>", "</emph><u>");
+		note=note.replaceAll("(\\s+)</emph>", "</emph>$1");
+		
+		
+		if (note.contains("<u>")&&!note.contains("</u>")){
+			note+="</u>";
+		}
+		if (note.contains("<strong>")&&!note.contains("</strong>")){
+			note+="</strong>";
+		}
+		if (note.contains("<emph>")&&!note.contains("</emph>")){
+			note+="</emph>";
+		}
+		
+		/*
+		 * assume 'u' should always be inside 'emph' or 'strong', etc.
+		 */
+		note=note.replace("<u><emph>", "<u><emph>");
+		note=note.replace("</emph></u>", "</u></emph>");
+		note=note.replace("<u><strong>", "<u><strong>");
+		note=note.replace("</strong></u>", "</u></strong>");
+		
+		
+		/*
+		 * fix bogus regions
+		 */
+		note=note.replaceAll("<emph>(\\s*)…</emph>", "$1…");
+		/*
+		 * remove empty regions
+		 */
+		note=note.replace("<emph></emph>", "");
+		note=note.replace("<u></u>", "");
+		if (note.contains("[") && !note.contains("<u>")){
+			System.err.println("MISSING <u>: "+note.replace("\n", " -> "));
+		}
+		u_balance: if (note.contains("[")){
+			String[] lines = StringUtils.split(note, "\n");
+			if (lines.length!=3) {
+				break u_balance;
+			}
+			int u1 = StringUtils.countMatches(lines[0], "<u>");
+			int u2 = StringUtils.countMatches(lines[0], "</u>");
+			if (u1!=u2) {
+				System.err.println("UNBALANCED <u>: "+note.replace("\n", " -> "));
+				break u_balance;
+			}
+			int u3 = StringUtils.countMatches(lines[1], "<u>");
+			int u4 = StringUtils.countMatches(lines[1], "</u>");
+			if (u3!=u4) {
+				System.err.println("UNBALANCED <u>: "+note.replace("\n", " -> "));
+				break u_balance;
+			}
+			if (u1!=u3 && (u1==0 || u3==0)) {
+				System.err.println("MISSING MATCHING <u>: "+note.replace("\n", " -> "));
+				break u_balance;
+			}
 		}
 		return note;
 	}
