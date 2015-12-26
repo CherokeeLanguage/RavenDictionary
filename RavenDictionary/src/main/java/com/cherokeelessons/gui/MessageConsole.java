@@ -2,6 +2,7 @@ package com.cherokeelessons.gui;
 
 
 import java.awt.Color;
+import java.awt.Font;
 import java.io.ByteArrayOutputStream;
 import java.io.PrintStream;
 
@@ -54,6 +55,7 @@ public class MessageConsole
 		this.document = textComponent.getDocument();
 		this.isAppend = isAppend;
 		textComponent.setEditable( false );
+		textComponent.setFont(new Font(Font.SANS_SERIF, Font.PLAIN, 25));
 	}
 
 	/*
