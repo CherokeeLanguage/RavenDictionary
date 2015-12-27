@@ -35,6 +35,12 @@ public class App extends Thread {
 			throw new RuntimeException(e2);
 		}
 		try {
+			String intro = FileUtils.readFileToString(new File(DIR+"includes/introduction.lyx"));
+			lyxExportFile.setIntroduction(StringUtils.substringBetween(intro, "\\begin_body", "\\end_body"));
+		} catch (IOException e2) {
+			throw new RuntimeException(e2);
+		}
+		try {
 			String grammar = FileUtils.readFileToString(new File(DIR+"grammar.lyx"));
 			lyxExportFile.setGrammar(StringUtils.substringBetween(grammar, "\\begin_body", "\\end_body"));
 		} catch (IOException e2) {

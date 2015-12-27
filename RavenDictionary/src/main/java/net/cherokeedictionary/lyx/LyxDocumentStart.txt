@@ -187,6 +187,17 @@ Michael Joyner
 TommyLee Whitlock
 \end_layout
 
+\begin_layout Date
+
+\emph on
+Language and culture which are not shared and taught openly and freely will
+ die.
+\begin_inset Newline newline
+\end_inset
+
+If our language and culture die, as a people, so do we.
+\end_layout
+
 \begin_layout Standard
 \begin_inset Newpage cleardoublepage
 \end_inset
@@ -249,11 +260,33 @@ __DATE__
 \end_layout
 
 \begin_layout Standard
+This work is licensed under the 
+\noun on
+Creative Commons Attribution-Share Alike 3.0 United States License
+\noun default
+.
+ This means you are free to copy, share, and update this material under
+ the condition that attribution is kept, no endorsements are implied, and
+ your work is also licensed the same.
+ 
+\emph on
+Commercial use is permitted.
+\end_layout
+
+\begin_layout Standard
 \begin_inset Newpage cleardoublepage
 \end_inset
 
 
 \end_layout
+
+\begin_layout Standard
+\begin_inset Newpage cleardoublepage
+\end_inset
+
+
+\end_layout
+
 
 \begin_layout Standard
 \begin_inset CommandInset toc
@@ -306,3 +339,6 @@ pagestyle{plain}
 \end_layout
 
 __preface__
+
+__introduction__
+

@@ -107,8 +107,18 @@ public class LyxExportFile extends Thread {
 		}
 	}
 
-	private String preface;
-	private String grammar;
+	private String preface="";
+	private String grammar="";
+	
+	private String introduction="";
+
+	public String getIntroduction() {
+		return introduction;
+	}
+
+	public void setIntroduction(String introduction) {
+		this.introduction = introduction;
+	}
 
 	public void _run() throws IOException {
 		final List<LyxEntry> definitions = new ArrayList<LyxEntry>();
@@ -116,6 +126,7 @@ public class LyxExportFile extends Thread {
 		String start = IOUtils
 				.toString(getClass().getResourceAsStream("/net/cherokeedictionary/lyx/LyxDocumentStart.txt"));
 		start = start.replace("__preface__", preface);
+		start = start.replace("__introduction__", introduction);
 		start = start.replace("__REVISION__", revisionNumber);
 		start = start.replace("__DATE__", dateModified);
 		start = start.replace("ISBN: 978-x-xxx-xxxxx-x", "ISBN: "+formattedIsbn);
