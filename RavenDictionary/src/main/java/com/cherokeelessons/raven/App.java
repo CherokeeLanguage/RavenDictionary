@@ -60,6 +60,7 @@ public class App extends Thread {
 		} catch (IOException e2) {
 			throw new RuntimeException(e2);
 		}
+		
 		String dateModified;
 		FastDateFormat fdf = FastDateFormat.getInstance("yyyy/MM/dd HH:mm:ss z", TimeZone.getTimeZone("EST5EDT")); 
 		//FastDateFormat ftf = FastDateFormat.getTimeInstance(FastDateFormat.MEDIUM, TimeZone.getTimeZone("EST5EDT"));
