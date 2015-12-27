@@ -2,12 +2,16 @@ package com.cherokeelessons.raven;
 
 import java.io.File;
 import java.io.IOException;
+import java.text.SimpleDateFormat;
 import java.util.ArrayList;
 import java.util.Arrays;
+import java.util.Date;
 import java.util.Iterator;
 import java.util.List;
+import java.util.TimeZone;
 
 import org.apache.commons.io.FileUtils;
+import org.apache.commons.lang.time.FastDateFormat;
 import org.apache.commons.lang3.StringEscapeUtils;
 import org.apache.commons.lang3.StringUtils;
 
@@ -50,19 +54,17 @@ public class App extends Thread {
 		String revision;
 		try {
 			revision = FileUtils.readFileToString(new File(DIR + DICTIONARY_SRC_LYX));
-			revision = StringUtils.substringBetween(revision, "$Revision", "$");
-			lyxExportFile.setRevision("$Revision"+revision+"$");
+			revision = StringUtils.substringBetween(revision, "$Revision:", "$");
+			revision=StringUtils.strip(revision);
+			lyxExportFile.setRevision("Revision: "+revision);
 		} catch (IOException e2) {
 			throw new RuntimeException(e2);
 		}
 		String dateModified;
-		try {
-			dateModified = FileUtils.readFileToString(new File(DIR + DICTIONARY_SRC_LYX));
-			dateModified = StringUtils.substringBetween(dateModified, "$Date", "$ UTC");
-			lyxExportFile.setDateModified("$Date"+dateModified+"$ UTC");
-		} catch (IOException e2) {
-			throw new RuntimeException(e2);
-		}
+		FastDateFormat fdf = FastDateFormat.getInstance("yyyy/MM/dd HH:mm:ss z", TimeZone.getTimeZone("EST5EDT")); 
+		//FastDateFormat ftf = FastDateFormat.getTimeInstance(FastDateFormat.MEDIUM, TimeZone.getTimeZone("EST5EDT"));
+		dateModified = "Last modified: "+fdf.format(new Date());//+", "+ftf.format(new Date());
+		lyxExportFile.setDateModified(dateModified);
 		
 		lyxExportFile.setAuthor("Michael Joyner, TommyLee Whitlock");
 		lyxExportFile.setIsbn("978-1-329-78831-2");
