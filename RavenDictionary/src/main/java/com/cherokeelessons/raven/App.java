@@ -39,6 +39,12 @@ public class App extends Thread {
 			throw new RuntimeException(e2);
 		}
 		try {
+			String biblio = FileUtils.readFileToString(new File(DIR+"includes/biblio.lyx"));
+			lyxExportFile.setPreface(StringUtils.substringBetween(biblio, "\\begin_body", "\\end_body"));
+		} catch (IOException e2) {
+			throw new RuntimeException(e2);
+		}
+		try {
 			String intro = FileUtils.readFileToString(new File(DIR+"includes/introduction.lyx"));
 			lyxExportFile.setIntroduction(StringUtils.substringBetween(intro, "\\begin_body", "\\end_body"));
 		} catch (IOException e2) {
