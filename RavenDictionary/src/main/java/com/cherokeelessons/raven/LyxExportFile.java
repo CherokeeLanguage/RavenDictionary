@@ -112,14 +112,14 @@ public class LyxExportFile extends Thread {
 	
 	private String introduction="";
 
-	private String biblio="";
+	private String appendix="";
 
-	public String getBiblio() {
-		return biblio;
+	public String getAppendix() {
+		return appendix;
 	}
 
-	public void setBiblio(String biblio) {
-		this.biblio = biblio;
+	public void setAppendix(String appendix) {
+		this.appendix = appendix;
 	}
 
 	public String getIntroduction() {
@@ -135,7 +135,7 @@ public class LyxExportFile extends Thread {
 
 		String start = IOUtils
 				.toString(getClass().getResourceAsStream("/net/cherokeedictionary/lyx/LyxDocumentStart.txt"));
-		start = start.replace("__biblio__", biblio);
+		start = start.replace("__appendix__", appendix);
 		start = start.replace("__preface__", preface);
 		start = start.replace("__introduction__", introduction);
 		start = start.replace("__REVISION__", revisionNumber);

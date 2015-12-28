@@ -2,7 +2,6 @@ package com.cherokeelessons.raven;
 
 import java.io.File;
 import java.io.IOException;
-import java.text.SimpleDateFormat;
 import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.Date;
@@ -39,8 +38,8 @@ public class App extends Thread {
 			throw new RuntimeException(e2);
 		}
 		try {
-			String biblio = FileUtils.readFileToString(new File(DIR+"includes/biblio.lyx"));
-			lyxExportFile.setPreface(StringUtils.substringBetween(biblio, "\\begin_body", "\\end_body"));
+			String appendix = FileUtils.readFileToString(new File(DIR+"includes/appendix.lyx"));
+			lyxExportFile.setAppendix(StringUtils.substringBetween(appendix, "\\begin_body", "\\end_body"));
 		} catch (IOException e2) {
 			throw new RuntimeException(e2);
 		}
