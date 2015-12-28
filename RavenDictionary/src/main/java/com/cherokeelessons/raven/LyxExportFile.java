@@ -135,7 +135,6 @@ public class LyxExportFile extends Thread {
 
 		String start = IOUtils
 				.toString(getClass().getResourceAsStream("/net/cherokeedictionary/lyx/LyxDocumentStart.txt"));
-		start = start.replace("__appendix__", appendix);
 		start = start.replace("__preface__", preface);
 		start = start.replace("__introduction__", introduction);
 		start = start.replace("__REVISION__", revisionNumber);
@@ -145,6 +144,7 @@ public class LyxExportFile extends Thread {
 
 		String end = IOUtils.toString(getClass().getResourceAsStream("/net/cherokeedictionary/lyx/LyxDocumentEnd.txt"));
 		end = end.replace("__grammar__", grammar);
+		end = end.replace("__appendix__", appendix);
 
 		for (IEntry entry : entries) {
 			if (entry.getType().equals("v")) {
