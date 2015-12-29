@@ -20,6 +20,16 @@ public class App extends Thread {
 
 	@Override
 	public void run() {
+		try {
+			_run();
+		} catch (IOException e) {
+			e.printStackTrace();
+			System.exit(-1);
+		}
+		System.exit(0);
+	}
+	
+	public void _run() throws IOException {
 		final String DIR = "/home/mjoyner/Sync/Cherokee/CherokeeReferenceMaterial/Raven-Dictionary-Output/";
 		File in = new File(DIR + DICTIONARY_SRC_LYX);
 		File destfile = new File(DIR + "raven-rock-cherokee-dictionary-output.lyx");
@@ -75,7 +85,7 @@ public class App extends Thread {
 		lyxExportFile.setAuthor("Michael Joyner, TommyLee Whitlock");
 		lyxExportFile.setIsbn("978-1-329-78831-2");
 		
-		lyxExportFile.run();
+		lyxExportFile.process();
 		try {
 			FileUtils.writeLines(new File(DIR+"raven-possible-duplications.odt"), lyxExportFile.maybe_dupe);
 		} catch (IOException e1) {

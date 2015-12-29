@@ -35,7 +35,7 @@ import net.cherokeedictionary.lyx.WordForm;
 import net.cherokeedictionary.shared.StemEntry;
 import net.cherokeedictionary.shared.StemType;
 
-public class LyxExportFile extends Thread {
+public class LyxExportFile {
 	private static final String sloppy_begin = "\\begin_layout Standard\n" + "\\begin_inset ERT\n"
 			+ "status collapsed\n" + "\n" + "\\begin_layout Plain Layout\n" + "\n" + "\n" + "\\backslash\n"
 			+ "begin{sloppy}\n" + "\\end_layout\n" + "\n" + "\\end_inset\n" + "\n" + "\n" + "\\end_layout\n\n";
@@ -98,13 +98,8 @@ public class LyxExportFile extends Thread {
 
 	public final List<String> maybe_dupe = new ArrayList<>();
 
-	@Override
-	public void run() {
-		try {
-			_run();
-		} catch (Exception e) {
-			throw new RuntimeException(e);
-		}
+	public void process() throws IOException {
+		_run();
 	}
 
 	private String preface="";
