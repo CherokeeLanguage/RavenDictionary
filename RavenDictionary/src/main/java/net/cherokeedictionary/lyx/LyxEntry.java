@@ -1002,7 +1002,7 @@ public abstract class LyxEntry implements Comparable<LyxEntry> {
 				"\n" + 
 				"\\end_inset\n");
 		sb.append("\\begin_inset CommandInset label\nLatexCommand label\nname \"");
-		sb.append(Integer.toString(label, Character.MAX_RADIX));
+		sb.append("_"+Integer.toString(label, Character.MAX_RADIX));
 		sb.append("\"\n\\end_inset\n");
 		return sb.toString();
 	}

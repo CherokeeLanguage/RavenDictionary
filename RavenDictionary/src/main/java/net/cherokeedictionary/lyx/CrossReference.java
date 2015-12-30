@@ -40,7 +40,7 @@ public class CrossReference {
 		sb.append("\\begin_inset CommandInset ref\n");
 		sb.append("LatexCommand pageref\n");
 		sb.append("reference \"");
-		sb.append(Integer.toString(forEntry, Character.MAX_RADIX));
+		sb.append("_"+Integer.toString(forEntry, Character.MAX_RADIX));
 		sb.append("\"\n");
 		sb.append("\\end_inset\n");
 		sb.append(")\n");

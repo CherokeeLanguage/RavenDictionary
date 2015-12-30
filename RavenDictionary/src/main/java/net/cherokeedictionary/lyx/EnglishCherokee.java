@@ -72,7 +72,7 @@ public class EnglishCherokee implements Comparable<EnglishCherokee> {
 			sb.append(stickySpaces("pg "));
 			sb.append("\\begin_inset CommandInset ref\n"
 					+ "LatexCommand pageref\n" + "reference \"");
-			sb.append(Integer.toString(ref.toLabel, Character.MAX_RADIX));
+			sb.append("_"+Integer.toString(ref.toLabel, Character.MAX_RADIX));
 			sb.append("\"\n" + "\\end_inset\n");
 			sb.append(")\n");
 		}
@@ -86,7 +86,7 @@ public class EnglishCherokee implements Comparable<EnglishCherokee> {
 			sb.append(stickySpaces("(pg "));
 			sb.append("\\begin_inset CommandInset ref\n"
 					+ "LatexCommand pageref\n" + "reference \"");
-			sb.append(Integer.toString(ref.toLabel, Character.MAX_RADIX));
+			sb.append("_"+Integer.toString(ref.toLabel, Character.MAX_RADIX));
 			sb.append("\"\n" + "\\end_inset\n");
 			sb.append(")\n");
 		}
