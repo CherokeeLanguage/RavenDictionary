@@ -370,9 +370,9 @@ public class LyxExportFile {
 			String syll = StringUtils.left(entry.getLyxCode().replaceAll("[^Ꭰ-Ᏼ]", ""), 1);
 			if (!syll.equals(prevSection)) {
 				prevSection = syll;
-				sb.append("\\begin_layout Section\n");
+				sb.append("\n\\begin_layout Section\n");
 				sb.append(syll);
-				sb.append("\\end_layout\n");
+				sb.append("\n\\end_layout\n");
 			}
 			// sb.append(entry.getLyxCode().replace("\\n", " "));
 			{
@@ -419,9 +419,9 @@ public class LyxExportFile {
 			String eng = StringUtils.left(entry.getDefinition(), 1).toUpperCase();
 			if (!eng.equals(prevSection)) {
 				prevSection = eng;
-				sb.append("\\begin_layout Section\n");
+				sb.append("\n\\begin_layout Section\n");
 				sb.append(eng.toUpperCase());
-				sb.append("\\end_layout\n");
+				sb.append("\n\\end_layout\n");
 			}
 			sb.append(entry.getLyxCode(true));
 		}
@@ -440,9 +440,9 @@ public class LyxExportFile {
 				String syll = StringUtils.left(entry.stemEntry.syllabary, 1);
 				if (!syll.equals(prevSection)) {
 					prevSection = syll;
-					sb.append("\\begin_layout Section\n");
+					sb.append("\n\\begin_layout Section\n");
 					sb.append(syll);
-					sb.append("\\end_layout\n");
+					sb.append("\n\\end_layout\n");
 				}
 				sb.append(entry.getLyxCode());
 			}
@@ -495,7 +495,7 @@ public class LyxExportFile {
 	}
 
 	private String insetBoxFramelessStart() {
-		return "\\begin_layout Standard\n" + 
+		return "\n\\begin_layout Standard\n" + 
 				"\\begin_inset Box Frameless\n" + 
 				"position \"t\"\n" + 
 				"hor_pos \"c\"\n" + 
