@@ -366,13 +366,23 @@ public class LyxExportFile {
 		 */
 		sb.append(Chapter_Dictionary + columnsep_large + seprule_on + MULTICOLS_BEGIN + sloppy_begin);
 		String prevSection = "";
+		int counter=0;
+		int maxPerSection=20;
 		for (LyxEntry entry : definitions) {
-			String syll = StringUtils.left(entry.getLyxCode().replaceAll("[^Ꭰ-Ᏼ]", ""), 1);
+			String syll = StringUtils.left(entry.getSyllabary().get(0).replaceAll("[^Ꭰ-Ᏼ]", ""), 1);
+			counter++;
 			if (!syll.equals(prevSection)) {
 				prevSection = syll;
 				sb.append("\n\\begin_layout Section\n");
 				sb.append(syll);
 				sb.append("\n\\end_layout\n");
+				counter=0;
+			}
+			if (counter>=maxPerSection) {
+				sb.append("\n\\begin_layout Section\n");
+				sb.append(entry.getSyllabary().get(0));
+				sb.append("\n\\end_layout\n");
+				counter=0;
 			}
 			// sb.append(entry.getLyxCode().replace("\\n", " "));
 			{
