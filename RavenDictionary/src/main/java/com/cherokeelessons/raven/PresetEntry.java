@@ -207,11 +207,16 @@ public class PresetEntry implements IEntry {
 			}
 			subdef = StringUtils.normalizeSpace(subdef);
 			subdef = StringUtils.strip(subdef);
-			sb.append(StringUtils.left(subdef, 1).toUpperCase());
-			sb.append(StringUtils.substring(subdef, 1));
-			if (!StringUtils.endsWithAny(subdef, ".", "?", "!")) {
-				sb.append(".");
+			if (!StringUtils.endsWithAny(subdef.replaceAll("<.*?>", ""), ".", "?", "!")) {
+				subdef=subdef+".";
 			}
+			subdef = subdef.replaceAll("<tag:([a-zA-Z]+):([a-zA-Z]+)>", "\n\\\\$1 $2\n");
+			if (!subdef.startsWith("biol.")){
+				sb.append(StringUtils.left(subdef, 1).toUpperCase());
+			} else {
+				sb.append(StringUtils.left(subdef, 1));
+			}
+			sb.append(StringUtils.substring(subdef, 1));
 			additional = true;
 		}
 		// sb.append(def);

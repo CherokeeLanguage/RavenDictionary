@@ -66,6 +66,7 @@ public class ParseDictionary implements Runnable {
 		while (li.hasNext()) {
 			//process entries until we see a new Chapter start
 			String line = li.next();
+			
 			if (line.startsWith("\\begin_layout Chapter")) {
 				break;
 			}
@@ -78,8 +79,8 @@ public class ParseDictionary implements Runnable {
 						throw new RuntimeException("BAD ENTRY: "+string);
 					}
 					String fixup = fixup(string);
-					IEntry parse = parse(fixup);
-					entries.add(parse);
+					IEntry parsed_entry = parse(fixup);
+					entries.add(parsed_entry);
 				}
 				entry.setLength(0);
 				entry.append(parse(line, li, state));
@@ -117,12 +118,13 @@ public class ParseDictionary implements Runnable {
 	
 	private IEntry parse(String definition) {
 		Iterator<String> ilines = Arrays.asList(StringUtils.split(definition, "\n")).iterator();
-		String line = StringUtils.strip(ilines.next());
+		String line = ilines.next();//StringUtils.strip(ilines.next());
 		PresetEntry entry = new PresetEntry();
 		String syllabary = StringUtils.substringBefore(line, " [");
 		String pronounce = StringUtils.substringBetween(line, "[", "]");
 		String type = StringUtils.substringBetween(line, "] (", ")");
 		String def = StringUtils.substringAfter(line, "{|");
+		def=def.replaceAll(" \\\\([a-zA-Z]+) ([a-zA-Z]+) ", "<tag:$1:$2>");
 		def=StringUtils.substringBeforeLast(def, "|}");
 		def=StringEscapeUtils.unescapeHtml4(def);
 		entry.addSyllabary(syllabary);

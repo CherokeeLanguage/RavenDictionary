@@ -281,7 +281,7 @@ public class LyxExportFile {
 		/**
 		 * Blacklisted entries.
 		 */
-		english.removeIf(entry -> entry.getDefinition().startsWith("Genus: All Varieties"));
+		english.removeIf(entry -> entry.getDefinition().startsWith("All Varieties"));
 
 		/*
 		 * Build up word forms reference
@@ -795,6 +795,15 @@ public class LyxExportFile {
 			}
 			list.add(ec);
 		}
+		list.forEach(entry->{
+			String english = entry.getEnglish();
+			if (english.startsWith("Biol. ")){
+				english=StringUtils.substringAfter(english, "Biol. ");
+				entry.setItalic(true);
+			}
+			english=english.replaceAll("\\\\[a-zA-Z]+ [a-zA-Z]+", "");
+			entry.setEnglish(english);
+		});
 		return list;
 	}
 

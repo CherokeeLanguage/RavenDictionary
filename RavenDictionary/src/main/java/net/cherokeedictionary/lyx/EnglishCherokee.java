@@ -8,7 +8,21 @@ import java.util.List;
 import org.apache.commons.lang3.StringUtils;
 
 public class EnglishCherokee implements Comparable<EnglishCherokee> {
+	private boolean italic=false;
+	
+	public boolean isItalic() {
+		return italic;
+	}
+
+	public void setItalic(boolean italic) {
+		this.italic = italic;
+	}
+
 	private String english;
+
+	public String getEnglish() {
+		return english;
+	}
 
 	public EnglishCherokee() {
 	}
@@ -53,12 +67,19 @@ public class EnglishCherokee implements Comparable<EnglishCherokee> {
 		if (bold) {
 			sb.append("\\begin_layout Standard\n");
 			sb.append("\\series bold\n");
+			if (isItalic()) {
+				sb.append("\\emph on\n");
+			}
 			sb.append(eng);
 			sb.append("\n");
+			if (isItalic()) {
+				sb.append("\\emph default\n");
+			}
 			sb.append("\\series default\n");
 		} else {
 			sb.append("\\begin_layout Standard\n");
 			sb.append(eng);
+			sb.append("\n");
 		}
 
 		sb.append(": ");
