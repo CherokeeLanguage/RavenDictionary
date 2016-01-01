@@ -13,7 +13,7 @@ if (new File(RTJAR).exists()) {
 	compileJava.options.bootClasspath=RTJAR
 }
 
-version = '1.0'
+version = '20151231'
 
 tasks.eclipseWtp.dependsOn(cleanEclipseWtp)
 

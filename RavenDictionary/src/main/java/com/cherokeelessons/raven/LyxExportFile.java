@@ -366,28 +366,32 @@ public class LyxExportFile {
 		 */
 		sb.append(Chapter_Dictionary + columnsep_large + seprule_on + MULTICOLS_BEGIN + sloppy_begin);
 		String prevSection = "";
-		int counter=0;
-		int maxPerSection=20;
+		int sectionCounter=0;
+		int maxPerSection=40;
 		for (LyxEntry entry : definitions) {
 			String syll = StringUtils.left(entry.getSyllabary().get(0).replaceAll("[^Ꭰ-Ᏼ]", ""), 1);
-			counter++;
+			sectionCounter++;
 			if (!syll.equals(prevSection)) {
 				prevSection = syll;
 				sb.append("\n\\begin_layout Section\n");
-				sb.append(syll);
-				sb.append("\n\\end_layout\n");
-				counter=0;
-			}
-			if (counter>=maxPerSection) {
-				sb.append("\n\\begin_layout Section\n");
+				sb.append("\n\\noun on\n");
 				sb.append(entry.getSyllabary().get(0));
+				sb.append("\n\\noun default\n");
+				//sb.append(syll);
 				sb.append("\n\\end_layout\n");
-				counter=0;
+				sectionCounter=0;
+			}
+			if (sectionCounter>=maxPerSection) {
+				sb.append("\n\\begin_layout Section\n");
+				sb.append("\n\\noun on\n");
+				sb.append(entry.getSyllabary().get(0));
+				sb.append("\n\\noun default\n");
+				sb.append("\n\\end_layout\n");
+				sectionCounter=0;
 			}
 			// sb.append(entry.getLyxCode().replace("\\n", " "));
 			{
 				sb.append(insetBoxFramelessStart());
-				// TODO: startbox
 				sb.append(entry.getLyxCode());
 				if (entry.examples.size() != 0) {
 					sb.append("\\begin_deeper\n");
@@ -415,7 +419,6 @@ public class LyxExportFile {
 					sb.append("\\end_deeper\n");
 				}
 				sb.append(insetBoxFramelessEnd());
-				// TODO: endbox
 			}
 		}
 		sb.append(sloppy_end + MULTICOLS_END + seprule_off + columnsep_normal);
@@ -425,13 +428,32 @@ public class LyxExportFile {
 		 */
 		sb.append(Chapter_English + columnsep_large + seprule_on + MULTICOLS_BEGIN + sloppy_begin);
 		prevSection = "";
+		sectionCounter=0;
+		maxPerSection=50;
 		for (EnglishCherokee entry : english) {
 			String eng = StringUtils.left(entry.getDefinition(), 1).toUpperCase();
+			sectionCounter++;
 			if (!eng.equals(prevSection)) {
 				prevSection = eng;
 				sb.append("\n\\begin_layout Section\n");
-				sb.append(eng.toUpperCase());
+				sb.append("\n\\noun on\n");
+				//sb.append(eng.toUpperCase());
+				String sectionName = StringUtils.substringBefore(entry.getDefinition(),"(");
+				sectionName=StringUtils.strip(sectionName);
+				sb.append(sectionName);
+				sb.append("\n\\noun default\n");
 				sb.append("\n\\end_layout\n");
+				sectionCounter=0;
+			}
+			if (sectionCounter>=maxPerSection) {
+				sb.append("\n\\begin_layout Section\n");
+				sb.append("\n\\noun on\n");
+				String sectionName = StringUtils.substringBefore(entry.getDefinition(),"(");
+				sectionName=StringUtils.strip(sectionName);
+				sb.append(sectionName);
+				sb.append("\n\\noun default\n");
+				sb.append("\n\\end_layout\n");
+				sectionCounter=0;
 			}
 			sb.append(entry.getLyxCode(true));
 		}
