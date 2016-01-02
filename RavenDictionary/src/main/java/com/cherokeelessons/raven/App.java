@@ -189,6 +189,9 @@ public class App extends Thread {
 			Iterator<String> isyl = entry.getSyllabary().iterator();
 			Iterator<String> ipro = entry.getPronunciations().iterator();
 			String def = entry.formattedDefinition(); 
+			def=def.replaceAll("\n*\\\\emph on\n*", "<emph>");
+			def=def.replaceAll("\n*\\\\emph default\n*", "</emph>");
+			def=def.replaceAll("\n*\\\\([a-z][A-Z]+) ([a-z][A-Z]+)\n*", "<span class='$1_$2' />");
 			String part = entry.getType();
 			List<String> notes = entry.getNotes();
 			String genus = entry.getGenus();
