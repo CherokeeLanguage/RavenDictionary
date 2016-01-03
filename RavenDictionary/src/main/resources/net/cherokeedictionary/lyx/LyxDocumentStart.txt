@@ -159,7 +159,7 @@ pagestyle{empty}
 \end_layout
 
 \begin_layout Title
-ᎪᎸᏅᏱ ᏣᎳᎩ ᎦᏬᏂᎯᏍᏗ ᏗᏕᎶᏆᏍᏙᏗ
+ᎪᎸᏅᏱ ᏣᎳᎩ-ᏲᏁᎦ ᎦᏬᏂᎯᏍᏗ ᏗᏕᎶᏆᏍᏙᏗ
 \begin_inset Newline newline
 \end_inset
 
@@ -176,7 +176,7 @@ height "1pt"
 \begin_inset Newline newline
 \end_inset
 
-Raven Rock Cherokee Language Dictionary
+Raven Rock Cherokee-English Language Dictionary
 \end_layout
 
 \begin_layout Author
@@ -227,7 +227,7 @@ If our language and culture die, as a people, so do we.
 \end_layout
 
 \begin_layout Standard
-Raven Rock Cherokee Language Dictionary
+Raven Rock Cherokee-English Language Dictionary
 \end_layout
 
 \begin_layout Standard
