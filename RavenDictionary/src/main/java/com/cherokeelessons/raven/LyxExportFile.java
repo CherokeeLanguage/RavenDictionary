@@ -375,7 +375,8 @@ public class LyxExportFile {
 				prevSection = syll;
 				sb.append("\n\\begin_layout Section\n");
 				sb.append("\n\\noun on\n");
-				sb.append(entry.getSyllabary().get(0));
+//				sb.append(entry.getSyllabary().get(0));
+				sb.append(syll);
 				sb.append("\n\\noun default\n");
 				//sb.append(syll);
 				sb.append("\n\\end_layout\n");
@@ -437,10 +438,10 @@ public class LyxExportFile {
 				prevSection = eng;
 				sb.append("\n\\begin_layout Section\n");
 				sb.append("\n\\noun on\n");
-				//sb.append(eng.toUpperCase());
-				String sectionName = StringUtils.substringBefore(entry.getDefinition(),"(");
-				sectionName=StringUtils.strip(sectionName);
-				sb.append(sectionName);
+				sb.append(eng.toUpperCase());
+//				String sectionName = StringUtils.substringBefore(entry.getDefinition(),"(");
+//				sectionName=StringUtils.strip(sectionName);
+//				sb.append(sectionName);
 				sb.append("\n\\noun default\n");
 				sb.append("\n\\end_layout\n");
 				sectionCounter=0;
