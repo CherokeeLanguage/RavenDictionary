@@ -189,8 +189,8 @@ public class App extends Thread {
 			Iterator<String> isyl = entry.getSyllabary().iterator();
 			Iterator<String> ipro = entry.getPronunciations().iterator();
 			String def = entry.formattedDefinition(); 
-			def=def.replaceAll("\n*\\\\emph on\n*", "<emph>");
-			def=def.replaceAll("\n*\\\\emph default\n*", "</emph>");
+			def=def.replaceAll("\n*\\\\emph on\n*", "<em>");
+			def=def.replaceAll("\n*\\\\emph default\n*", "</em>");
 			def=def.replaceAll("\n*\\\\([a-z][A-Z]+) ([a-z][A-Z]+)\n*", "<span class='$1_$2' />");
 			String part = entry.getType();
 			List<String> notes = entry.getNotes();
@@ -289,10 +289,10 @@ public class App extends Thread {
 		note=note.replace("\n\\size footnotesize\n", "");
 		note=note.replace("\n\\series bold\n", "<strong>");
 		note=note.replace("\n\\series default\n", "</strong>");
-		note=note.replace("\n\\emph on\n", "<emph>");
-		note=note.replace("\n\\emph default\n", "</emph>");
-		note=note.replace("\n\\noun on\n", "<emph>");
-		note=note.replace("\n\\noun default\n", "</emph>");
+		note=note.replace("\n\\emph on\n", "<em>");
+		note=note.replace("\n\\emph default\n", "</em>");
+		note=note.replace("\n\\noun on\n", "<em>");
+		note=note.replace("\n\\noun default\n", "</em>");
 		note=note.replace("\n\\bar under\n", "<u>");
 		note=note.replace("\n\\bar default\n", "</u>");
 		note=note.replace("\\SpecialChar \\-", "");
@@ -305,9 +305,9 @@ public class App extends Thread {
 		/*
 		 * simple uncross any easy fix crossed-up spans
 		 */
-		note=note.replace("<emph></u>", "</u><emph>");
-		note=note.replace("<u></emph>", "</emph><u>");
-		note=note.replaceAll("(\\s+)</emph>", "</emph>$1");
+		note=note.replace("<em></u>", "</u><em>");
+		note=note.replace("<u></em>", "</em><u>");
+		note=note.replaceAll("(\\s+)</em>", "</em>$1");
 		
 		
 		if (note.contains("<u>")&&!note.contains("</u>")){
@@ -316,15 +316,15 @@ public class App extends Thread {
 		if (note.contains("<strong>")&&!note.contains("</strong>")){
 			note+="</strong>";
 		}
-		if (note.contains("<emph>")&&!note.contains("</emph>")){
-			note+="</emph>";
+		if (note.contains("<em>")&&!note.contains("</em>")){
+			note+="</em>";
 		}
 		
 		/*
 		 * assume 'u' should always be inside 'emph' or 'strong', etc.
 		 */
-		note=note.replace("<u><emph>", "<u><emph>");
-		note=note.replace("</emph></u>", "</u></emph>");
+		note=note.replace("<u><em>", "<u><em>");
+		note=note.replace("</em></u>", "</u></em>");
 		note=note.replace("<u><strong>", "<u><strong>");
 		note=note.replace("</strong></u>", "</u></strong>");
 		
@@ -332,11 +332,11 @@ public class App extends Thread {
 		/*
 		 * fix bogus regions
 		 */
-		note=note.replaceAll("<emph>(\\s*)…</emph>", "$1…");
+		note=note.replaceAll("<em>(\\s*)…</em>", "$1…");
 		/*
 		 * remove empty regions
 		 */
-		note=note.replace("<emph></emph>", "");
+		note=note.replace("<em></em>", "");
 		note=note.replace("<u></u>", "");
 		if (note.contains("[") && !note.contains("<u>")){
 			System.err.println("MISSING <u>: "+note.replace("\n", " -> "));
