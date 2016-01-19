@@ -30,7 +30,7 @@ public class App extends Thread {
 	}
 	
 	public void _run() throws IOException {
-		final String DIR = "/home/mjoyner/Sync/Cherokee/CherokeeReferenceMaterial/Raven-Dictionary-Output/";
+		final String DIR = "/home/mjoyner/Documents/ᏣᎳᎩ/Lessons/Raven-Cherokee-English-Dictionary/";
 		File in = new File(DIR + DICTIONARY_SRC_LYX);
 		File destfile = new File(DIR + "raven-rock-cherokee-dictionary-output.lyx");
 		ParseDictionary parseDictionary = new ParseDictionary(in);
