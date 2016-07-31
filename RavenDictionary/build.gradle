@@ -1,9 +1,13 @@
 plugins {
-  id "us.kirchmeier.capsule" version "1.0-rc1"
+  id "us.kirchmeier.capsule" version "1.0.2"
 }
 
 apply plugin: 'java'
 apply plugin: 'eclipse-wtp'
+apply plugin: 'maven'
+
+group "com.github.michael-joyner"
+version = '20160731'
 
 sourceCompatibility = 1.8
 compileJava.options.encoding = 'UTF-8'
@@ -12,10 +16,6 @@ def RTJAR = '/usr/lib/jvm/java-8-openjdk-amd64/jre/lib/rt.jar';
 if (new File(RTJAR).exists()) {
 	compileJava.options.bootClasspath=RTJAR
 }
-
-version = '20151231'
-
-tasks.eclipseWtp.dependsOn(cleanEclipseWtp)
 
 task fatjar(type: FatCapsule) {
 	//-Dfile.encoding=UTF-8
@@ -28,8 +28,7 @@ task fatjar(type: FatCapsule) {
 
 repositories {
     jcenter()
-	mavenCentral()
-	mavenLocal()
+    maven { url "https://jitpack.io/" }
 }
 
 configurations {
@@ -37,12 +36,13 @@ configurations {
 }
 
 dependencies {
-	//compile project(':ResearcherInstituteShared')
 	compile 'org.apache.commons:commons-lang3:+'
-	compile 'com.fasterxml.jackson.core:jackson-databind:+'
+	compile 'com.fasterxml.jackson.core:jackson-databind:2.8.1'
 	compile 'commons-io:commons-io:+'
 	compile 'org.languagetool:language-en:3.0'
 	compile 'org.languagetool:languagetool-core:3.0'
+	
+	compile 'com.github.michael-joyner:SimpleTextUi:-SNAPSHOT'
 }
  
 sourceSets {
@@ -58,6 +58,26 @@ sourceSets {
 task "create-dirs" << {
 	sourceSets*.java.srcDirs*.each { it.mkdirs() }
 	sourceSets*.resources.srcDirs*.each { it.mkdirs() }
+}
+
+task sourcesJar(type: Jar, dependsOn: classes) {
+    classifier = 'sources'
+    from sourceSets.main.allSource
+}
+
+task javadocJar(type: Jar, dependsOn: javadoc) {
+	javadoc.failOnError=false
+    classifier = 'javadoc'
+    from javadoc.destinationDir
+}
+
+artifacts {
+    archives sourcesJar
+    archives javadocJar
+}
+
+configurations.all {
+    resolutionStrategy.cacheChangingModulesFor 30, 'seconds'
 }
 
 eclipseJdt << {
@@ -117,8 +137,4 @@ eclipse {
 			/*facet name: 'jst.web', version: '3.0'*/
 		}
 	}
-}
-
-task wrapper(type: Wrapper) {
-    gradleVersion = '2.10'
 }
