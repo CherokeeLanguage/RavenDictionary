@@ -93,7 +93,7 @@ eclipse {
 	project {
 		name = 'RavenDictionary'
 		comment = 'The Raven Dictionary Project'
-		natures 'org.springsource.ide.eclipse.gradle.core.nature'
+		natures 'org.eclipse.buildship.core.gradleprojectnature'
 //		referencedProjects 'SHARED-POJOS', 'SHARED-SERVER'
 		//webAppDirName = 'src/main/webapp'
 	}
