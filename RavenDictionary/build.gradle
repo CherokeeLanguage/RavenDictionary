@@ -7,7 +7,7 @@ apply plugin: 'eclipse-wtp'
 apply plugin: 'maven'
 
 group "com.github.michael-joyner"
-version = '20160731'
+version = '20160806'
 
 sourceCompatibility = 1.8
 compileJava.options.encoding = 'UTF-8'

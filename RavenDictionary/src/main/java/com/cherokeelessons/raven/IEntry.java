@@ -3,34 +3,20 @@ package com.cherokeelessons.raven;
 import java.util.List;
 
 public interface IEntry extends Comparable<IEntry> {
-	
-	public void addNote(String note);
-	public void clearNotes();
-	public List<String> getNotes();
-
-	public int compareTo(IEntry o);
-
-	public boolean equals(Object obj);
-
-	public String formattedDefinition();
-
-	public String getDef();
-
-	public List<String> getPronunciations();
-
-	public List<String> getSyllabary();
-
-	public String getType();
-
-	void setDef(String def);
-
-	public void setType(String type);
-
-	public int size();
-
-	public String sortKey();
-
-	void setGenus(String genus);
-
+	void addNote(String note);
+	void clearNotes();
+	int compareTo(IEntry o);
+	boolean equals(Object obj);
+	String formattedDefinition();
+	String getDef();
 	String getGenus();
+	List<String> getNotes();
+	List<String> getPronunciations();
+	List<String> getSyllabary();
+	String getType();
+	void setDef(String def);
+	void setGenus(String genus);
+	void setType(String type);
+	int size();
+	String sortKey();
 }

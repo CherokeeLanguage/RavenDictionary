@@ -7,10 +7,23 @@ import java.util.List;
 import org.apache.commons.lang3.StringUtils;
 import org.apache.commons.lang3.text.WordUtils;
 
+import com.cherokeelessons.log.Log;
+
 public class Entry implements IEntry {
-	private static final boolean eastern_ts = true;
-	private static final boolean show_transforms = false;
-	private static final boolean show_deletes = false;
+	
+	private List<String> notes=new ArrayList<>();
+	
+	public void clearNotes(){
+		notes.clear();
+	}
+	
+	public void addNote(String note) {
+		notes.add(note);
+	}
+	
+	public List<String> getNotes(){
+		return new ArrayList<>(notes);
+	}
 
 	private String def = "";
 	@Override
@@ -41,50 +54,28 @@ public class Entry implements IEntry {
 		this.genus = genus;
 	}
 
-	private final List<String> list = new ArrayList<>();
-
-	public void add(String l) {
-		list.add(l);
-	}
-
 	/* (non-Javadoc)
 	 * @see com.cherokeelessons.raven.IEntry#size()
 	 */
 	@Override
 	public int size() {
-		return list.size();
+		return syllabary.size();
 	}
 
+	private final List<String> pronunciations=new ArrayList<String>();
+	public void addPronunciation(String pro) {
+		if (pro == null) {
+			App.err("BAD PRONUNCIATION FOR: "+getDef());
+			throw new RuntimeException("BAD PRONUNCIATION FOR: "+getDef());
+		}
+		pronunciations.add(StringUtils.defaultString(pro));
+	}
 	/* (non-Javadoc)
 	 * @see com.cherokeelessons.raven.IEntry#getPronunciations()
 	 */
 	@Override
 	public List<String> getPronunciations() {
-		List<String> tmp = new ArrayList<String>();
-		for (String l : list) {
-			if (!show_deletes) {
-				l = l.replaceAll("[aeiouvạẹịọụṿ]"
-						+ SyllabaryConverter.UpperMark, "");
-				l = l.replace("dh", "t");
-				l = l.replace("gh", "k");
-			}
-			if (show_transforms) {
-				tmp.add(l);
-				continue;
-			}
-			l = l.replace("s" + SyllabaryConverter.UpperMark, "s");
-			l = l.replaceAll("¹h" + SyllabaryConverter.UpperMark, "¹");
-			l = l.replaceAll("(?<=[hɂ])" + SyllabaryConverter.UpperMark, "");
-			l = l.replaceAll("(?<=[aeiouvạẹịọụṿ])h(?=s)", "");
-			if (!show_deletes && !show_transforms) {
-				l = l.replace(SyllabaryConverter.UpperMark, "");
-			}
-			if (eastern_ts) {
-				l = l.replace("j", "ts");
-			}
-			tmp.add(l);
-		}
-		return tmp;
+		return new ArrayList<String>(pronunciations);
 	}
 
 	private String _sortKey;
@@ -96,10 +87,10 @@ public class Entry implements IEntry {
 			for (String l : getSyllabary()) {
 				sb.append(l.replaceAll("[^Ꭰ-Ᏼ]", "") + "-");
 			}
-			for (String l : list) {
+			for (String l : getPronunciations()) {
 				sb.append(l + "-");
 			}
-			sb.append(list.size());
+			sb.append(size());
 			_sortKey = sb.toString();
 		}
 		return _sortKey;
@@ -124,59 +115,29 @@ public class Entry implements IEntry {
 		return compareTo((Entry) obj) == 0;
 	}
 
-	private boolean withSyllabary = true;
-
-	public boolean isWithSyllabary() {
-		return withSyllabary;
-	}
-
-	public void setWithSyllabary(boolean withSyllabary) {
-		this.withSyllabary = withSyllabary;
-	}
-
 	/* (non-Javadoc)
 	 * @see com.cherokeelessons.raven.IEntry#getSyllabary()
 	 */
 	@Override
 	public List<String> getSyllabary() {
-		List<String> list = new ArrayList<>();
-		SyllabaryGuesser syll = new SyllabaryGuesser();
-		Iterator<String> ilist = this.list.iterator();
-		boolean invalid=false;
-		while (ilist.hasNext()) {
-			String pronunciation = ilist.next();
-			if (StringUtils.isBlank(pronunciation)) {
-				continue;
-			}
-			if (pronunciation.startsWith("-")) {
-				list.add(pronunciation);
-				continue;
-			}
-			if (pronunciation.startsWith("@")) {
-				list.add(pronunciation);
-				continue;
-			}
-			if (pronunciation.startsWith("IRR")) {
-				list.add(pronunciation);
-				continue;
-			}
-			String s = syll.get(pronunciation);
-			invalid = invalid | s.contains("[");
-			list.add(s);
+		return new ArrayList<String>(syllabary);
+	}
+	private final ArrayList<String> syllabary = new ArrayList<>();
+	public void addSyllabary(String syllabary) {
+		if (syllabary == null) {
+			App.err("BAD SYLLABARY FOR: "+getDef());
 		}
-		if (invalid) {
-			syll.reprocess(list);
-		}
-		return list;
+		this.syllabary.add(StringUtils.defaultString(syllabary));
 	}
 
 	@Override
 	public String toString() {
-		SyllabaryGuesser syll = new SyllabaryGuesser();
 		StringBuilder sb = new StringBuilder();
-		Iterator<String> ilist = list.iterator();
+		Iterator<String> ilist = pronunciations.iterator();
+		Iterator<String> slist = syllabary.iterator();
 		if (ilist.hasNext()) {
 			String pronunciation = ilist.next();
+			String syllabary = slist.next();
 			reformat: {
 				if (pronunciation.startsWith("-")) {
 					sb.append(pronunciation);
@@ -193,14 +154,10 @@ public class Entry implements IEntry {
 					sb.append("\n");
 					break reformat;
 				}
-				if (isWithSyllabary()) {
-					sb.append(syll.get(pronunciation));
+					sb.append(syllabary);
 					sb.append(" [");
 					sb.append(pronunciation);
 					sb.append("]");
-				} else {
-					sb.append(pronunciation);
-				}
 			}
 			sb.append(" - (" + type + ") ");
 			sb.append(formattedDefinition());
@@ -225,47 +182,55 @@ public class Entry implements IEntry {
 					sb.append("\n");
 					continue;
 				}
-				if (isWithSyllabary()) {
-					sb.append(syll.get(pronunciation));
-					sb.append(" [");
-					sb.append(pronunciation);
-					sb.append("]");
-				} else {
-					sb.append(pronunciation);
-				}
+				sb.append(syllabary);
+				sb.append(" [");
+				sb.append(pronunciation);
+				sb.append("]");
 				sb.append("\n");
 			}
 		}
 		return sb.toString();
 	}
 
-	/* (non-Javadoc)
-	 * @see com.cherokeelessons.raven.IEntry#formattedDefinition()
-	 */
 	@Override
 	public String formattedDefinition() {
 		StringBuilder sb = new StringBuilder();
-		String[] subdefs = StringUtils.split(def, ";");
+		//String[] subdefs = StringUtils.split(def, ";");
+		String[] subdefs = def.split(Consts.splitRegex);
 		boolean additional = false;
+		int count=0;
 		for (String subdef : subdefs) {
 			if (StringUtils.isBlank(subdef)) {
 				continue;
 			}
 			if (additional) {
-				sb.append("; ");
+				//sb.append("; ");
+				count++;
+				sb.append(" ");
+				sb.append(Consts.definitionMarkers[count % Consts.definitionMarkers.length]);
+				sb.append(" ");
 			}
 			subdef = StringUtils.normalizeSpace(subdef);
 			subdef = StringUtils.strip(subdef);
-			sb.append(StringUtils.left(subdef, 1).toUpperCase());
-			sb.append(StringUtils.substring(subdef, 1));
-			if (!StringUtils.endsWithAny(subdef, ".", "?", "!")) {
-				sb.append(".");
+			if (!StringUtils.endsWithAny(subdef.replaceAll("<.*?>", ""), ".", "?", "!")) {
+				subdef=subdef+".";
 			}
+			subdef = subdef.replaceAll("<tag:([a-zA-Z]+):([a-zA-Z]+)>", "\n\\\\$1 $2\n");
+			if (!subdef.startsWith("biol.")){
+				sb.append(StringUtils.left(subdef, 1).toUpperCase());
+			} else {
+				sb.append(StringUtils.left(subdef, 1));
+			}
+			sb.append(StringUtils.substring(subdef, 1));
 			additional = true;
 		}
 		// sb.append(def);
 		if (!StringUtils.isBlank(genus)) {
-			sb.append("; ");
+			//sb.append("; ");
+			count++;
+			sb.append(" ");
+			sb.append(Consts.definitionMarkers[count % Consts.definitionMarkers.length]);
+			sb.append(" ");
 			if (genus.startsWith("(")) {
 				sb.append("Genus: ");
 				String sub = StringUtils.substringBetween(genus, "(", ")");
@@ -278,21 +243,10 @@ public class Entry implements IEntry {
 				sb.append(genus);
 			}
 		}
-		return sb.toString();
-	}
-	
-	private List<String> notes=new ArrayList<>();
-	
-	@Override
-	public void addNote(String note) {
-		notes.add(note);
-	}
-	@Override
-	public void clearNotes() {
-		notes.clear();
-	}
-	@Override
-	public List<String> getNotes() {
-		return new ArrayList<>(notes);
+		if (count>0) {
+			sb.insert(0, " ");
+			sb.insert(0, Consts.definitionMarkers[0]);
+		}
+		return StringUtils.strip(sb.toString());
 	}
 }

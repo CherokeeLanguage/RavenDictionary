@@ -102,12 +102,12 @@ public class LyxExportFile {
 		_run();
 	}
 
-	private String preface="";
-	private String grammar="";
-	
-	private String introduction="";
+	private String preface = "";
+	private String grammar = "";
 
-	private String appendix="";
+	private String introduction = "";
+
+	private String appendix = "";
 
 	public String getAppendix() {
 		return appendix;
@@ -134,7 +134,7 @@ public class LyxExportFile {
 		start = start.replace("__introduction__", introduction);
 		start = start.replace("__REVISION__", revisionNumber);
 		start = start.replace("__DATE__", dateModified);
-		start = start.replace("ISBN: 978-x-xxx-xxxxx-x", "ISBN: "+formattedIsbn);
+		start = start.replace("ISBN: 978-x-xxx-xxxxx-x", "ISBN: " + formattedIsbn);
 		start = start.replace("__AUTHOR__", author);
 
 		String end = IOUtils.toString(getClass().getResourceAsStream("/net/cherokeedictionary/lyx/LyxDocumentEnd.txt"));
@@ -366,8 +366,8 @@ public class LyxExportFile {
 		 */
 		sb.append(Chapter_Dictionary + columnsep_large + seprule_on + MULTICOLS_BEGIN + sloppy_begin);
 		String prevSection = "";
-		int sectionCounter=0;
-		int maxPerSection=40;
+		int sectionCounter = 0;
+		int maxPerSection = 40;
 		for (LyxEntry entry : definitions) {
 			String syll = StringUtils.left(entry.getSyllabary().get(0).replaceAll("[^Ꭰ-Ᏼ]", ""), 1);
 			sectionCounter++;
@@ -375,20 +375,20 @@ public class LyxExportFile {
 				prevSection = syll;
 				sb.append("\n\\begin_layout Section\n");
 				sb.append("\n\\noun on\n");
-//				sb.append(entry.getSyllabary().get(0));
+				// sb.append(entry.getSyllabary().get(0));
 				sb.append(syll);
 				sb.append("\n\\noun default\n");
-				//sb.append(syll);
+				// sb.append(syll);
 				sb.append("\n\\end_layout\n");
-				sectionCounter=0;
+				sectionCounter = 0;
 			}
-			if (sectionCounter>=maxPerSection) {
+			if (sectionCounter >= maxPerSection) {
 				sb.append("\n\\begin_layout Section\n");
 				sb.append("\n\\noun on\n");
 				sb.append(entry.getSyllabary().get(0));
 				sb.append("\n\\noun default\n");
 				sb.append("\n\\end_layout\n");
-				sectionCounter=0;
+				sectionCounter = 0;
 			}
 			// sb.append(entry.getLyxCode().replace("\\n", " "));
 			{
@@ -429,8 +429,8 @@ public class LyxExportFile {
 		 */
 		sb.append(Chapter_English + columnsep_large + seprule_on + MULTICOLS_BEGIN + sloppy_begin);
 		prevSection = "";
-		sectionCounter=0;
-		maxPerSection=50;
+		sectionCounter = 0;
+		maxPerSection = 50;
 		for (EnglishCherokee entry : english) {
 			String eng = StringUtils.left(entry.getDefinition(), 1).toUpperCase();
 			sectionCounter++;
@@ -439,22 +439,23 @@ public class LyxExportFile {
 				sb.append("\n\\begin_layout Section\n");
 				sb.append("\n\\noun on\n");
 				sb.append(eng.toUpperCase());
-//				String sectionName = StringUtils.substringBefore(entry.getDefinition(),"(");
-//				sectionName=StringUtils.strip(sectionName);
-//				sb.append(sectionName);
+				// String sectionName =
+				// StringUtils.substringBefore(entry.getDefinition(),"(");
+				// sectionName=StringUtils.strip(sectionName);
+				// sb.append(sectionName);
 				sb.append("\n\\noun default\n");
 				sb.append("\n\\end_layout\n");
-				sectionCounter=0;
+				sectionCounter = 0;
 			}
-			if (sectionCounter>=maxPerSection) {
+			if (sectionCounter >= maxPerSection) {
 				sb.append("\n\\begin_layout Section\n");
 				sb.append("\n\\noun on\n");
-				String sectionName = StringUtils.substringBefore(entry.getDefinition(),"(");
-				sectionName=StringUtils.strip(sectionName);
+				String sectionName = StringUtils.substringBefore(entry.getDefinition(), "(");
+				sectionName = StringUtils.strip(sectionName);
 				sb.append(sectionName);
 				sb.append("\n\\noun default\n");
 				sb.append("\n\\end_layout\n");
-				sectionCounter=0;
+				sectionCounter = 0;
 			}
 			sb.append(entry.getLyxCode(true));
 		}
@@ -528,26 +529,14 @@ public class LyxExportFile {
 	}
 
 	private String insetBoxFramelessStart() {
-		return "\n\\begin_layout Standard\n" + 
-				"\\begin_inset Box Frameless\n" + 
-				"position \"t\"\n" + 
-				"hor_pos \"c\"\n" + 
-				"has_inner_box 1\n" + 
-				"inner_pos \"t\"\n" + 
-				"use_parbox 0\n" + 
-				"use_makebox 0\n" + 
-				"width \"100col%\"\n" + 
-				"special \"none\"\n" + 
-				"height \"1in\"\n" + 
-				"height_special \"totalheight\"\n" + 
-				"status open\n";
+		return "\n\\begin_layout Standard\n" + "\\begin_inset Box Frameless\n" + "position \"t\"\n" + "hor_pos \"c\"\n"
+				+ "has_inner_box 1\n" + "inner_pos \"t\"\n" + "use_parbox 0\n" + "use_makebox 0\n"
+				+ "width \"100col%\"\n" + "special \"none\"\n" + "height \"1in\"\n" + "height_special \"totalheight\"\n"
+				+ "status open\n";
 	}
-	
-	private String insetBoxFramelessEnd(){
-		return "\\end_inset\n" + 
-				"\n" + 
-				"\n" + 
-				"\\end_layout\n";
+
+	private String insetBoxFramelessEnd() {
+		return "\\end_inset\n" + "\n" + "\n" + "\\end_layout\n";
 	}
 
 	private void corpusWriter(final List<LyxEntry> definitions) throws IOException {
@@ -635,8 +624,9 @@ public class LyxExportFile {
 						}
 						break;
 					case 2:// 1st person
-						// tmp = subdef.replaceAll("^(He|She) is ", "I am ");
-						// tmp_def.add(new DefSyl(str_syl, tmp));
+							// tmp = subdef.replaceAll("^(He|She) is ", "I am
+							// ");
+							// tmp_def.add(new DefSyl(str_syl, tmp));
 						break;
 					case 3:// remote past
 						tmp_def.addAll(pronouns_intransitive_b(str_syl, subdef));
@@ -773,7 +763,8 @@ public class LyxExportFile {
 
 	private String author;
 
-	/*
+	/**
+	 * 
 	 * is this a "splittable" definition?
 	 */
 	private List<EnglishCherokee> getSplitsFor(EnglishCherokee ec) {
@@ -781,8 +772,8 @@ public class LyxExportFile {
 		splitAndAdd: {
 			// keep this one first
 			String definition = ec.getDefinition();
-			if (definition.contains(";")) {
-				String defs[] = definition.split(";");
+			if (definition.contains(";") || StringUtils.containsAny(definition, Consts.definitionMarkers)) {
+				String defs[] = definition.split(Consts.splitRegex);
 				for (String adef : defs) {
 					if (StringUtils.isBlank(adef)) {
 						continue;
@@ -796,13 +787,17 @@ public class LyxExportFile {
 			}
 			list.add(ec);
 		}
-		list.forEach(entry->{
+		list.forEach(entry -> {
 			String english = entry.getEnglish();
-			if (english.startsWith("Biol. ")){
-				english=StringUtils.substringAfter(english, "Biol. ");
+			if (english.startsWith("Biol. ")) {
+				english = StringUtils.substringAfter(english, "Biol. ");
 				entry.setItalic(true);
 			}
-			english=english.replaceAll("\\\\[a-zA-Z]+ [a-zA-Z]+", "");
+			if (english.startsWith("biol. ")) {
+				english = StringUtils.substringAfter(english, "biol. ");
+				entry.setItalic(true);
+			}
+			english = english.replaceAll("\\\\[a-zA-Z]+ [a-zA-Z]+", "");
 			entry.setEnglish(english);
 		});
 		return list;
