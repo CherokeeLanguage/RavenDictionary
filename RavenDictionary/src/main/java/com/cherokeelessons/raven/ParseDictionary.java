@@ -24,13 +24,13 @@ public class ParseDictionary implements Runnable {
 	private final File in;
 	public ParseDictionary(File in) {
 		this.in=in;
-		entries = new ArrayList<IEntry>();
+		entries = new ArrayList<Entry>();
 	}
 	
-	private final List<IEntry> entries;
+	private final List<Entry> entries;
 	
 
-	public List<IEntry> getEntries() {
+	public List<Entry> getEntries() {
 		return entries;
 	}
 
@@ -79,7 +79,7 @@ public class ParseDictionary implements Runnable {
 						throw new RuntimeException("BAD ENTRY: "+string);
 					}
 					String fixup = fixup(string);
-					IEntry parsed_entry = parse(fixup);
+					Entry parsed_entry = parse(fixup);
 					entries.add(parsed_entry);
 				}
 				entry.setLength(0);
@@ -116,10 +116,10 @@ public class ParseDictionary implements Runnable {
 		return string;
 	}
 	
-	private IEntry parse(String definition) {
+	private Entry parse(String definition) {
 		Iterator<String> ilines = Arrays.asList(StringUtils.split(definition, "\n")).iterator();
 		String line = ilines.next();//StringUtils.strip(ilines.next());
-		Entry entry = new Entry();
+		RavenEntry entry = new RavenEntry();
 		String syllabary = StringUtils.substringBefore(line, " [");
 		String pronounce = StringUtils.substringBetween(line, "[", "]");
 		String type = StringUtils.substringBetween(line, "] (", ")");

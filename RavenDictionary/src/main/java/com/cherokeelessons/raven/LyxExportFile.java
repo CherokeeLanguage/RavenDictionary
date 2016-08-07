@@ -69,7 +69,7 @@ public class LyxExportFile {
 	private static final String Chapter_English = "\\begin_layout Chapter\n" + "English to Cherokee Lookup\n"
 			+ "\\end_layout\n";
 
-	private final List<IEntry> entries;
+	private final List<Entry> entries;
 
 	private boolean doWordForms = true;
 
@@ -91,7 +91,7 @@ public class LyxExportFile {
 		this.docorpus = docorpus;
 	}
 
-	public LyxExportFile(List<IEntry> entries, String destfile) {
+	public LyxExportFile(List<Entry> entries, String destfile) {
 		this.entries = entries;
 		this.lyxfile = destfile;
 	}
@@ -141,7 +141,7 @@ public class LyxExportFile {
 		end = end.replace("__grammar__", grammar);
 		end = end.replace("__appendix__", appendix);
 
-		for (IEntry entry : entries) {
+		for (Entry entry : entries) {
 			if (entry.getType().startsWith("v")) {
 				VerbEntry v = new VerbEntry();
 				v.definition = entry.formattedDefinition();

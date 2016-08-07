@@ -1,20 +1,33 @@
 package com.cherokeelessons.raven;
 
 import java.io.File;
+import java.io.FileOutputStream;
 import java.io.IOException;
+import java.io.OutputStreamWriter;
+import java.nio.charset.StandardCharsets;
 import java.util.ArrayList;
 import java.util.Arrays;
+import java.util.Collections;
 import java.util.Date;
 import java.util.Iterator;
 import java.util.List;
 import java.util.TimeZone;
+import java.util.logging.Logger;
 
+import org.apache.commons.csv.CSVFormat;
+import org.apache.commons.csv.CSVPrinter;
 import org.apache.commons.io.FileUtils;
 import org.apache.commons.lang.time.FastDateFormat;
 import org.apache.commons.lang3.StringEscapeUtils;
 import org.apache.commons.lang3.StringUtils;
 
+import com.cherokeelessons.log.Log;
+import com.cherokeelessons.raven.RavenEntry.SpreadsheetEntry;
+import com.cherokeelessons.raven.RavenEntry.SpreadsheetEntry.SpreadsheetRow;
+
 public class App extends Thread {
+	
+	private static final String CSV_LINK = "https://docs.google.com/spreadsheets/d/1_QEZjG4USzUHgj7mK4MOftg6c5GYY01qxy-e3zULmOE/export?format=csv";
 
 	private static final String DICTIONARY_SRC_LYX = "raven-cherokee-dictionary-tlw.lyx";
 
@@ -29,15 +42,43 @@ public class App extends Thread {
 		System.exit(0);
 	}
 
+	private final Logger log = Log.getLogger(this);
+
 	public void _run() throws IOException {
 		final String DIR = "/home/mjoyner/Documents/ᏣᎳᎩ/Lessons/Raven-Cherokee-English-Dictionary/";
 		File in = new File(DIR + DICTIONARY_SRC_LYX);
 		File destfile = new File(DIR + "raven-rock-cherokee-dictionary-output.lyx");
 		ParseDictionary parseDictionary = new ParseDictionary(in);
-		App.info("parsing...");
+		log.info("parsing...");
 		parseDictionary.run();
-		App.info("creating new lyx file...");
-		List<IEntry> entries = parseDictionary.getEntries();
+		log.info("creating new lyx file...");
+		List<Entry> entries = parseDictionary.getEntries();
+
+		File editFile = new File(DIR, "raven-dictionary-edit-file.csv");
+		FileUtils.deleteQuietly(editFile);
+		editFile.getParentFile().mkdirs();
+		OutputStreamWriter os = new OutputStreamWriter(new FileOutputStream(editFile), StandardCharsets.UTF_8);
+		CSVFormat withHeader = CSVFormat.DEFAULT.withHeader("ENTRY_MARK", "SYLLABARY", "PRONUNCIATION", "POS", "DEFINITIONS");
+		try (CSVPrinter printer = withHeader.print(os)) {
+			Collections.sort(entries);
+			for (Entry entry : entries) {
+				SpreadsheetEntry records = entry.spreadsheetEntry();
+				for (SpreadsheetRow record : records.rows) {
+					while (record.fields.size()<5) {
+						record.fields.add("");
+					}
+					for (String field: record.fields) {
+						String tmp = unlatexFormat(field);
+						tmp=tmp.replace("<tag:emph:on>", "<em>");
+						tmp=tmp.replace("<tag:emph:default>", "</em>");
+						printer.print(tmp);
+					}
+					printer.println();
+				}
+				printer.println();
+			}
+		}
+
 		LyxExportFile lyxExportFile = new LyxExportFile(entries, destfile.getAbsolutePath());
 		lyxExportFile.setDocorpus(false);
 		lyxExportFile.setDoWordForms(false);
@@ -95,7 +136,7 @@ public class App extends Thread {
 		} catch (IOException e1) {
 			e1.printStackTrace();
 		}
-		App.info("creating new csv file for use by analyzer project ...");
+		log.info("creating new csv file for use by analyzer project ...");
 		List<String> csvlist = new ArrayList<>();
 		entries = parseDictionary.getEntries();
 		entries.forEach(entry -> {
@@ -119,7 +160,7 @@ public class App extends Thread {
 			e.printStackTrace();
 		}
 
-		App.info("creating new csv file for use by example hunter script ...");
+		log.info("creating new csv file for use by example hunter script ...");
 		csvlist.clear();
 		entries = parseDictionary.getEntries();
 		entries.stream().filter(entry -> entry.getNotes().size() == 0).forEach(entry -> {
@@ -144,7 +185,7 @@ public class App extends Thread {
 		}
 
 		csvlist.clear();
-		App.info("creating new csv file for use by cherokeedictionary.net ...");
+		log.info("creating new csv file for use by cherokeedictionary.net ...");
 		List<String> columns = new ArrayList<>();
 		columns.add("entry");
 		columns.add("pronounce");
@@ -280,90 +321,94 @@ public class App extends Thread {
 			e.printStackTrace();
 		}
 
-		App.info("done.");
+		log.info("done.");
 	}
 
-	public String unlatexFormat(String note) {
+	public static String unlatexFormat(String text) {
 		// note=note.replace("\n\\size larger\n", "<span class='cap'>");
 		// note=note.replace("\n\\size default\n", "</span>");
-		note = note.replace("\n\\size larger\n", "");
-		note = note.replace("\n\\size default\n", "");
-		note = note.replace("\n\\size footnotesize\n", "");
-		note = note.replace("\n\\series bold\n", "<strong>");
-		note = note.replace("\n\\series default\n", "</strong>");
-		note = note.replace("\n\\emph on\n", "<em>");
-		note = note.replace("\n\\emph default\n", "</em>");
-		note = note.replace("\n\\noun on\n", "<em>");
-		note = note.replace("\n\\noun default\n", "</em>");
-		note = note.replace("\n\\bar under\n", "<u>");
-		note = note.replace("\n\\bar default\n", "</u>");
-		note = note.replace("\\SpecialChar \\-", "");
-		note = note.replace("\n\\begin_inset Newline newline\n\\end_inset\n", "\n");
-		note = note.replaceAll("\n+", "\n");
-		if (note.contains("\\")) {
-			System.err.println("*** WARNING - BACKSLASH REMAINS: " + note);
+		text = text.replace("\n\\size larger\n", "");
+		text = text.replace("\n\\size default\n", "");
+		text = text.replace("\n\\size footnotesize\n", "");
+		text = text.replace("\n\\series bold\n", "<strong>");
+		text = text.replace("\n\\series default\n", "</strong>");
+		text = text.replace("\n\\emph on\n", "<em>");
+		text = text.replace("\n\\emph default\n", "</em>");
+		text = text.replace("\n\\noun on\n", "<em>");
+		text = text.replace("\n\\noun default\n", "</em>");
+		text = text.replace("\n\\bar under\n", "<u>");
+		text = text.replace("\n\\bar default\n", "</u>");
+		text = text.replace("\\SpecialChar \\-", "");
+		text = text.replace("\n\\begin_inset Newline newline\n\\end_inset\n", "\n");
+		text = text.replaceAll("\n+", "\n");
+		if (text.contains("\\")) {
+			System.err.println("*** WARNING - BACKSLASH REMAINS: " + text);
 		}
 
 		/*
 		 * simple uncross any easy fix crossed-up spans
 		 */
-		note = note.replace("<em></u>", "</u><em>");
-		note = note.replace("<u></em>", "</em><u>");
-		note = note.replaceAll("(\\s+)</em>", "</em>$1");
+		text = text.replace("<em></u>", "</u><em>");
+		text = text.replace("<u></em>", "</em><u>");
+		text = text.replaceAll("(\\s+)</em>", "</em>$1");
 
-		if (note.contains("<u>") && !note.contains("</u>")) {
-			note += "</u>";
+		if (text.contains("<u>") && !text.contains("</u>")) {
+			text += "</u>";
 		}
-		if (note.contains("<strong>") && !note.contains("</strong>")) {
-			note += "</strong>";
+		if (text.contains("<strong>") && !text.contains("</strong>")) {
+			text += "</strong>";
 		}
-		if (note.contains("<em>") && !note.contains("</em>")) {
-			note += "</em>";
+		if (text.contains("<em>") && !text.contains("</em>")) {
+			text += "</em>";
 		}
 
 		/*
 		 * assume 'u' should always be inside 'emph' or 'strong', etc.
 		 */
-		note = note.replace("<u><em>", "<u><em>");
-		note = note.replace("</em></u>", "</u></em>");
-		note = note.replace("<u><strong>", "<u><strong>");
-		note = note.replace("</strong></u>", "</u></strong>");
+		text = text.replace("<u><em>", "<u><em>");
+		text = text.replace("</em></u>", "</u></em>");
+		text = text.replace("<u><strong>", "<u><strong>");
+		text = text.replace("</strong></u>", "</u></strong>");
 
 		/*
 		 * fix bogus regions
 		 */
-		note = note.replaceAll("<em>(\\s*)…</em>", "$1…");
+		text = text.replaceAll("<em>(\\s*)…</em>", "$1…");
 		/*
 		 * remove empty regions
 		 */
-		note = note.replace("<em></em>", "");
-		note = note.replace("<u></u>", "");
-		if (note.contains("[") && !note.contains("<u>")) {
-			System.err.println("MISSING <u>: " + note.replace("\n", " -> "));
+		text = text.replace("<em></em>", "");
+		text = text.replace("<u></u>", "");
+		if (text.contains("[") && !text.contains("<u>")) {
+			System.err.println("MISSING <u>: " + text.replace("\n", " -> "));
 		}
-		u_balance: if (note.contains("[")) {
-			String[] lines = StringUtils.split(note, "\n");
+		u_balance: if (text.contains("[")) {
+			String[] lines = StringUtils.split(text, "\n");
 			if (lines.length != 3) {
 				break u_balance;
 			}
 			int u1 = StringUtils.countMatches(lines[0], "<u>");
 			int u2 = StringUtils.countMatches(lines[0], "</u>");
 			if (u1 != u2) {
-				System.err.println("UNBALANCED <u>: " + note.replace("\n", " -> "));
+				System.err.println("UNBALANCED <u>: " + text.replace("\n", " -> "));
 				break u_balance;
 			}
 			int u3 = StringUtils.countMatches(lines[1], "<u>");
 			int u4 = StringUtils.countMatches(lines[1], "</u>");
 			if (u3 != u4) {
-				System.err.println("UNBALANCED <u>: " + note.replace("\n", " -> "));
+				System.err.println("UNBALANCED <u>: " + text.replace("\n", " -> "));
 				break u_balance;
 			}
 			if (u1 != u3 && (u1 == 0 || u3 == 0)) {
-				System.err.println("MISSING MATCHING <u>: " + note.replace("\n", " -> "));
+				System.err.println("MISSING MATCHING <u>: " + text.replace("\n", " -> "));
 				break u_balance;
 			}
 		}
-		return note;
+		/**
+		 * strip out leading and trailing space on full lines of text
+		 */
+		text=text.replaceAll("(?s)\\s*\n\\s*", "\n");
+		return text;
 	}
 
 	/*
