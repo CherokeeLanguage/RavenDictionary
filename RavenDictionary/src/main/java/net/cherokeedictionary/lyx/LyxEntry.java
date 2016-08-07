@@ -5,16 +5,18 @@ import java.util.List;
 import java.util.regex.Matcher;
 import java.util.regex.Pattern;
 
-import net.cherokeedictionary.shared.DbEntry;
-import net.cherokeedictionary.shared.StemEntry;
-
 import org.apache.commons.lang3.StringUtils;
 
 import com.cherokeelessons.raven.App;
 import com.cherokeelessons.raven.JsonConverter;
 
+import net.cherokeedictionary.shared.DbEntry;
+import net.cherokeedictionary.shared.StemEntry;
+
 public abstract class LyxEntry implements Comparable<LyxEntry> {
-	
+	protected static final String LDOTS = "\\SpecialChar \\ldots{}\n";
+	protected static final String LYX_RDQUOTE = "\\begin_inset Quotes erd\n\\end_inset\n";
+	protected static final String LYX_LDQUOTE = "\\begin_inset Quotes eld\n\\end_inset\n";
 	private List<String> notes = new ArrayList<>();
 	public void clearNotes(){
 		notes.clear();
@@ -898,7 +900,11 @@ public abstract class LyxEntry implements Comparable<LyxEntry> {
 		}
 	}
 
-	static String lyxSyllabaryPronounce(DefinitionLine def) {
+	public static String lyxSyllabaryPronounce(DefinitionLine def, String inlineGloss) {
+		return lyxSyllabaryPronounce(def.syllabary, def.pronounce, inlineGloss);
+	}
+	
+	public static String lyxSyllabaryPronounce(DefinitionLine def) {
 		return lyxSyllabaryPronounce(def.syllabary, def.pronounce);
 	}
 
@@ -911,19 +917,30 @@ public abstract class LyxEntry implements Comparable<LyxEntry> {
 
 	private static String lyxSyllabaryPronounce(String syllabary,
 			String pronounce) {
+		return lyxSyllabaryPronounce(syllabary, pronounce, "");
+	}
+	
+	private static final String EMPH_ON="\\emph on\n";
+	private static final String EMPH_DEFAULT="\\emph default\n";
+	
+	private static String lyxSyllabaryPronounce(String syllabary,
+			String pronounce, String inlineGloss) {
 		StringBuilder sb = new StringBuilder();
 		sb.append("\\begin_layout Description\n");
 		if (syllabary.startsWith("-")) {
 			syllabary = "-----";
 			pronounce = "";
+			inlineGloss = "";
 		}
 		if (pronounce.startsWith("@")) {
 			syllabary = "@-----";
 			pronounce = "";
+			inlineGloss = "";
 		}
 		if (pronounce.startsWith("IRR")) {
 			syllabary = "IRR";
 			pronounce = "";
+			inlineGloss = "";
 		}
 		syllabary = syllabary.replace(" ",
 				"\n\\begin_inset space ~\n\\end_inset\n");
@@ -932,6 +949,15 @@ public abstract class LyxEntry implements Comparable<LyxEntry> {
 			sb.append(" [");
 			sb.append(pronounce);
 			sb.append("]");
+		}
+		if (!StringUtils.isEmpty(inlineGloss)) {
+			sb.append(" ");
+			sb.append(EMPH_ON);
+			sb.append(LYX_LDQUOTE);
+			sb.append(inlineGloss);
+			sb.append("\n");
+			sb.append(LYX_RDQUOTE);
+			sb.append(EMPH_DEFAULT);
 		}
 		sb.append("\n");
 		sb.append("\\end_layout\n");
@@ -977,10 +1003,10 @@ public abstract class LyxEntry implements Comparable<LyxEntry> {
 		}
 		sb.append(" \n");
 		sb.append(lyxLabel(label));
-		sb.append("\\begin_inset Quotes eld\n\\end_inset\n");
+		sb.append(LYX_LDQUOTE);
 		sb.append(definition);
 		sb.append("\n");
-		sb.append("\\begin_inset Quotes erd\n\\end_inset\n");		
+		sb.append(LYX_RDQUOTE);		
 		sb.append("\\end_layout\n");
 		return sb.toString();
 	}

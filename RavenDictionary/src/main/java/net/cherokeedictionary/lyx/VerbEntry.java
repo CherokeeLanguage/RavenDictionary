@@ -3,14 +3,14 @@ package net.cherokeedictionary.lyx;
 import java.util.ArrayList;
 import java.util.List;
 
-import net.cherokeedictionary.lyx.LyxEntry.HasStemmedForms;
-import net.cherokeedictionary.shared.StemEntry;
-import net.cherokeedictionary.shared.StemType;
-
 import org.apache.commons.lang3.StringUtils;
 
 import com.cherokeelessons.raven.App;
 import com.cherokeelessons.raven.JsonConverter;
+
+import net.cherokeedictionary.lyx.LyxEntry.HasStemmedForms;
+import net.cherokeedictionary.shared.StemEntry;
+import net.cherokeedictionary.shared.StemType;
 
 public class VerbEntry extends LyxEntry implements HasStemmedForms {
 	public DefinitionLine present3rd = null;
@@ -23,25 +23,33 @@ public class VerbEntry extends LyxEntry implements HasStemmedForms {
 
 	@Override
 	public String getLyxCode() {
-		boolean let_it=present1st==null||StringUtils.isBlank(present1st.syllabary)||present1st.syllabary.startsWith("-");
+		boolean helperIsHas=definition.matches(".*?(He|She) has\\b.*?");
+		boolean isFemaleOnly = definition.matches(".*?\\bShe\\b.*?");
+		boolean let_it = present1st == null || StringUtils.isBlank(present1st.syllabary)
+				|| present1st.syllabary.startsWith("-");
+		String helperVerb1st=helperIsHas?"have":"am";
 		StringBuilder sb = new StringBuilder();
-		sb.append(lyxSyllabaryPronounceDefinition(id, present3rd,
-				pos, definition));
+		sb.append(lyxSyllabaryPronounceDefinition(id, present3rd, pos, definition));
 		sb.append("\\begin_deeper\n");
-		sb.append(lyxSyllabaryPronounce(present1st));
-		sb.append(lyxSyllabaryPronounce(remotepast));
-		sb.append(lyxSyllabaryPronounce(habitual));
 		if (let_it) {
-			sb.append(lyxSyllabaryPronounceDefinition(0, imperative,
-					"", "Let it \\SpecialChar \\ldots{}"));
+			sb.append(lyxSyllabaryPronounce(present1st));
+			sb.append(lyxSyllabaryPronounce(remotepast, "It did " + LDOTS));
+			sb.append(lyxSyllabaryPronounce(habitual, "It often " + LDOTS));
+			sb.append(lyxSyllabaryPronounce(imperative, "Let it " + LDOTS));
+			sb.append(lyxSyllabaryPronounce(infinitive, "For it " + LDOTS));
 		} else {
-			sb.append(lyxSyllabaryPronounce(imperative));
+			String subject = isFemaleOnly ? "She" : "He";
+			String object = isFemaleOnly ? "her" : "him";
+			sb.append(lyxSyllabaryPronounce(present1st, "I " + helperVerb1st + " " + LDOTS));
+			sb.append(lyxSyllabaryPronounce(remotepast, subject + " did " + LDOTS));
+			sb.append(lyxSyllabaryPronounce(habitual, subject + " often " + LDOTS));
+			sb.append(lyxSyllabaryPronounce(imperative, "Let you " + LDOTS));
+			sb.append(lyxSyllabaryPronounce(infinitive, "For " + object + " " + LDOTS));
 		}
-		sb.append(lyxSyllabaryPronounce(infinitive));
 		sb.append("\\end_deeper\n");
-		if (getNotes().size()!=0) {
+		if (getNotes().size() != 0) {
 			sb.append("\n\\begin_deeper\n");
-			getNotes().stream().forEach(note->{
+			getNotes().stream().forEach(note -> {
 				sb.append("\n\\begin_layout Standard\n");
 				sb.append(note);
 				sb.append("\n\\end_layout\n");
@@ -113,8 +121,8 @@ public class VerbEntry extends LyxEntry implements HasStemmedForms {
 
 	@Override
 	public List<StemEntry> getStems() {
-		NormalizedVerbEntry e=new NormalizedVerbEntry();
-		
+		NormalizedVerbEntry e = new NormalizedVerbEntry();
+
 		e.pres3 = StringUtils.strip(present3rd.syllabary.replaceAll("[^Ꭰ-Ᏼ]", ""));
 		if (e.pres3.contains(",")) {
 			e.pres3 = StringUtils.substringBefore(e.pres3, ",");
@@ -166,7 +174,7 @@ public class VerbEntry extends LyxEntry implements HasStemmedForms {
 		 * String Ꭲ- (again) prefix if easy to identify
 		 */
 		NormalizedVerbEntry.removeᎢprefix(e);
-		
+
 		/*
 		 * Ꭰ
 		 */
@@ -177,12 +185,12 @@ public class VerbEntry extends LyxEntry implements HasStemmedForms {
 			return generateVowelStems("Ꭰ", e);
 		}
 		if (e.pres3.startsWith("Ꭰ") && !e.past.startsWith("ᎤᏩ")) {
-			if (e.pres3.equals("ᎠᎦᏍᎦ")){
+			if (e.pres3.equals("ᎠᎦᏍᎦ")) {
 				new JsonConverter().toJson(generateVowelStems("Ꭰ", e));
 			}
 			return generateVowelStems("Ꭰ", e);
 		}
-		
+
 		/*
 		 * Ꭶ
 		 */
@@ -192,7 +200,7 @@ public class VerbEntry extends LyxEntry implements HasStemmedForms {
 		if (e.pres3.startsWith("Ꭶ") && e.pres1.startsWith("Ꭶ")) {
 			return generateVowelStems("Ꭰ", e);
 		}
-		
+
 		/*
 		 * Ꭷ
 		 */
@@ -205,28 +213,27 @@ public class VerbEntry extends LyxEntry implements HasStemmedForms {
 		if (e.pres3.startsWith("Ꭷ") && e.imp.startsWith("Ꭿ")) {
 			return generateConsonentStems(e);
 		}
-		
+
 		if (e.pres3.startsWith("Ꭷ") && e.past.startsWith("Ꭴ") && !e.past.matches("^[Ꮹ-Ꮾ].*")) {
 			return generateConsonentStems(e);
 		}
-		
-		if (e.pres3.startsWith("Ꭷ") && StringUtils.isEmpty(e.past)
-				&& StringUtils.isEmpty(e.imp) && StringUtils.isEmpty(e.inf)) {
+
+		if (e.pres3.startsWith("Ꭷ") && StringUtils.isEmpty(e.past) && StringUtils.isEmpty(e.imp)
+				&& StringUtils.isEmpty(e.inf)) {
 			return generateConsonentStems(e);
 		}
 
-		
-		if (e.pres3.startsWith("Ꭴ") && e.pres1.startsWith("ᎠᏆ")) {				
+		if (e.pres3.startsWith("Ꭴ") && e.pres1.startsWith("ᎠᏆ")) {
 			return generateVowelStems("Ꭰ", e);
 		}
 		if (e.pres3.startsWith("Ꭼ") && e.past.startsWith("ᎤᏩ")) {
-			e.past=chopPrefix(e.past);
-			e.inf=chopPrefix(e.inf);
+			e.past = chopPrefix(e.past);
+			e.inf = chopPrefix(e.inf);
 			return generateVowelStems("Ꭵ", e);
 		}
 		if (e.pres3.startsWith("Ꭶ") && e.past.startsWith("ᎤᏩ")) {
-			e.past=chopPrefix(e.past);
-			e.inf=chopPrefix(e.inf);
+			e.past = chopPrefix(e.past);
+			e.inf = chopPrefix(e.inf);
 			return generateVowelStems("Ꭰ", e);
 		}
 		if (e.pres3.startsWith("Ꭴ") && e.pres1.startsWith("ᎠᎩ")) {
@@ -236,115 +243,114 @@ public class VerbEntry extends LyxEntry implements HasStemmedForms {
 			return generateVowelStems("Ꭵ", e);
 		}
 		if (e.pres3.startsWith("ᎤᏮ") && e.pres1.startsWith("ᎠᏋ")) {
-			e.pres3=chopPrefix(e.pres3);
-			e.past=chopPrefix(e.past);
-			e.habit=chopPrefix(e.habit);
-			e.imp=chopPrefix(e.inf);
+			e.pres3 = chopPrefix(e.pres3);
+			e.past = chopPrefix(e.past);
+			e.habit = chopPrefix(e.habit);
+			e.imp = chopPrefix(e.inf);
 			return generateVowelStems("Ꭵ", e);
 		}
 		if (e.pres3.startsWith("ᎤᏪ") && e.pres1.startsWith("ᎠᏇ")) {
-			e.pres3=chopPrefix(e.pres3);
-			e.past=chopPrefix(e.past);
-			e.habit=chopPrefix(e.habit);
-			e.imp=chopPrefix(e.inf);
+			e.pres3 = chopPrefix(e.pres3);
+			e.past = chopPrefix(e.past);
+			e.habit = chopPrefix(e.habit);
+			e.imp = chopPrefix(e.inf);
 			return generateVowelStems("Ꭱ", e);
 		}
 		if (e.pres3.startsWith("ᎤᏬ") && e.pres1.startsWith("ᎠᏉ")) {
-			e.pres3=chopPrefix(e.pres3);
-			e.past=chopPrefix(e.past);
-			e.habit=chopPrefix(e.habit);
-			e.imp=chopPrefix(e.inf);
+			e.pres3 = chopPrefix(e.pres3);
+			e.past = chopPrefix(e.past);
+			e.habit = chopPrefix(e.habit);
+			e.imp = chopPrefix(e.inf);
 			return generateVowelStems("Ꭳ", e);
 		}
 		if (e.pres3.startsWith("Ꮽ") && e.pres1.startsWith("ᏩᏆ")) {
-			e.pres3=chopPrefix(e.pres3);
-			e.past=chopPrefix(e.past);
-			e.habit=chopPrefix(e.habit);
-			e.imp=chopPrefix(e.inf);
+			e.pres3 = chopPrefix(e.pres3);
+			e.past = chopPrefix(e.past);
+			e.habit = chopPrefix(e.habit);
+			e.imp = chopPrefix(e.inf);
 			return generateVowelStems("Ꭰ", e);
 		}
-		
-		if (e.pres3.startsWith("Ꭸ") && e.past.startsWith("ᎤᏪ")){
-			e.past=chopPrefix(e.past);
-			e.inf=chopPrefix(e.inf);
+
+		if (e.pres3.startsWith("Ꭸ") && e.past.startsWith("ᎤᏪ")) {
+			e.past = chopPrefix(e.past);
+			e.inf = chopPrefix(e.inf);
 			return generateVowelStems("Ꭱ", e);
 		}
-		
-		if (e.pres3.startsWith("Ꭺ") && e.past.startsWith("ᎤᏬ")){
-			e.past=chopPrefix(e.past);
-			e.inf=chopPrefix(e.inf);
+
+		if (e.pres3.startsWith("Ꭺ") && e.past.startsWith("ᎤᏬ")) {
+			e.past = chopPrefix(e.past);
+			e.inf = chopPrefix(e.inf);
 			return generateVowelStems("Ꭳ", e);
 		}
-		
-		if (e.pres3.startsWith("Ꭻ") && e.past.startsWith("ᎤᏭ")){
-			e.past=chopPrefix(e.past);
-			e.inf=chopPrefix(e.inf);
+
+		if (e.pres3.startsWith("Ꭻ") && e.past.startsWith("ᎤᏭ")) {
+			e.past = chopPrefix(e.past);
+			e.inf = chopPrefix(e.inf);
 			return generateVowelStems("Ꭴ", e);
 		}
-		
-		if (e.pres3.startsWith("Ꭼ") && e.past.startsWith("ᎤᏮ")){
-			e.past=chopPrefix(e.past);
-			e.inf=chopPrefix(e.inf);
+
+		if (e.pres3.startsWith("Ꭼ") && e.past.startsWith("ᎤᏮ")) {
+			e.past = chopPrefix(e.past);
+			e.inf = chopPrefix(e.inf);
 			return generateVowelStems("Ꭵ", e);
 		}
-		if (e.pres3.startsWith("Ꭱ") && e.imp.startsWith("Ꭾ")){
-			e.past=chopPrefix(e.past);
-			e.inf=chopPrefix(e.inf);
+		if (e.pres3.startsWith("Ꭱ") && e.imp.startsWith("Ꭾ")) {
+			e.past = chopPrefix(e.past);
+			e.inf = chopPrefix(e.inf);
 			return generateVowelStems("Ꭱ", e);
 		}
 		/*
 		 * eh! "Ꭲ-/Ꭿ-" stemmed verbs don't parse nicely!
 		 */
-		if (e.pres3.startsWith("Ꭹ") && e.past.startsWith("ᎤᏫ")){
+		if (e.pres3.startsWith("Ꭹ") && e.past.startsWith("ᎤᏫ")) {
 			List<StemEntry> list = new ArrayList<StemEntry>();
 			list.add(new StemEntry(newPrefix("Ꭲ", e.pres3), StemType.PresentContinous));
-			list.add(new StemEntry(newPrefix("Ꭿ",chopPrefix(e.past)), StemType.RemotePast));
+			list.add(new StemEntry(newPrefix("Ꭿ", chopPrefix(e.past)), StemType.RemotePast));
 			list.add(new StemEntry(newPrefix("Ꭲ", e.habit), StemType.Habitual));
-			if (e.imp.startsWith("Ꮂ")){
+			if (e.imp.startsWith("Ꮂ")) {
 				list.add(new StemEntry(newPrefix("Ꭵ", e.imp), StemType.Immediate));
 			} else {
-				App.err("Normalize Corner Case Needed: "+e.getEntries().toString());
+				App.err("Normalize Corner Case Needed: " + e.getEntries().toString());
 			}
-			list.add(new StemEntry(newPrefix("Ꭿ",chopPrefix(e.inf)), StemType.Deverbal));
+			list.add(new StemEntry(newPrefix("Ꭿ", chopPrefix(e.inf)), StemType.Deverbal));
 			return list;
 		}
-		
-		if (e.pres3.startsWith("Ꭴ") && !e.pres3.matches("^Ꭴ[Ꮹ-Ꮾ].*")) {				
+
+		if (e.pres3.startsWith("Ꭴ") && !e.pres3.matches("^Ꭴ[Ꮹ-Ꮾ].*")) {
 			return generateConsonentStems(e);
 		}
-		
+
 		if (e.pres3.startsWith("Ꭶ") && !e.past.matches("^Ꭴ[Ꮹ-Ꮾ].*")) {
 			return generateConsonentStems(e);
 		}
-		
+
 		/*
-		 * corner case for ᎬᏙᎠ / ktoa and similar entries
-		 * (Ꭶ + Ꮩ => ᎬᏙ and no 1st person or past entry)
+		 * corner case for ᎬᏙᎠ / ktoa and similar entries (Ꭶ + Ꮩ => ᎬᏙ and no
+		 * 1st person or past entry)
 		 */
-		if (e.pres3.startsWith("Ꭼ") && e.imp.startsWith("Ꭽ")){
+		if (e.pres3.startsWith("Ꭼ") && e.imp.startsWith("Ꭽ")) {
 			return generateVowelStems("Ꭰ", e);
 		}
 		/*
-		 * corner case for ᎬᎿ similar entries where they 
-		 * have no past entry)
+		 * corner case for ᎬᎿ similar entries where they have no past entry)
 		 */
-		if (e.pres3.startsWith("Ꭼ") && e.imp.startsWith("Ꮂ")){
+		if (e.pres3.startsWith("Ꭼ") && e.imp.startsWith("Ꮂ")) {
 			return generateVowelStems("Ꭵ", e);
 		}
 		/*
 		 * "Ꭼ" + !"ᎤᏮ" is an odd corner case and should always be processed
 		 * close to last...
 		 */
-		if (e.pres3.startsWith("Ꭼ") && e.past.startsWith("Ꭴ")){
+		if (e.pres3.startsWith("Ꭼ") && e.past.startsWith("Ꭴ")) {
 			return generateVowelStems("Ꭵ", e);
 		}
-		App.info("No normalization method for: "+e.getEntries().toString());
+		App.info("No normalization method for: " + e.getEntries().toString());
 		return new ArrayList<StemEntry>();
 	}
 
 	public List<StemEntry> generateVowelStems(String vowel, NormalizedVerbEntry e) {
-		if (e.imp.startsWith("Ꮻ")){
-			e.imp=chopPrefix(e.imp);
+		if (e.imp.startsWith("Ꮻ")) {
+			e.imp = chopPrefix(e.imp);
 		}
 		List<StemEntry> list = new ArrayList<StemEntry>();
 		list.add(new StemEntry(newPrefix(vowel, e.pres3), StemType.PresentContinous));
@@ -356,8 +362,8 @@ public class VerbEntry extends LyxEntry implements HasStemmedForms {
 	}
 
 	public List<StemEntry> generateConsonentStems(NormalizedVerbEntry e) {
-		if (e.imp.startsWith("Ꮻ")){
-			e.imp=chopPrefix(e.imp);
+		if (e.imp.startsWith("Ꮻ")) {
+			e.imp = chopPrefix(e.imp);
 		}
 		List<StemEntry> list = new ArrayList<StemEntry>();
 		list.add(new StemEntry(chopPrefix(e.pres3), StemType.PresentContinous));
@@ -368,8 +374,6 @@ public class VerbEntry extends LyxEntry implements HasStemmedForms {
 		return list;
 	}
 
-	
-
 	private String fixImperativeSuffix(String imp) {
 		if (StringUtils.isBlank(imp)) {
 			return "";
@@ -378,7 +382,7 @@ public class VerbEntry extends LyxEntry implements HasStemmedForms {
 		/*
 		 * matches -Ꭷ !
 		 */
-		if (StringUtils.containsAny("ᎠᎦᎧᎭᎳᎹᎾᎿᏆᏌᏓᏔᏜᏝᏣᏩᏯ", suffix)){
+		if (StringUtils.containsAny("ᎠᎦᎧᎭᎳᎹᎾᎿᏆᏌᏓᏔᏜᏝᏣᏩᏯ", suffix)) {
 			return imp;
 		}
 		/*
@@ -392,8 +396,7 @@ public class VerbEntry extends LyxEntry implements HasStemmedForms {
 			c--;
 			suffix = String.valueOf(c);
 		}
-		String recent_past_form = StringUtils.left(imp, imp.length() - 1)
-				+ suffix;			
+		String recent_past_form = StringUtils.left(imp, imp.length() - 1) + suffix;
 		return recent_past_form;
 	}
 
@@ -406,5 +409,5 @@ public class VerbEntry extends LyxEntry implements HasStemmedForms {
 			return "";
 		}
 		return prefix + StringUtils.substring(text, 1);
-	}	
+	}
 }

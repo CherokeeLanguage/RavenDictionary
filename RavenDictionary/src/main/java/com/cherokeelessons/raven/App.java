@@ -198,7 +198,6 @@ public class App extends Thread {
 			def = def.replaceAll("\n*\\\\([a-z][A-Z]+) ([a-z][A-Z]+)\n*", "<span class='$1_$2' />");
 			String part = entry.getType();
 			List<String> notes = entry.getNotes();
-//			String genus = entry.getGenus();
 
 			columns.add(StringEscapeUtils.escapeCsv(isyl.next()));
 			columns.add(StringEscapeUtils.escapeCsv(ipro.next()));

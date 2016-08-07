@@ -142,13 +142,13 @@ public class LyxExportFile {
 		end = end.replace("__appendix__", appendix);
 
 		for (IEntry entry : entries) {
-			if (entry.getType().equals("v")) {
+			if (entry.getType().startsWith("v")) {
 				VerbEntry v = new VerbEntry();
 				v.definition = entry.formattedDefinition();
 				v.pos = "v";
 				/*
-				 * it is ASSUMED that vbst generated entries have five forms and
-				 * that they are in proper order
+				 * it is ASSUMED that vbst generated entries have six forms
+				 * (five stems) and that they are in proper order
 				 */
 				v.present3rd = new DefinitionLine();
 				v.present1st = new DefinitionLine();
@@ -221,15 +221,15 @@ public class LyxExportFile {
 				continue;
 			}
 			if (!d1.getPronunciations().get(0).equals(d2.getPronunciations().get(0))) {
-				App.info("Likely Duplicate: " + d2.getSyllabary().get(0) + " " + d2.definition);
+//				App.info("Likely Duplicate: " + d2.getSyllabary().get(0) + " " + d2.definition);
 				d1 = d2;
 				continue;
 			}
-			App.info("Likely Duplicate: " + d2.getSyllabary().get(0) + " " + d2.definition);
+//			App.info("Likely Duplicate: " + d2.getSyllabary().get(0) + " " + d2.definition);
 			ientry.remove();
 		}
 		for (String e : maybe_dupe) {
-			App.info(e);
+//			App.info(e);
 		}
 
 		/*
@@ -566,6 +566,10 @@ public class LyxExportFile {
 			while (ldef.hasNext()) {
 				String subdef = StringUtils.strip(ldef.next());
 				if (subdef.startsWith("Genus:")) {
+					ldef.remove();
+					continue;
+				}
+				if (subdef.startsWith("Family:")) {
 					ldef.remove();
 					continue;
 				}
