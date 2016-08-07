@@ -1,6 +1,7 @@
 package com.cherokeelessons.raven;
 
 import java.io.File;
+import java.io.FileNotFoundException;
 import java.io.FileOutputStream;
 import java.io.IOException;
 import java.io.OutputStreamWriter;
@@ -26,9 +27,8 @@ import com.cherokeelessons.raven.RavenEntry.SpreadsheetEntry;
 import com.cherokeelessons.raven.RavenEntry.SpreadsheetEntry.SpreadsheetRow;
 
 public class App extends Thread {
-	
-	private static final String CSV_LINK = "https://docs.google.com/spreadsheets/d/1_QEZjG4USzUHgj7mK4MOftg6c5GYY01qxy-e3zULmOE/export?format=csv";
 
+	private static final String CSV_LINK = "https://docs.google.com/spreadsheets/d/1_QEZjG4USzUHgj7mK4MOftg6c5GYY01qxy-e3zULmOE/export?format=csv";
 	private static final String DICTIONARY_SRC_LYX = "raven-cherokee-dictionary-tlw.lyx";
 
 	@Override
@@ -43,148 +43,40 @@ public class App extends Thread {
 	}
 
 	private final Logger log = Log.getLogger(this);
+	private static final String DIR = "/home/mjoyner/Documents/ᏣᎳᎩ/Lessons/Raven-Cherokee-English-Dictionary/";
 
 	public void _run() throws IOException {
-		final String DIR = "/home/mjoyner/Documents/ᏣᎳᎩ/Lessons/Raven-Cherokee-English-Dictionary/";
-		File in = new File(DIR + DICTIONARY_SRC_LYX);
-		File destfile = new File(DIR + "raven-rock-cherokee-dictionary-output.lyx");
-		ParseDictionary parseDictionary = new ParseDictionary(in);
-		log.info("parsing...");
+		
+		log.info("parsing lyx file...");
+		File lyxSrcFile = new File(DIR + DICTIONARY_SRC_LYX);
+		ParseDictionary parseDictionary = new ParseDictionary(lyxSrcFile);
 		parseDictionary.run();
-		log.info("creating new lyx file...");
 		List<Entry> entries = parseDictionary.getEntries();
+		
+		String destCsvFile = "raven-dictionary-edit-file-from-lyx.csv";
+		File editFile = new File(DIR, destCsvFile);
+		writeCsvEditFile(editFile, entries);
 
-		File editFile = new File(DIR, "raven-dictionary-edit-file.csv");
-		FileUtils.deleteQuietly(editFile);
-		editFile.getParentFile().mkdirs();
-		OutputStreamWriter os = new OutputStreamWriter(new FileOutputStream(editFile), StandardCharsets.UTF_8);
-		CSVFormat withHeader = CSVFormat.DEFAULT.withHeader("ENTRY_MARK", "SYLLABARY", "PRONUNCIATION", "POS", "DEFINITIONS");
-		try (CSVPrinter printer = withHeader.print(os)) {
-			Collections.sort(entries);
-			for (Entry entry : entries) {
-				SpreadsheetEntry records = entry.spreadsheetEntry();
-				for (SpreadsheetRow record : records.rows) {
-					while (record.fields.size()<5) {
-						record.fields.add("");
-					}
-					for (String field: record.fields) {
-						String tmp = unlatexFormat(field);
-						tmp=tmp.replace("<tag:emph:on>", "<em>");
-						tmp=tmp.replace("<tag:emph:default>", "</em>");
-						printer.print(tmp);
-					}
-					printer.println();
-				}
-				printer.println();
-			}
-		}
+		File destfile = new File(DIR + "raven-rock-cherokee-dictionary-output.lyx");
+		List<String> maybeDupes = writeLyxPrintFile(destfile, entries);
+		
+		File dupesCheckFile = new File(DIR + "raven-possible-duplications.odt");
+		writeDupesCheckFile(dupesCheckFile, maybeDupes);
+		
+		File analizerCsvFile = new File(DIR + "dictionary.csv");
+		writeAnalyzerCsvFile(analizerCsvFile, entries);
 
-		LyxExportFile lyxExportFile = new LyxExportFile(entries, destfile.getAbsolutePath());
-		lyxExportFile.setDocorpus(false);
-		lyxExportFile.setDoWordForms(false);
-		try {
-			String preface = FileUtils.readFileToString(new File(DIR + "includes/preface.lyx"));
-			lyxExportFile.setPreface(StringUtils.substringBetween(preface, "\\begin_body", "\\end_body"));
-		} catch (IOException e2) {
-			throw new RuntimeException(e2);
-		}
-		try {
-			String appendix = FileUtils.readFileToString(new File(DIR + "includes/appendix.lyx"));
-			lyxExportFile.setAppendix(StringUtils.substringBetween(appendix, "\\begin_body", "\\end_body"));
-		} catch (IOException e2) {
-			throw new RuntimeException(e2);
-		}
-		try {
-			String intro = FileUtils.readFileToString(new File(DIR + "includes/introduction.lyx"));
-			lyxExportFile.setIntroduction(StringUtils.substringBetween(intro, "\\begin_body", "\\end_body"));
-		} catch (IOException e2) {
-			throw new RuntimeException(e2);
-		}
-		try {
-			String grammar = FileUtils.readFileToString(new File(DIR + "grammar.lyx"));
-			lyxExportFile.setGrammar(StringUtils.substringBetween(grammar, "\\begin_body", "\\end_body"));
-		} catch (IOException e2) {
-			throw new RuntimeException(e2);
-		}
+		File needExamplesCsvFile = new File(DIR + "needs-examples.csv");
+		writeNeedExamplesCsvFile(needExamplesCsvFile, entries);
 
-		String revision;
-		try {
-			revision = FileUtils.readFileToString(new File(DIR + DICTIONARY_SRC_LYX));
-			revision = StringUtils.substringBetween(revision, "$Revision:", "$");
-			revision = StringUtils.strip(revision);
-			lyxExportFile.setRevision("Revision: " + revision);
-		} catch (IOException e2) {
-			throw new RuntimeException(e2);
-		}
+		File cherokeedictionaryCsvFile = new File(DIR + "raven-cherokeedictionary-net.csv");
+		writeCherokeedictionaryCsvFile(cherokeedictionaryCsvFile, entries);
 
-		String dateModified;
-		FastDateFormat fdf = FastDateFormat.getInstance("yyyy/MM/dd HH:mm:ss z", TimeZone.getTimeZone("EST5EDT"));
-		// FastDateFormat ftf =
-		// FastDateFormat.getTimeInstance(FastDateFormat.MEDIUM,
-		// TimeZone.getTimeZone("EST5EDT"));
-		dateModified = "Last modified: " + fdf.format(new Date());// +",
-																	// "+ftf.format(new
-																	// Date());
-		lyxExportFile.setDateModified(dateModified);
+		log.info("done.");
+	}
 
-		lyxExportFile.setAuthor("Michael Joyner, TommyLee Whitlock");
-		lyxExportFile.setIsbn("978-1-329-78831-2");
-
-		lyxExportFile.process();
-		try {
-			FileUtils.writeLines(new File(DIR + "raven-possible-duplications.odt"), lyxExportFile.maybe_dupe);
-		} catch (IOException e1) {
-			e1.printStackTrace();
-		}
-		log.info("creating new csv file for use by analyzer project ...");
-		List<String> csvlist = new ArrayList<>();
-		entries = parseDictionary.getEntries();
-		entries.forEach(entry -> {
-			String def = entry.getDef();
-			def = def.replace("He is ", "");
-			def = def.replace("She is ", "");
-			List<String> syll = entry.getSyllabary();
-			String main = syll.get(0);
-			for (String s : syll) {
-				if (!s.matches(".*[Ꭰ-Ᏼ].*")) {
-					continue;
-				}
-				csvlist.add(StringEscapeUtils.escapeCsv(s) + ","
-						+ StringEscapeUtils.escapeCsv(def + " (" + main + ") [raven]"));
-			}
-		});
-
-		try {
-			FileUtils.writeLines(new File(DIR + "dictionary.csv"), csvlist);
-		} catch (IOException e) {
-			e.printStackTrace();
-		}
-
-		log.info("creating new csv file for use by example hunter script ...");
-		csvlist.clear();
-		entries = parseDictionary.getEntries();
-		entries.stream().filter(entry -> entry.getNotes().size() == 0).forEach(entry -> {
-			String def = entry.getDef();
-			def = def.replace("He is ", "");
-			def = def.replace("She is ", "");
-			List<String> syll = entry.getSyllabary();
-			String main = syll.get(0);
-			for (String s : syll) {
-				if (!s.matches(".*[Ꭰ-Ᏼ].*")) {
-					continue;
-				}
-				csvlist.add(StringEscapeUtils.escapeCsv(s) + ","
-						+ StringEscapeUtils.escapeCsv(def + " (" + main + ") [raven]"));
-			}
-		});
-
-		try {
-			FileUtils.writeLines(new File(DIR + "needs-examples.csv"), csvlist);
-		} catch (IOException e) {
-			e.printStackTrace();
-		}
-
-		csvlist.clear();
+	private void writeCherokeedictionaryCsvFile(File cherokeedictionaryCsvFile, List<Entry> entries) {
+		List<String> csvlist=new ArrayList<>();
 		log.info("creating new csv file for use by cherokeedictionary.net ...");
 		List<String> columns = new ArrayList<>();
 		columns.add("entry");
@@ -316,12 +208,154 @@ public class App extends Thread {
 		System.out.println("\t\tFound " + withExamples + " entries with examples.");
 
 		try {
-			FileUtils.writeLines(new File(DIR + "raven-cherokeedictionary-net.csv"), csvlist);
+			FileUtils.writeLines(cherokeedictionaryCsvFile, csvlist);
 		} catch (IOException e) {
 			e.printStackTrace();
 		}
+	}
 
-		log.info("done.");
+	private void writeNeedExamplesCsvFile(File needsExamplesCsvFile, List<Entry> entries) {
+		log.info("creating new csv file for use by example hunter script ...");
+		List<String> csvlist=new ArrayList<>();
+		entries.stream().filter(entry -> entry.getNotes().size() == 0).forEach(entry -> {
+			String def = entry.getDef();
+			def = def.replace("He is ", "");
+			def = def.replace("She is ", "");
+			List<String> syll = entry.getSyllabary();
+			String main = syll.get(0);
+			for (String s : syll) {
+				if (!s.matches(".*[Ꭰ-Ᏼ].*")) {
+					continue;
+				}
+				csvlist.add(StringEscapeUtils.escapeCsv(s) + ","
+						+ StringEscapeUtils.escapeCsv(def + " (" + main + ") [raven]"));
+			}
+		});
+
+		try {
+			FileUtils.writeLines(needsExamplesCsvFile, csvlist);
+		} catch (IOException e) {
+			e.printStackTrace();
+		}
+	}
+
+	private void writeAnalyzerCsvFile(File analizerCsvFile, List<Entry> entries) {
+		log.info("creating new csv file for use by analyzer project ...");
+		List<String> csvlist = new ArrayList<>();
+		entries.forEach(entry -> {
+			String def = entry.getDef();
+			def = def.replace("He is ", "");
+			def = def.replace("She is ", "");
+			List<String> syll = entry.getSyllabary();
+			String main = syll.get(0);
+			for (String s : syll) {
+				if (!s.matches(".*[Ꭰ-Ᏼ].*")) {
+					continue;
+				}
+				csvlist.add(StringEscapeUtils.escapeCsv(s) + ","
+						+ StringEscapeUtils.escapeCsv(def + " (" + main + ") [raven]"));
+			}
+		});
+
+		try {
+			FileUtils.writeLines(analizerCsvFile, csvlist);
+		} catch (IOException e) {
+			e.printStackTrace();
+		}
+	}
+
+	private void writeDupesCheckFile(File dupesCheckFile, List<String> maybeDupes) {
+		try {
+			FileUtils.writeLines(dupesCheckFile, maybeDupes);
+		} catch (IOException e1) {
+			e1.printStackTrace();
+		}
+	}
+
+	private List<String> writeLyxPrintFile(File destfile, List<Entry> entries) throws IOException {
+		log.info("creating new lyx file...");
+		LyxExportFile lyxExportFile = new LyxExportFile(entries, destfile.getAbsolutePath());
+		lyxExportFile.setDocorpus(false);
+		lyxExportFile.setDoWordForms(false);
+		try {
+			String preface = FileUtils.readFileToString(new File(DIR + "includes/preface.lyx"));
+			lyxExportFile.setPreface(StringUtils.substringBetween(preface, "\\begin_body", "\\end_body"));
+		} catch (IOException e2) {
+			throw new RuntimeException(e2);
+		}
+		try {
+			String appendix = FileUtils.readFileToString(new File(DIR + "includes/appendix.lyx"));
+			lyxExportFile.setAppendix(StringUtils.substringBetween(appendix, "\\begin_body", "\\end_body"));
+		} catch (IOException e2) {
+			throw new RuntimeException(e2);
+		}
+		try {
+			String intro = FileUtils.readFileToString(new File(DIR + "includes/introduction.lyx"));
+			lyxExportFile.setIntroduction(StringUtils.substringBetween(intro, "\\begin_body", "\\end_body"));
+		} catch (IOException e2) {
+			throw new RuntimeException(e2);
+		}
+		try {
+			String grammar = FileUtils.readFileToString(new File(DIR + "grammar.lyx"));
+			lyxExportFile.setGrammar(StringUtils.substringBetween(grammar, "\\begin_body", "\\end_body"));
+		} catch (IOException e2) {
+			throw new RuntimeException(e2);
+		}
+
+		String revision;
+		try {
+			revision = FileUtils.readFileToString(new File(DIR + DICTIONARY_SRC_LYX));
+			revision = StringUtils.substringBetween(revision, "$Revision:", "$");
+			revision = StringUtils.strip(revision);
+			lyxExportFile.setRevision("Revision: " + revision);
+		} catch (IOException e2) {
+			throw new RuntimeException(e2);
+		}
+
+		String dateModified;
+		FastDateFormat fdf = FastDateFormat.getInstance("yyyy/MM/dd HH:mm:ss z", TimeZone.getTimeZone("EST5EDT"));
+		// FastDateFormat ftf =
+		// FastDateFormat.getTimeInstance(FastDateFormat.MEDIUM,
+		// TimeZone.getTimeZone("EST5EDT"));
+		dateModified = "Last modified: " + fdf.format(new Date());// +",
+																	// "+ftf.format(new
+																	// Date());
+		lyxExportFile.setDateModified(dateModified);
+
+		lyxExportFile.setAuthor("Michael Joyner, TommyLee Whitlock");
+		lyxExportFile.setIsbn("978-1-329-78831-2");
+
+		lyxExportFile.process();
+		return lyxExportFile.maybe_dupe;
+	}
+
+	private void writeCsvEditFile(File editFile, List<Entry> entries) throws FileNotFoundException, IOException {
+		log.info("writing csv edit file from lyx file...");
+		FileUtils.deleteQuietly(editFile);
+		editFile.getParentFile().mkdirs();
+		OutputStreamWriter os = new OutputStreamWriter(new FileOutputStream(editFile), StandardCharsets.UTF_8);
+		CSVFormat withHeader = CSVFormat.DEFAULT.withHeader("ENTRY_MARK", "SYLLABARY", "PRONUNCIATION", "POS",
+				"DEFINITIONS");
+		List<Entry> copy = new ArrayList<>(entries); 
+		Collections.sort(copy);
+		try (CSVPrinter printer = withHeader.print(os)) {
+			for (Entry entry : copy) {
+				SpreadsheetEntry records = entry.spreadsheetEntry();
+				for (SpreadsheetRow record : records.rows) {
+					while (record.fields.size() < 5) {
+						record.fields.add("");
+					}
+					for (String field : record.fields) {
+						String tmp = unlatexFormat(field);
+						tmp = tmp.replace("<tag:emph:on>", "<em>");
+						tmp = tmp.replace("<tag:emph:default>", "</em>");
+						printer.print(tmp);
+					}
+					printer.println();
+				}
+				printer.println();
+			}
+		}
 	}
 
 	public static String unlatexFormat(String text) {
@@ -407,7 +441,7 @@ public class App extends Thread {
 		/**
 		 * strip out leading and trailing space on full lines of text
 		 */
-		text=text.replaceAll("(?s)\\s*\n\\s*", "\n");
+		text = text.replaceAll("(?s)\\s*\n\\s*", "\n");
 		return text;
 	}
 
