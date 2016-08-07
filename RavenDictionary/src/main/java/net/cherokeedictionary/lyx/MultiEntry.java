@@ -3,6 +3,7 @@ package net.cherokeedictionary.lyx;
 import java.util.ArrayList;
 import java.util.Iterator;
 import java.util.List;
+import java.util.logging.Logger;
 
 import org.apache.commons.lang3.StringUtils;
 
@@ -41,6 +42,7 @@ public class MultiEntry extends LyxEntry {
 		return list;
 	}
 
+	private final Logger logger = Log.getLogger(this);
 	@Override
 	public String getLyxCode() {
 		boolean femaleOnly = definition.matches(".*?\\b(She|Hers|Her)\\b.*?");
@@ -61,9 +63,6 @@ public class MultiEntry extends LyxEntry {
 				String gloss;
 				glossSelect: {
 					boolean plural1st = next.syllabary.matches("Ꮣ[ᎩᏆᏇᏉᏊᏋ].*?");
-					if (plural1st){
-						Log.getLogger(this).warning("Plural 1st: "+definition);
-					}
 					boolean plural = next.syllabary.matches("[ᏓᏕᏗᏙᏚᏛᏔᏖᏘᏤᏦᏧᏨ].*?");
 					if (mode == 2) {
 						if (count==2 && (plural && !plural1st)) {

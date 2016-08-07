@@ -129,14 +129,14 @@ public class App extends Thread {
 			Iterator<CSVRecord> irec = parser.iterator();
 			while (irec.hasNext()) {
 				CSVRecord next = irec.next();
-				String entryMark = next.get(0);
+				String entryMark = StringUtils.strip(next.get(0));
 				if (entry==null && !entryMark.equals("ENTRY")){
 					continue;
 				}
-				String syllabaryOrNote = next.get(1);
-				String pronounciation = next.get(2);
-				String pos = next.get(3);
-				String def = next.get(4);
+				String syllabaryOrNote = StringUtils.strip(next.get(1));
+				String pronounciation = StringUtils.strip(next.get(2));
+				String pos = StringUtils.strip(next.get(3));
+				String def = StringUtils.strip(next.get(4));
 				if (entryMark.equalsIgnoreCase("ENTRY")){
 					entry=new RavenEntry();
 					entries.add(entry);
@@ -280,14 +280,14 @@ public class App extends Thread {
 				String note = notes.remove(0);
 				note = unlatexFormat(note);
 				Iterator<String> inote = Arrays.asList(StringUtils.split(note, LF)).iterator();
-				columns.add(StringEscapeUtils.escapeCsv(inote.next()));
+				columns.add(StringUtils.strip(StringEscapeUtils.escapeCsv(inote.next())));
 				if (inote.hasNext()) {
-					columns.add(StringEscapeUtils.escapeCsv(inote.next()));
+					columns.add(StringUtils.strip(StringEscapeUtils.escapeCsv(inote.next())));
 				} else {
 					columns.add("");
 				}
 				if (inote.hasNext()) {
-					columns.add(StringEscapeUtils.escapeCsv(StringUtils.join(inote, "<br/>")));
+					columns.add(StringUtils.strip(StringEscapeUtils.escapeCsv(StringUtils.join(inote, "<br/>"))));
 				} else {
 					columns.add("");
 				}
@@ -299,25 +299,13 @@ public class App extends Thread {
 			if (!notes.isEmpty()) {
 				String note = StringUtils.join(notes, "<br/>");
 				note = unlatexFormat(note);
+				note = StringUtils.strip(note);
 				columns.add(StringEscapeUtils.escapeCsv(note));
 			} else {
 				columns.add("");
 			}
 			csvlist.add(StringUtils.join(columns, ","));
 		});
-
-		int withExamples = entries.stream().mapToInt(e -> {
-			List<String> n = e.getNotes();
-			if (n.size() == 0) {
-				return 0;
-			}
-			if (!n.get(0).contains("[")) {
-				return 0;
-			}
-			return 1;
-		}).sum();
-
-		System.out.println("\t\tFound " + withExamples + " entries with examples.");
 
 		try {
 			FileUtils.writeLines(cherokeedictionaryCsvFile, csvlist);
