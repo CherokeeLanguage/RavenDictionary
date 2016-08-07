@@ -27,24 +27,30 @@ public class VerbEntry extends LyxEntry implements HasStemmedForms {
 		boolean isFemaleOnly = definition.matches(".*?\\bShe\\b.*?");
 		boolean let_it = present1st == null || StringUtils.isBlank(present1st.syllabary)
 				|| present1st.syllabary.startsWith("-");
-		String helperVerb1st=helperIsHas?"have":"am";
+		String helperVerb1st="am";
+		String helperVerb3rdPast="did";
+		if (helperIsHas) {
+			helperVerb1st="have";
+			helperVerb3rdPast="had";
+		}
+		
 		StringBuilder sb = new StringBuilder();
 		sb.append(lyxSyllabaryPronounceDefinition(id, present3rd, pos, definition));
 		sb.append("\\begin_deeper\n");
 		if (let_it) {
 			sb.append(lyxSyllabaryPronounce(present1st));
-			sb.append(lyxSyllabaryPronounce(remotepast, "It did " + LDOTS));
-			sb.append(lyxSyllabaryPronounce(habitual, "It often " + LDOTS));
-			sb.append(lyxSyllabaryPronounce(imperative, "Let it " + LDOTS));
-			sb.append(lyxSyllabaryPronounce(infinitive, "For it " + LDOTS));
+			sb.append(lyxSyllabaryPronounce(remotepast, "It " + helperVerb3rdPast + LDOTS));
+			sb.append(lyxSyllabaryPronounce(habitual, "It often" + LDOTS));
+			sb.append(lyxSyllabaryPronounce(imperative, "Let it" + LDOTS));
+			sb.append(lyxSyllabaryPronounce(infinitive, "For it" + LDOTS));
 		} else {
 			String subject = isFemaleOnly ? "She" : "He";
 			String object = isFemaleOnly ? "her" : "him";
-			sb.append(lyxSyllabaryPronounce(present1st, "I " + helperVerb1st + " " + LDOTS));
-			sb.append(lyxSyllabaryPronounce(remotepast, subject + " did " + LDOTS));
-			sb.append(lyxSyllabaryPronounce(habitual, subject + " often " + LDOTS));
-			sb.append(lyxSyllabaryPronounce(imperative, "Let you " + LDOTS));
-			sb.append(lyxSyllabaryPronounce(infinitive, "For " + object + " " + LDOTS));
+			sb.append(lyxSyllabaryPronounce(present1st, "I " + helperVerb1st + LDOTS));
+			sb.append(lyxSyllabaryPronounce(remotepast, subject + " " + helperVerb3rdPast + LDOTS));
+			sb.append(lyxSyllabaryPronounce(habitual, subject + " often" + LDOTS));
+			sb.append(lyxSyllabaryPronounce(imperative, "Let you" + LDOTS));
+			sb.append(lyxSyllabaryPronounce(infinitive, "For " + object + LDOTS));
 		}
 		sb.append("\\end_deeper\n");
 		if (getNotes().size() != 0) {

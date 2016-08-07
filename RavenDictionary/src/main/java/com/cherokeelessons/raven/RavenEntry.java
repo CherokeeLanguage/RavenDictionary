@@ -11,7 +11,6 @@ import com.cherokeelessons.raven.RavenEntry.SpreadsheetEntry.SpreadsheetRow;
 public class RavenEntry implements Entry {
 
 	protected String def;
-	// protected String genus;
 	protected final List<String> notes = new ArrayList<>();
 	protected final List<String> pronunciations = new ArrayList<String>();
 	protected final List<String> syllabary = new ArrayList<>();
@@ -20,9 +19,24 @@ public class RavenEntry implements Entry {
 	public RavenEntry() {
 	}
 
-	public RavenEntry(String spreadsheetRecord) {
-		this();
+	public RavenEntry(Entry copy) {
+		if (copy==null) {
+			return;
+		}
+		def=copy.getDef();
+		if (copy.getNotes()!=null) {
+			notes.addAll(copy.getNotes());
+		}
+		if (copy.getPronunciations()!=null) {
+			pronunciations.addAll(copy.getPronunciations());
+		}
+		if (copy.getSyllabary()!=null) {
+			syllabary.addAll(copy.getSyllabary());
+		}
+		type=copy.getType();
 	}
+
+
 
 	public static class SpreadsheetEntry {
 		public static class SpreadsheetRow {

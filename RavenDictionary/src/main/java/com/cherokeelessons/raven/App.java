@@ -1,10 +1,14 @@
 package com.cherokeelessons.raven;
 
 import java.io.File;
+import java.io.FileInputStream;
 import java.io.FileNotFoundException;
 import java.io.FileOutputStream;
 import java.io.IOException;
 import java.io.OutputStreamWriter;
+import java.io.StringReader;
+import java.net.MalformedURLException;
+import java.net.URL;
 import java.nio.charset.StandardCharsets;
 import java.util.ArrayList;
 import java.util.Arrays;
@@ -12,12 +16,17 @@ import java.util.Collections;
 import java.util.Date;
 import java.util.Iterator;
 import java.util.List;
+import java.util.ListIterator;
+import java.util.Properties;
 import java.util.TimeZone;
 import java.util.logging.Logger;
 
 import org.apache.commons.csv.CSVFormat;
+import org.apache.commons.csv.CSVParser;
 import org.apache.commons.csv.CSVPrinter;
+import org.apache.commons.csv.CSVRecord;
 import org.apache.commons.io.FileUtils;
+import org.apache.commons.io.IOUtils;
 import org.apache.commons.lang.time.FastDateFormat;
 import org.apache.commons.lang3.StringEscapeUtils;
 import org.apache.commons.lang3.StringUtils;
@@ -28,7 +37,21 @@ import com.cherokeelessons.raven.RavenEntry.SpreadsheetEntry.SpreadsheetRow;
 
 public class App extends Thread {
 
-	private static final String CSV_LINK = "https://docs.google.com/spreadsheets/d/1_QEZjG4USzUHgj7mK4MOftg6c5GYY01qxy-e3zULmOE/export?format=csv";
+	private static final String HTML_U_END = "</u>";
+	private static final String HTML_U = "<u>";
+	private static final String HTML_EM_END = "</em>";
+	private static final String HTML_EM = "<em>";
+	private static final String HTML_STRONG_END = "</strong>";
+	private static final String HTML_STRONG = "<strong>";
+	private static final String LF = "\n";
+	private static final String LYX_EM = "\n\\emph on\n";
+	private static final String LYX_UNU = "\n\\bar default\n";
+	private static final String LYX_U = "\n\\bar under\n";
+	private static final String LYX_UNEM = "\n\\emph default\n";
+	private static final String LYX_UNBOLD = "\n\\series default\n";
+	private static final String LYX_BOLD = "\n\\series bold\n";
+	private static final String LYX_NEWLINE = "\n\\begin_inset Newline newline\n\\end_inset\n";
+	private static final String PROPERTIES_FILE = ".RavenDictionaryJava.properties";
 	private static final String DICTIONARY_SRC_LYX = "raven-cherokee-dictionary-tlw.lyx";
 
 	@Override
@@ -37,7 +60,6 @@ public class App extends Thread {
 			_run();
 		} catch (IOException e) {
 			e.printStackTrace();
-			System.exit(-1);
 		}
 		System.exit(0);
 	}
@@ -46,23 +68,39 @@ public class App extends Thread {
 	private static final String DIR = "/home/mjoyner/Documents/ᏣᎳᎩ/Lessons/Raven-Cherokee-English-Dictionary/";
 
 	public void _run() throws IOException {
-		
+		log.info("loading config...");
+		loadConfiguration();
+
 		log.info("parsing lyx file...");
 		File lyxSrcFile = new File(DIR + DICTIONARY_SRC_LYX);
-		ParseDictionary parseDictionary = new ParseDictionary(lyxSrcFile);
-		parseDictionary.run();
-		List<Entry> entries = parseDictionary.getEntries();
-		
+
 		String destCsvFile = "raven-dictionary-edit-file-from-lyx.csv";
 		File editFile = new File(DIR, destCsvFile);
-		writeCsvEditFile(editFile, entries);
+		writeCsvEditFile(editFile, extractEntriesFromLyxFile(lyxSrcFile));
+
+		List<Entry> entries = extractEntriesFromGoogleCsvFile();
+		
+		String destGoogleCsvFile = "raven-dictionary-edit-file-from-google.csv";
+		File googleEditFile = new File(DIR, destGoogleCsvFile);
+		writeCsvEditFile(googleEditFile, entries);
 
 		File destfile = new File(DIR + "raven-rock-cherokee-dictionary-output.lyx");
-		List<String> maybeDupes = writeLyxPrintFile(destfile, entries);
-		
+		List<Entry> forLyx = new ArrayList<>();
+		entries.forEach(e->{
+			RavenEntry entry = new RavenEntry(e);
+			forLyx.add(entry);
+			entry.setDef(simpleLatexFormat(entry.getDef().replace("\n", "")));
+			ListIterator<String> inotes = entry.getNotes().listIterator();
+			while (inotes.hasNext()) {
+				String note=inotes.next();
+				inotes.set(simpleLatexFormat(note));
+			}
+		});
+		List<String> maybeDupes = writeLyxPrintFile(destfile, forLyx);
+
 		File dupesCheckFile = new File(DIR + "raven-possible-duplications.odt");
 		writeDupesCheckFile(dupesCheckFile, maybeDupes);
-		
+
 		File analizerCsvFile = new File(DIR + "dictionary.csv");
 		writeAnalyzerCsvFile(analizerCsvFile, entries);
 
@@ -75,8 +113,82 @@ public class App extends Thread {
 		log.info("done.");
 	}
 
+	private List<Entry> extractEntriesFromGoogleCsvFile() throws MalformedURLException, IOException {
+		if (csvLink == null) {
+			return null;
+		}
+		File localCopyOfCsv = new File(DIR, "raven-dictionary-google-download.csv");
+		List<Entry> entries = new ArrayList<>();
+
+		log.info("parsing Google CSV file...");
+		URL csvFile = new URL(csvLink);
+		String csvString = IOUtils.toString(csvFile, StandardCharsets.UTF_8);
+		FileUtils.write(localCopyOfCsv, csvString, StandardCharsets.UTF_8);
+		Entry entry=null;
+		try (CSVParser parser = new CSVParser(new StringReader(csvString), CSVFormat.DEFAULT.withHeader())) {
+			Iterator<CSVRecord> irec = parser.iterator();
+			while (irec.hasNext()) {
+				CSVRecord next = irec.next();
+				String entryMark = next.get(0);
+				if (entry==null && !entryMark.equals("ENTRY")){
+					continue;
+				}
+				String syllabaryOrNote = next.get(1);
+				String pronounciation = next.get(2);
+				String pos = next.get(3);
+				String def = next.get(4);
+				if (entryMark.equalsIgnoreCase("ENTRY")){
+					entry=new RavenEntry();
+					entries.add(entry);
+					entry.addSyllabary(syllabaryOrNote);
+					entry.addPronunciation(pronounciation);
+					entry.setDef(def);
+					entry.setType(pos);
+					continue;
+				}
+				if (entryMark.isEmpty() && syllabaryOrNote.isEmpty()){
+					continue;
+				}
+				if (entryMark.isEmpty() && !syllabaryOrNote.isEmpty()){
+					entry.addSyllabary(syllabaryOrNote);
+					entry.addPronunciation(pronounciation);
+					continue;
+				}
+				if (entryMark.equalsIgnoreCase("note")){
+					entry.addNote(syllabaryOrNote);
+					continue;
+				}
+			}
+		}
+		return entries;
+	}
+
+	private List<Entry> extractEntriesFromLyxFile(File lyxSrcFile) {
+		ParseDictionary parseDictionary = new ParseDictionary(lyxSrcFile);
+		parseDictionary.run();
+		List<Entry> entries = parseDictionary.getEntries();
+		return entries;
+	}
+
+	private String csvLink;
+
+	private void loadConfiguration() throws IOException {
+		File propertiesFile = new File(DIR, PROPERTIES_FILE);
+		if (new File(DIR).isDirectory()) {
+			if (!propertiesFile.exists()) {
+				FileUtils.touch(propertiesFile);
+			}
+		}
+		if (!propertiesFile.exists()) {
+			return;
+		}
+		Properties prop = new Properties();
+		prop.load(new FileInputStream(propertiesFile));
+		csvLink = prop.getProperty("google-csv-url");
+	}
+
 	private void writeCherokeedictionaryCsvFile(File cherokeedictionaryCsvFile, List<Entry> entries) {
-		List<String> csvlist=new ArrayList<>();
+		List<String> csvlist = new ArrayList<>();
 		log.info("creating new csv file for use by cherokeedictionary.net ...");
 		List<String> columns = new ArrayList<>();
 		columns.add("entry");
@@ -126,8 +238,8 @@ public class App extends Thread {
 			Iterator<String> isyl = entry.getSyllabary().iterator();
 			Iterator<String> ipro = entry.getPronunciations().iterator();
 			String def = entry.formattedDefinition();
-			def = def.replaceAll("\n*\\\\emph on\n*", "<em>");
-			def = def.replaceAll("\n*\\\\emph default\n*", "</em>");
+			def = def.replaceAll("\n*\\\\emph on\n*", HTML_EM);
+			def = def.replaceAll("\n*\\\\emph default\n*", HTML_EM_END);
 			def = def.replaceAll("\n*\\\\([a-z][A-Z]+) ([a-z][A-Z]+)\n*", "<span class='$1_$2' />");
 			String part = entry.getType();
 			List<String> notes = entry.getNotes();
@@ -167,7 +279,7 @@ public class App extends Thread {
 			if (!notes.isEmpty() && notes.get(0).contains("[")) {
 				String note = notes.remove(0);
 				note = unlatexFormat(note);
-				Iterator<String> inote = Arrays.asList(StringUtils.split(note, "\n")).iterator();
+				Iterator<String> inote = Arrays.asList(StringUtils.split(note, LF)).iterator();
 				columns.add(StringEscapeUtils.escapeCsv(inote.next()));
 				if (inote.hasNext()) {
 					columns.add(StringEscapeUtils.escapeCsv(inote.next()));
@@ -216,7 +328,7 @@ public class App extends Thread {
 
 	private void writeNeedExamplesCsvFile(File needsExamplesCsvFile, List<Entry> entries) {
 		log.info("creating new csv file for use by example hunter script ...");
-		List<String> csvlist=new ArrayList<>();
+		List<String> csvlist = new ArrayList<>();
 		entries.stream().filter(entry -> entry.getNotes().size() == 0).forEach(entry -> {
 			String def = entry.getDef();
 			def = def.replace("He is ", "");
@@ -336,7 +448,7 @@ public class App extends Thread {
 		OutputStreamWriter os = new OutputStreamWriter(new FileOutputStream(editFile), StandardCharsets.UTF_8);
 		CSVFormat withHeader = CSVFormat.DEFAULT.withHeader("ENTRY_MARK", "SYLLABARY", "PRONUNCIATION", "POS",
 				"DEFINITIONS");
-		List<Entry> copy = new ArrayList<>(entries); 
+		List<Entry> copy = new ArrayList<>(entries);
 		Collections.sort(copy);
 		try (CSVPrinter printer = withHeader.print(os)) {
 			for (Entry entry : copy) {
@@ -347,8 +459,8 @@ public class App extends Thread {
 					}
 					for (String field : record.fields) {
 						String tmp = unlatexFormat(field);
-						tmp = tmp.replace("<tag:emph:on>", "<em>");
-						tmp = tmp.replace("<tag:emph:default>", "</em>");
+						tmp = tmp.replace("<tag:emph:on>", HTML_EM);
+						tmp = tmp.replace("<tag:emph:default>", HTML_EM_END);
 						printer.print(tmp);
 					}
 					printer.println();
@@ -357,24 +469,37 @@ public class App extends Thread {
 			}
 		}
 	}
+	
+	private static String simpleLatexFormat(String text) {
+		//must do '\n' conversion first
+		text = text.replace(LF, LYX_NEWLINE);
+		text = text.replace(HTML_STRONG,LYX_BOLD);
+		text = text.replace(HTML_STRONG_END,LYX_UNBOLD);
+		text = text.replace(HTML_EM,LYX_EM);
+		text = text.replace(HTML_EM_END, LYX_UNEM);
+		text = text.replace(HTML_U, LYX_U);
+		text = text.replace(HTML_U_END, LYX_UNU);
+		return text;
+	}
 
 	public static String unlatexFormat(String text) {
 		// note=note.replace("\n\\size larger\n", "<span class='cap'>");
 		// note=note.replace("\n\\size default\n", "</span>");
+		text += LF;
 		text = text.replace("\n\\size larger\n", "");
 		text = text.replace("\n\\size default\n", "");
 		text = text.replace("\n\\size footnotesize\n", "");
-		text = text.replace("\n\\series bold\n", "<strong>");
-		text = text.replace("\n\\series default\n", "</strong>");
-		text = text.replace("\n\\emph on\n", "<em>");
-		text = text.replace("\n\\emph default\n", "</em>");
-		text = text.replace("\n\\noun on\n", "<em>");
-		text = text.replace("\n\\noun default\n", "</em>");
-		text = text.replace("\n\\bar under\n", "<u>");
-		text = text.replace("\n\\bar default\n", "</u>");
+		text = text.replace(LYX_BOLD, HTML_STRONG);
+		text = text.replace(LYX_UNBOLD, HTML_STRONG_END);
+		text = text.replace(LYX_EM, HTML_EM);
+		text = text.replace(LYX_UNEM, HTML_EM_END);
+		text = text.replace("\n\\noun on\n", HTML_EM);
+		text = text.replace("\n\\noun default\n", HTML_EM_END);
+		text = text.replace(LYX_U, HTML_U);
+		text = text.replace(LYX_UNU, HTML_U_END);
 		text = text.replace("\\SpecialChar \\-", "");
-		text = text.replace("\n\\begin_inset Newline newline\n\\end_inset\n", "\n");
-		text = text.replaceAll("\n+", "\n");
+		text = text.replace(LYX_NEWLINE, LF);
+		text = text.replaceAll("\n+", LF);
 		if (text.contains("\\")) {
 			System.err.println("*** WARNING - BACKSLASH REMAINS: " + text);
 		}
@@ -386,14 +511,14 @@ public class App extends Thread {
 		text = text.replace("<u></em>", "</em><u>");
 		text = text.replaceAll("(\\s+)</em>", "</em>$1");
 
-		if (text.contains("<u>") && !text.contains("</u>")) {
-			text += "</u>";
+		if (text.contains(HTML_U) && !text.contains(HTML_U_END)) {
+			text += HTML_U_END;
 		}
-		if (text.contains("<strong>") && !text.contains("</strong>")) {
-			text += "</strong>";
+		if (text.contains(HTML_STRONG) && !text.contains(HTML_STRONG_END)) {
+			text += HTML_STRONG_END;
 		}
-		if (text.contains("<em>") && !text.contains("</em>")) {
-			text += "</em>";
+		if (text.contains(HTML_EM) && !text.contains(HTML_EM_END)) {
+			text += HTML_EM_END;
 		}
 
 		/*
@@ -413,35 +538,35 @@ public class App extends Thread {
 		 */
 		text = text.replace("<em></em>", "");
 		text = text.replace("<u></u>", "");
-		if (text.contains("[") && !text.contains("<u>")) {
-			System.err.println("MISSING <u>: " + text.replace("\n", " -> "));
+		if (text.contains("[") && !text.contains(HTML_U)) {
+			System.err.println("MISSING <u>: " + text.replace(LF, " -> "));
 		}
 		u_balance: if (text.contains("[")) {
-			String[] lines = StringUtils.split(text, "\n");
+			String[] lines = StringUtils.split(text, LF);
 			if (lines.length != 3) {
 				break u_balance;
 			}
-			int u1 = StringUtils.countMatches(lines[0], "<u>");
-			int u2 = StringUtils.countMatches(lines[0], "</u>");
+			int u1 = StringUtils.countMatches(lines[0], HTML_U);
+			int u2 = StringUtils.countMatches(lines[0], HTML_U_END);
 			if (u1 != u2) {
-				System.err.println("UNBALANCED <u>: " + text.replace("\n", " -> "));
+				System.err.println("UNBALANCED <u>: " + text.replace(LF, " -> "));
 				break u_balance;
 			}
-			int u3 = StringUtils.countMatches(lines[1], "<u>");
-			int u4 = StringUtils.countMatches(lines[1], "</u>");
+			int u3 = StringUtils.countMatches(lines[1], HTML_U);
+			int u4 = StringUtils.countMatches(lines[1], HTML_U_END);
 			if (u3 != u4) {
-				System.err.println("UNBALANCED <u>: " + text.replace("\n", " -> "));
+				System.err.println("UNBALANCED <u>: " + text.replace(LF, " -> "));
 				break u_balance;
 			}
 			if (u1 != u3 && (u1 == 0 || u3 == 0)) {
-				System.err.println("MISSING MATCHING <u>: " + text.replace("\n", " -> "));
+				System.err.println("MISSING MATCHING <u>: " + text.replace(LF, " -> "));
 				break u_balance;
 			}
 		}
 		/**
 		 * strip out leading and trailing space on full lines of text
 		 */
-		text = text.replaceAll("(?s)\\s*\n\\s*", "\n");
+		text = text.replaceAll("(?s)\\s*\n\\s*", LF);
 		return text;
 	}
 
@@ -455,7 +580,7 @@ public class App extends Thread {
 	}
 
 	public static void info() {
-		info("\n");
+		info(LF);
 	}
 
 	public static void info(String... info) {
@@ -480,6 +605,6 @@ public class App extends Thread {
 	}
 
 	public static void err() {
-		err("\n");
+		err(LF);
 	}
 }

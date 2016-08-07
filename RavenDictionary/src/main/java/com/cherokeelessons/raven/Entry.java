@@ -6,6 +6,8 @@ import com.cherokeelessons.raven.RavenEntry.SpreadsheetEntry;
 
 public interface Entry extends Comparable<Entry> {
 	void addNote(String note);
+	void addPronunciation(String pronounciation);
+	void addSyllabary(String syllabary);
 	void clearNotes();
 	int compareTo(Entry o);
 	boolean equals(Object obj);
