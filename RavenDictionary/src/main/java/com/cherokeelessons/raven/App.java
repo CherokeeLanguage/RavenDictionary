@@ -473,7 +473,6 @@ public class App extends Thread {
 	public static String unlatexFormat(String text) {
 		// note=note.replace("\n\\size larger\n", "<span class='cap'>");
 		// note=note.replace("\n\\size default\n", "</span>");
-		text += LF;
 		text = text.replace("\n\\size larger\n", "");
 		text = text.replace("\n\\size default\n", "");
 		text = text.replace("\n\\size footnotesize\n", "");
