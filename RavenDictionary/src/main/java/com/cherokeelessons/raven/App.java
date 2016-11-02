@@ -75,6 +75,10 @@ public class App extends Thread {
 		File lyxSrcFile = new File(DIR + DICTIONARY_SRC_LYX);
 
 		String destCsvFile = "raven-dictionary-edit-file-from-lyx.csv";
+		
+		File csvDir = new File(DIR,"csv-files");
+		csvDir.mkdirs();
+		
 		File editFile = new File(DIR, destCsvFile);
 		writeCsvEditFile(editFile, extractEntriesFromLyxFile(lyxSrcFile));
 
@@ -97,17 +101,17 @@ public class App extends Thread {
 			}
 		});
 		List<String> maybeDupes = writeLyxPrintFile(destfile, forLyx);
-
-		File dupesCheckFile = new File(DIR + "raven-possible-duplications.odt");
+		
+		File dupesCheckFile = new File(csvDir,"raven-possible-duplications.");
 		writeDupesCheckFile(dupesCheckFile, maybeDupes);
 
-		File analizerCsvFile = new File(DIR + "dictionary.csv");
+		File analizerCsvFile = new File(csvDir,"dictionary.csv");
 		writeAnalyzerCsvFile(analizerCsvFile, entries);
 
-		File needExamplesCsvFile = new File(DIR + "needs-examples.csv");
+		File needExamplesCsvFile = new File(csvDir,"needs-examples.csv");
 		writeNeedExamplesCsvFile(needExamplesCsvFile, entries);
 
-		File cherokeedictionaryCsvFile = new File(DIR + "raven-cherokeedictionary-net.csv");
+		File cherokeedictionaryCsvFile = new File(csvDir,"raven-cherokeedictionary-net.csv");
 		writeCherokeedictionaryCsvFile(cherokeedictionaryCsvFile, entries);
 
 		log.info("done.");
