@@ -65,7 +65,7 @@ public class App extends Thread {
 	}
 
 	private final Logger log = Log.getLogger(this);
-	private static final String DIR = "/home/mjoyner/Documents/ᏣᎳᎩ/Lessons/Raven-Cherokee-English-Dictionary/";
+	private static final String DIR = "/home/muksihs/Documents/ᏣᎳᎩ/Lessons/Raven-Cherokee-English-Dictionary/";
 
 	public void _run() throws IOException {
 		log.info("loading config...");
