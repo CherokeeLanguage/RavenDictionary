@@ -1,5 +1,5 @@
-#LyX 2.1 created this file. For more info see http://www.lyx.org/
-\lyxformat 474
+#LyX 2.2 created this file. For more info see http://www.lyx.org/
+\lyxformat 508
 \begin_document
 \begin_header
 \textclass extbook
@@ -10,7 +10,6 @@
 \raggedbottom
 \usepackage[nottoc]{tocbibind}
 \end_preamble
-\use_default_options false
 \begin_modules
 fixltx2e
 \end_modules
@@ -19,16 +18,16 @@ fixltx2e
 \language_package default
 \inputencoding utf8-plain
 \fontencoding global
-\font_roman FreeSerif
-\font_sans FreeSans
-\font_typewriter FreeMono
-\font_math auto
+\font_roman "default" "FreeSerif"
+\font_sans "default" "FreeSans"
+\font_typewriter "default" "FreeMono"
+\font_math "auto" "auto"
 \font_default_family default
 \use_non_tex_fonts true
 \font_sc false
 \font_osf false
-\font_sf_scale 100
-\font_tt_scale 100
+\font_sf_scale 100 100
+\font_tt_scale 100 100
 \graphics none
 \default_output_format pdf4
 \output_sync 1
@@ -103,6 +102,8 @@ fixltx2e
 \html_css_as_file 0
 \html_be_strict true
 \end_header
+\save_transient_properties true
+\origin unavailable
 
 \begin_body
 

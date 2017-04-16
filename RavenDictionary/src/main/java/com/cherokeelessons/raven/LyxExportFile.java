@@ -36,37 +36,148 @@ import net.cherokeedictionary.shared.StemEntry;
 import net.cherokeedictionary.shared.StemType;
 
 public class LyxExportFile {
-	private static final String sloppy_begin = "\\begin_layout Standard\n" + "\\begin_inset ERT\n"
-			+ "status collapsed\n" + "\n" + "\\begin_layout Plain Layout\n" + "\n" + "\n" + "\\backslash\n"
-			+ "begin{sloppy}\n" + "\\end_layout\n" + "\n" + "\\end_inset\n" + "\n" + "\n" + "\\end_layout\n\n";
+	private static final String sloppy_begin = "\\begin_layout Standard\n" //
+			+ "\\begin_inset ERT\n" //
+			+ "status collapsed\n" //
+			+ "\n" //
+			+ "\\begin_layout Plain Layout\n" //
+			+ "\n" //
+			+ "\n" //
+			+ "\\backslash\n" //
+			+ "begin{sloppy}\n" //
+			+ "\\end_layout\n" //
+			+ "\n" //
+			+ "\\end_inset\n" //
+			+ "\n" //
+			+ "\n" //
+			+ "\\end_layout\n\n";
 
-	private static final String sloppy_end = "\\begin_layout Standard\n" + "\\begin_inset ERT\n" + "status collapsed\n"
-			+ "\n" + "\\begin_layout Plain Layout\n" + "\n" + "\n" + "\\backslash\n" + "end{sloppy}\n"
-			+ "\\end_layout\n" + "\n" + "\\end_inset\n" + "\n" + "\n" + "\\end_layout\n\n";
+	private static final String sloppy_end = "\\begin_layout Standard\n" //
+			+ "\\begin_inset ERT\n" //
+			+ "status collapsed\n" //
+			+ "\n" //
+			+ "\\begin_layout Plain Layout\n" //
+			+ "\n" //
+			+ "\n" //
+			+ "\\backslash\n" //
+			+ "end{sloppy}\n" //
+			+ "\\end_layout\n" //
+			+ "\n" //
+			+ "\\end_inset\n" //
+			+ "\n" //
+			+ "\n" //
+			+ "\\end_layout\n\n";
 
-	private static final String columnsep_large = "\\begin_layout Standard\n" + "\\begin_inset ERT\n" + "status open\n"
-			+ "\n" + "\\begin_layout Plain Layout\n" + "\n" + "\n" + "\\backslash\n" + "setlength{\n" + "\\backslash\n"
-			+ "columnsep}{20pt}\n" + "\\end_layout\n" + "\n" + "\\end_inset\n" + "\n" + "\n" + "\\end_layout\n" + "\n";
-	private static final String columnsep_normal = "\\begin_layout Standard\n" + "\\begin_inset ERT\n" + "status open\n"
-			+ "\n" + "\\begin_layout Plain Layout\n" + "\n" + "\n" + "\\backslash\n" + "setlength{\n" + "\\backslash\n"
-			+ "columnsep}{10pt}\n" + "\\end_layout\n" + "\n" + "\\end_inset\n" + "\n" + "\n" + "\\end_layout\n" + "\n";
-	private static final String seprule_on = "\\begin_layout Standard\n" + "\\begin_inset ERT\n" + "status open\n"
-			+ "\n" + "\\begin_layout Plain Layout\n" + "\n" + "\n" + "\\backslash\n" + "setlength{\n" + "\\backslash\n"
-			+ "columnseprule}{0.5pt}\n" + "\\end_layout\n" + "\n" + "\\end_inset\n" + "\n" + "\n" + "\\end_layout\n";
-	private static final String seprule_off = "\\begin_layout Standard\n" + "\\begin_inset ERT\n" + "status open\n"
-			+ "\n" + "\\begin_layout Plain Layout\n" + "\n" + "\n" + "\\backslash\n" + "setlength{\n" + "\\backslash\n"
-			+ "columnseprule}{0pt}\n" + "\\end_layout\n" + "\n" + "\\end_inset\n" + "\n" + "\n" + "\\end_layout\n";
-	private static final String MULTICOLS_END = "\\begin_layout Standard\n" + "\\begin_inset ERT\n"
-			+ "status collapsed\n" + "\n" + "\\begin_layout Plain Layout\n" + "\n" + "\n" + "\\backslash\n"
-			+ "end{multicols}\n" + "\\end_layout\n" + "\n" + "\\end_inset\n" + "\n" + "\n" + "\\end_layout\n";
-	private static final String MULTICOLS_BEGIN = "\\begin_layout Standard\n" + "\n" + "\\lang english\n"
-			+ "\\begin_inset ERT\n" + "status collapsed\n" + "\n" + "\\begin_layout Plain Layout\n" + "\n" + "\n"
-			+ "\\backslash\n" + "begin{multicols}{2}\n" + "\\end_layout\n" + "\n" + "\\end_inset\n" + "\n" + "\n"
+	private static final String columnsep_large = "\\begin_layout Standard\n" //
+			+ "\\begin_inset ERT\n" //
+			+ "status open\n" //
+			+ "\n" //
+			+ "\\begin_layout Plain Layout\n" //
+			+ "\n" //
+			+ "\n" //
+			+ "\\backslash\n" //
+			+ "setlength{\n" //
+			+ "\\backslash\n" //
+			+ "columnsep}{20pt}\n" //
+			+ "\\end_layout\n" //
+			+ "\n" //
+			+ "\\end_inset\n" //
+			+ "\n" //
+			+ "\n" //
+			+ "\\end_layout\n" //
+			+ "\n";
+	private static final String columnsep_normal = "\\begin_layout Standard\n" //
+			+ "\\begin_inset ERT\n" //
+			+ "status open\n" //
+			+ "\n" //
+			+ "\\begin_layout Plain Layout\n" //
+			+ "\n" //
+			+ "\n" //
+			+ "\\backslash\n" //
+			+ "setlength{\n" //
+			+ "\\backslash\n" //
+			+ "columnsep}{10pt}\n" //
+			+ "\\end_layout\n" //
+			+ "\n" //
+			+ "\\end_inset\n" //
+			+ "\n" //
+			+ "\n" //
+			+ "\\end_layout\n" //
+			+ "\n";
+	private static final String seprule_on = "\\begin_layout Standard\n" //
+			+ "\\begin_inset ERT\n" //
+			+ "status open\n" //
+			+ "\n" //
+			+ "\\begin_layout Plain Layout\n" //
+			+ "\n" //
+			+ "\n" //
+			+ "\\backslash\n" //
+			+ "setlength{\n" //
+			+ "\\backslash\n" //
+			+ "columnseprule}{0.5pt}\n" //
+			+ "\\end_layout\n" //
+			+ "\n" //
+			+ "\\end_inset\n" //
+			+ "\n" //
+			+ "\n" //
 			+ "\\end_layout\n";
-	private static final String Chapter_Dictionary = "\\begin_layout Chapter\n" + "Dictionary\n" + "\\end_layout\n";
-	private static final String Chapter_WordForms = "\\begin_layout Chapter\n" + "Word Form Lookup\n"
+	private static final String seprule_off = "\\begin_layout Standard\n" //
+			+ "\\begin_inset ERT\n" //
+			+ "status open\n" //
+			+ "\n" //
+			+ "\\begin_layout Plain Layout\n" //
+			+ "\n" //
+			+ "\n" //
+			+ "\\backslash\n" //
+			+ "setlength{\n" //
+			+ "\\backslash\n" //
+			+ "columnseprule}{0pt}\n" //
+			+ "\\end_layout\n" //
+			+ "\n" //
+			+ "\\end_inset\n" //
+			+ "\n" //
+			+ "\n" //
 			+ "\\end_layout\n";
-	private static final String Chapter_English = "\\begin_layout Chapter\n" + "English to Cherokee Lookup\n"
+	private static final String MULTICOLS_END = "\\begin_layout Standard\n" //
+			+ "\\begin_inset ERT\n" //
+			+ "status collapsed\n" //
+			+ "\n" //
+			+ "\\begin_layout Plain Layout\n" //
+			+ "\n" //
+			+ "\n" //
+			+ "\\backslash\n" //
+			+ "end{multicols}\n" //
+			+ "\\end_layout\n" //
+			+ "\n" //
+			+ "\\end_inset\n" //
+			+ "\n" //
+			+ "\n" //
+			+ "\\end_layout\n";
+	private static final String MULTICOLS_BEGIN = "\\begin_layout Standard\n" //
+			+ "\n" //
+			+ "\\lang english\n" //
+			+ "\\begin_inset ERT\n" //
+			+ "status collapsed\n" //
+			+ "\n" //
+			+ "\\begin_layout Plain Layout\n" //
+			+ "\n" //
+			+ "\n" //
+			+ "\\backslash\n" //
+			+ "begin{multicols}{2}\n" //
+			+ "\\end_layout\n" //
+			+ "\n" //
+			+ "\\end_inset\n" //
+			+ "\n" //
+			+ "\n" //
+			+ "\\end_layout\n";
+	private static final String Chapter_Dictionary = "\\begin_layout Chapter\n" //
+			+ "Dictionary\n" //
+			+ "\\end_layout\n";
+	private static final String Chapter_WordForms = "\\begin_layout Chapter\n" //
+			+ "Word Form Lookup\n" //
+			+ "\\end_layout\n";
+	private static final String Chapter_English = "\\begin_layout Chapter\n" //
+			+ "English to Cherokee Lookup\n" //
 			+ "\\end_layout\n";
 
 	private final List<Entry> entries;
@@ -221,15 +332,17 @@ public class LyxExportFile {
 				continue;
 			}
 			if (!d1.getPronunciations().get(0).equals(d2.getPronunciations().get(0))) {
-//				App.info("Likely Duplicate: " + d2.getSyllabary().get(0) + " " + d2.definition);
+				// App.info("Likely Duplicate: " + d2.getSyllabary().get(0) + "
+				// " + d2.definition);
 				d1 = d2;
 				continue;
 			}
-//			App.info("Likely Duplicate: " + d2.getSyllabary().get(0) + " " + d2.definition);
+			// App.info("Likely Duplicate: " + d2.getSyllabary().get(0) + " " +
+			// d2.definition);
 			ientry.remove();
 		}
 		for (String e : maybe_dupe) {
-//			App.info(e);
+			// App.info(e);
 		}
 
 		/*
@@ -529,14 +642,26 @@ public class LyxExportFile {
 	}
 
 	private String insetBoxFramelessStart() {
-		return "\n\\begin_layout Standard\n" + "\\begin_inset Box Frameless\n" + "position \"t\"\n" + "hor_pos \"c\"\n"
-				+ "has_inner_box 1\n" + "inner_pos \"t\"\n" + "use_parbox 0\n" + "use_makebox 0\n"
-				+ "width \"100col%\"\n" + "special \"none\"\n" + "height \"1in\"\n" + "height_special \"totalheight\"\n"
+		return "\n\\begin_layout Standard\n" //
+				+ "\\begin_inset Box Frameless\n" //
+				+ "position \"t\"\n" //
+				+ "hor_pos \"c\"\n" //
+				+ "has_inner_box 1\n" //
+				+ "inner_pos \"t\"\n" //
+				+ "use_parbox 0\n" //
+				+ "use_makebox 0\n" //
+				+ "width \"100col%\"\n" //
+				+ "special \"none\"\n" //
+				+ "height \"1in\"\n" //
+				+ "height_special \"totalheight\"\n" //
 				+ "status open\n";
 	}
 
 	private String insetBoxFramelessEnd() {
-		return "\\end_inset\n" + "\n" + "\n" + "\\end_layout\n";
+		return "\\end_inset\n" //
+				+ "\n" //
+				+ "\n" //
+				+ "\\end_layout\n";
 	}
 
 	private void corpusWriter(final List<LyxEntry> definitions) throws IOException {
