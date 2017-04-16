@@ -2,6 +2,8 @@
 \lyxformat 508
 \begin_document
 \begin_header
+\save_transient_properties true
+\origin unavailable
 \textclass extbook
 \begin_preamble
 \usepackage{multicol}
@@ -10,6 +12,7 @@
 \raggedbottom
 \usepackage[nottoc]{tocbibind}
 \end_preamble
+\use_default_options false
 \begin_modules
 fixltx2e
 \end_modules
@@ -63,6 +66,7 @@ fixltx2e
 \use_package undertilde 1
 \cite_engine basic
 \cite_engine_type default
+\biblio_style plain
 \use_bibtopic false
 \use_indices false
 \paperorientation portrait
@@ -102,8 +106,6 @@ fixltx2e
 \html_css_as_file 0
 \html_be_strict true
 \end_header
-\save_transient_properties true
-\origin unavailable
 
 \begin_body
 
@@ -236,15 +238,6 @@ Raven Rock Cherokee-English Dictionary
 status collapsed
 
 \begin_layout Standard
-Published by __AUTHOR__ at Smashwords
-\end_layout
-
-\end_inset
-
-
-\end_layout
-
-\begin_layout Standard
 Copyright 2015, __AUTHOR__
 \end_layout
 
@@ -288,7 +281,6 @@ Commercial use is permitted.
 
 \end_layout
 
-
 \begin_layout Standard
 \begin_inset CommandInset toc
 LatexCommand tableofcontents
@@ -329,15 +321,23 @@ mainmatter{}
 \end_layout
 
 \begin_layout Standard
+
 \lang english
 \begin_inset ERT
 status collapsed
+
 \begin_layout Plain Layout
+
+
 \backslash
 pagestyle{plain}
 \end_layout
+
 \end_inset
+
+
 \end_layout
+
 
 __preface__
 

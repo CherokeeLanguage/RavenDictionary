@@ -920,8 +920,8 @@ public abstract class LyxEntry implements Comparable<LyxEntry> {
 		return lyxSyllabaryPronounce(syllabary, pronounce, "");
 	}
 	
-	private static final String EMPH_ON="\\emph on\n";
-	private static final String EMPH_DEFAULT="\\emph default\n";
+	private static final String EMPH_ON="\n\\emph on\n";
+	private static final String EMPH_DEFAULT="\n\\emph default\n";
 	
 	private static String lyxSyllabaryPronounce(String syllabary,
 			String pronounce, String inlineGloss) {
@@ -1017,7 +1017,7 @@ public abstract class LyxEntry implements Comparable<LyxEntry> {
 		}
 		StringBuilder sb = new StringBuilder();
 		sb.append("\\begin_inset ERT\n" + 
-				"status closed\n" + 
+				"status collapsed\n" + 
 				"\n" + 
 				"\\begin_layout Plain Layout\n" + 
 				"\n" + 
@@ -1027,9 +1027,13 @@ public abstract class LyxEntry implements Comparable<LyxEntry> {
 				"\\end_layout\n" + 
 				"\n" + 
 				"\\end_inset\n");
-		sb.append("\\begin_inset CommandInset label\nLatexCommand label\nname \"");
+		sb.append("\n\n");
+		sb.append(" \\begin_inset CommandInset label\n");
+		sb.append(" LatexCommand label\n");
+		sb.append(" name \"");
 		sb.append("_"+Integer.toString(label, Character.MAX_RADIX));
-		sb.append("\"\n\\end_inset\n");
+		sb.append("\"\n\n");
+		sb.append("\\end_inset\n\n\n");
 		return sb.toString();
 	}
 

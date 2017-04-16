@@ -178,6 +178,7 @@ public class ParseDictionary implements Runnable {
 			return line;
 		}
 		line = line.replace("\\SpecialChar \\ldots{}", "…");
+		line = line.replace("\\SpecialChar \\ldots", "…");
 		return line;
 	}
 	

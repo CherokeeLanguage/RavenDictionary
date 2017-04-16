@@ -68,7 +68,7 @@ public class EnglishCherokee implements Comparable<EnglishCherokee> {
 			sb.append("\\begin_layout Standard\n");
 			sb.append("\\series bold\n");
 			if (isItalic()) {
-				sb.append("\\emph on\n");
+				sb.append("\n\\emph on\n");
 			}
 			sb.append(eng);
 			sb.append("\n");

@@ -522,7 +522,7 @@ public class LyxExportFile {
 					sb1.append("\\noindent\n");
 					sb1.append("\\align left\n");
 					sb1.append("\\emph on\n");
-					sb1.append("cf: ");
+					sb1.append("cf: \n");
 					sb1.append("\\emph default\n");
 					// sb1.append("\\end_layout\n");
 					sb.append(sb1.toString());
@@ -654,6 +654,12 @@ public class LyxExportFile {
 				+ "special \"none\"\n" //
 				+ "height \"1in\"\n" //
 				+ "height_special \"totalheight\"\n" //
+				+ "thickness \"0.4pt\"\n" //
+				+ "separation \"3pt\"\n" //
+				+ "shadowsize \"4pt\"\n" //
+				+ "framecolor \"black\"\n" //
+				+ "backgroundcolor \"none\"\n" //
+				+ "" //
 				+ "status open\n";
 	}
 
