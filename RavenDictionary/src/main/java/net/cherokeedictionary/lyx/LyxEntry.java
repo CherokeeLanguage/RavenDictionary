@@ -14,7 +14,7 @@ import net.cherokeedictionary.shared.DbEntry;
 import net.cherokeedictionary.shared.StemEntry;
 
 public abstract class LyxEntry implements Comparable<LyxEntry> {
-	protected static final String LDOTS = "\\SpecialChar \\ldots\n";
+	protected static final String LDOTS = "\\SpecialChar ldots\n";
 	protected static final String LYX_RDQUOTE = "\\begin_inset Quotes erd\n\\end_inset\n";
 	protected static final String LYX_LDQUOTE = "\\begin_inset Quotes eld\n\\end_inset\n";
 	private List<String> notes = new ArrayList<>();

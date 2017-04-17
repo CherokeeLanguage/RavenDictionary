@@ -4,7 +4,7 @@ import org.apache.commons.lang3.StringUtils;
 
 public class Consts {
 
-	public static final String LDOTS = "\\SpecialChar \\ldots{}";
+	public static final String LDOTS = "\\SpecialChar ldots\n";
 	public static String numbersSuperscriptZero = "⁰";
 	public static String[] numbersSuperscript = { "¹", "²", "³", "⁴", "⁵", "⁶", "⁷", "⁸", "⁹" };
 	public static String[] numbersCircled = { "①", "②", "③", "④", "⑤", "⑥", "⑦", "⑧", "⑨", "⑩" };
