@@ -124,7 +124,7 @@ public class App extends Thread {
 		File localCopyOfCsv = new File(DIR, "raven-dictionary-google-download.csv");
 		List<Entry> entries = new ArrayList<>();
 
-		log.info("parsing Google CSV file...");
+		log.info("Downloading Google CSV file...");
 		URL csvFile = new URL(csvLink);
 		String csvString = IOUtils.toString(csvFile, StandardCharsets.UTF_8);
 		FileUtils.write(localCopyOfCsv, csvString, StandardCharsets.UTF_8);
