@@ -9,6 +9,7 @@ import java.io.OutputStreamWriter;
 import java.io.StringReader;
 import java.net.MalformedURLException;
 import java.net.URL;
+import java.net.URLConnection;
 import java.nio.charset.StandardCharsets;
 import java.util.ArrayList;
 import java.util.Arrays;
@@ -126,6 +127,8 @@ public class App extends Thread {
 
 		log.info("Downloading Google CSV file...");
 		URL csvFile = new URL(csvLink);
+		URLConnection openConnection = csvFile.openConnection();
+		openConnection.setRequestProperty("User-Agent", "Mozilla/5.0 (Macintosh; U; Intel Mac OS X 10.4; en-US; rv:1.9.2.2) Gecko/20100316 Firefox/3.6.2");
 		String csvString = IOUtils.toString(csvFile, StandardCharsets.UTF_8);
 		FileUtils.write(localCopyOfCsv, csvString, StandardCharsets.UTF_8);
 		Entry entry=null;
