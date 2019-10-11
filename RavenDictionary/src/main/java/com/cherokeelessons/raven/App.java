@@ -108,6 +108,7 @@ public class App extends Thread {
 
 		File analizerCsvFile = new File(csvDir, "dictionary.csv");
 		writeAnalyzerCsvFile(analizerCsvFile, entries);
+		writeLemmaLookupTabFile(new File(csvDir, "raven-lemma-lookup.tab"), entries);
 
 		File needExamplesCsvFile = new File(csvDir, "needs-examples.csv");
 		writeNeedExamplesCsvFile(needExamplesCsvFile, entries);
@@ -360,8 +361,35 @@ public class App extends Thread {
 				if (!s.matches(".*[Ꭰ-Ᏼ].*")) {
 					continue;
 				}
-				csvlist.add(StringEscapeUtils.escapeCsv(s) + ","
-						+ StringEscapeUtils.escapeCsv(def + " (" + main + ") [raven]"));
+				csvlist.add(StringEscapeUtils.escapeCsv(s).replace("\n", "\\n") + ","
+						+ StringEscapeUtils.escapeCsv(def + " (" + main + ") [raven]").replace("\n", "\\n"));
+			}
+		});
+
+		try {
+			FileUtils.writeLines(analizerCsvFile, csvlist);
+		} catch (IOException e) {
+			e.printStackTrace();
+		}
+	}
+
+	private void writeLemmaLookupTabFile(File analizerCsvFile, List<Entry> entries) {
+		log.info("creating new csv file for use by analyzer project ...");
+		List<String> csvlist = new ArrayList<>();
+		entries.forEach(entry -> {
+			String def = entry.getDef();
+			def = def.replace("He is ", "");
+			def = def.replace("She is ", "");
+			List<String> syll = entry.getSyllabary();
+			String main = syll.get(0);
+			for (String s : syll) {
+				if (!s.matches(".*[Ꭰ-Ᏼ].*")) {
+					continue;
+				}
+				String surfaceForm = StringEscapeUtils.escapeCsv(s).replace("\n", " ");
+				String lemmaForm = StringEscapeUtils.escapeCsv(main).replace("\n", " ");
+				String details = StringEscapeUtils.escapeCsv(def + " [raven]").replace("\n", " ");
+				csvlist.add(surfaceForm + "\t" + lemmaForm + "\t" + details);
 			}
 		});
 
