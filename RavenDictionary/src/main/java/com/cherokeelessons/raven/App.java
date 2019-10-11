@@ -76,43 +76,43 @@ public class App extends Thread {
 		File lyxSrcFile = new File(DIR + DICTIONARY_SRC_LYX);
 
 		String destCsvFile = "raven-dictionary-edit-file-from-lyx.csv";
-		
-		File csvDir = new File(DIR,"csv-files");
+
+		File csvDir = new File(DIR, "csv-files");
 		csvDir.mkdirs();
-		
+
 		File editFile = new File(DIR, destCsvFile);
 		writeCsvEditFile(editFile, extractEntriesFromLyxFile(lyxSrcFile));
 
 		List<Entry> entries = extractEntriesFromGoogleCsvFile();
-		
+
 		String destGoogleCsvFile = "raven-dictionary-edit-file-from-google.csv";
 		File googleEditFile = new File(DIR, destGoogleCsvFile);
 		writeCsvEditFile(googleEditFile, entries);
 
 		File destfile = new File(DIR + "raven-rock-cherokee-dictionary-output.lyx");
 		List<Entry> forLyx = new ArrayList<>();
-		entries.forEach(e->{
+		entries.forEach(e -> {
 			RavenEntry entry = new RavenEntry(e);
 			forLyx.add(entry);
 			entry.setDef(simpleLatexFormat(entry.getDef().replace("\n", "")));
 			ListIterator<String> inotes = entry.getNotes().listIterator();
 			while (inotes.hasNext()) {
-				String note=inotes.next();
+				String note = inotes.next();
 				inotes.set(simpleLatexFormat(note));
 			}
 		});
 		List<String> maybeDupes = writeLyxPrintFile(destfile, forLyx);
-		
-		File dupesCheckFile = new File(csvDir,"raven-possible-duplications.");
+
+		File dupesCheckFile = new File(csvDir, "raven-possible-duplications.");
 		writeDupesCheckFile(dupesCheckFile, maybeDupes);
 
-		File analizerCsvFile = new File(csvDir,"dictionary.csv");
+		File analizerCsvFile = new File(csvDir, "dictionary.csv");
 		writeAnalyzerCsvFile(analizerCsvFile, entries);
 
-		File needExamplesCsvFile = new File(csvDir,"needs-examples.csv");
+		File needExamplesCsvFile = new File(csvDir, "needs-examples.csv");
 		writeNeedExamplesCsvFile(needExamplesCsvFile, entries);
 
-		File cherokeedictionaryCsvFile = new File(csvDir,"raven-cherokeedictionary-net.csv");
+		File cherokeedictionaryCsvFile = new File(csvDir, "raven-cherokeedictionary-net.csv");
 		writeCherokeedictionaryCsvFile(cherokeedictionaryCsvFile, entries);
 
 		log.info("done.");
@@ -128,24 +128,25 @@ public class App extends Thread {
 		log.info("Downloading Google CSV file...");
 		URL csvFile = new URL(csvLink);
 		URLConnection openConnection = csvFile.openConnection();
-		openConnection.setRequestProperty("User-Agent", "Mozilla/5.0 (Macintosh; U; Intel Mac OS X 10.4; en-US; rv:1.9.2.2) Gecko/20100316 Firefox/3.6.2");
+		openConnection.setRequestProperty("User-Agent",
+				"Mozilla/5.0 (Macintosh; U; Intel Mac OS X 10.4; en-US; rv:1.9.2.2) Gecko/20100316 Firefox/3.6.2");
 		String csvString = IOUtils.toString(csvFile, StandardCharsets.UTF_8);
 		FileUtils.write(localCopyOfCsv, csvString, StandardCharsets.UTF_8);
-		Entry entry=null;
+		Entry entry = null;
 		try (CSVParser parser = new CSVParser(new StringReader(csvString), CSVFormat.DEFAULT.withHeader())) {
 			Iterator<CSVRecord> irec = parser.iterator();
 			while (irec.hasNext()) {
 				CSVRecord next = irec.next();
 				String entryMark = StringUtils.strip(next.get(0));
-				if (entry==null && !entryMark.equals("ENTRY")){
+				if (entry == null && !entryMark.equals("ENTRY")) {
 					continue;
 				}
 				String syllabaryOrNote = StringUtils.strip(next.get(1));
 				String pronounciation = StringUtils.strip(next.get(2));
 				String pos = StringUtils.strip(next.get(3));
 				String def = StringUtils.strip(next.get(4));
-				if (entryMark.equalsIgnoreCase("ENTRY")){
-					entry=new RavenEntry();
+				if (entryMark.equalsIgnoreCase("ENTRY")) {
+					entry = new RavenEntry();
 					entries.add(entry);
 					entry.addSyllabary(syllabaryOrNote);
 					entry.addPronunciation(pronounciation);
@@ -153,15 +154,15 @@ public class App extends Thread {
 					entry.setType(pos);
 					continue;
 				}
-				if (entryMark.isEmpty() && syllabaryOrNote.isEmpty()){
+				if (entryMark.isEmpty() && syllabaryOrNote.isEmpty()) {
 					continue;
 				}
-				if (entryMark.isEmpty() && !syllabaryOrNote.isEmpty()){
+				if (entryMark.isEmpty() && !syllabaryOrNote.isEmpty()) {
 					entry.addSyllabary(syllabaryOrNote);
 					entry.addPronunciation(pronounciation);
 					continue;
 				}
-				if (entryMark.equalsIgnoreCase("note")){
+				if (entryMark.equalsIgnoreCase("note")) {
 					entry.addNote(syllabaryOrNote);
 					continue;
 				}
@@ -385,25 +386,27 @@ public class App extends Thread {
 		lyxExportFile.setDocorpus(false);
 		lyxExportFile.setDoWordForms(false);
 		try {
-			String preface = FileUtils.readFileToString(new File(DIR + "includes/preface.lyx"));
+			String preface = FileUtils.readFileToString(new File(DIR + "includes/preface.lyx"), StandardCharsets.UTF_8);
 			lyxExportFile.setPreface(StringUtils.substringBetween(preface, "\\begin_body", "\\end_body"));
 		} catch (IOException e2) {
 			throw new RuntimeException(e2);
 		}
 		try {
-			String appendix = FileUtils.readFileToString(new File(DIR + "includes/appendix.lyx"));
+			String appendix = FileUtils.readFileToString(new File(DIR + "includes/appendix.lyx"),
+					StandardCharsets.UTF_8);
 			lyxExportFile.setAppendix(StringUtils.substringBetween(appendix, "\\begin_body", "\\end_body"));
 		} catch (IOException e2) {
 			throw new RuntimeException(e2);
 		}
 		try {
-			String intro = FileUtils.readFileToString(new File(DIR + "includes/introduction.lyx"));
+			String intro = FileUtils.readFileToString(new File(DIR + "includes/introduction.lyx"),
+					StandardCharsets.UTF_8);
 			lyxExportFile.setIntroduction(StringUtils.substringBetween(intro, "\\begin_body", "\\end_body"));
 		} catch (IOException e2) {
 			throw new RuntimeException(e2);
 		}
 		try {
-			String grammar = FileUtils.readFileToString(new File(DIR + "grammar.lyx"));
+			String grammar = FileUtils.readFileToString(new File(DIR + "grammar.lyx"), StandardCharsets.UTF_8);
 			lyxExportFile.setGrammar(StringUtils.substringBetween(grammar, "\\begin_body", "\\end_body"));
 		} catch (IOException e2) {
 			throw new RuntimeException(e2);
@@ -411,7 +414,7 @@ public class App extends Thread {
 
 		String revision;
 		try {
-			revision = FileUtils.readFileToString(new File(DIR + DICTIONARY_SRC_LYX));
+			revision = FileUtils.readFileToString(new File(DIR + DICTIONARY_SRC_LYX), StandardCharsets.UTF_8);
 			revision = StringUtils.substringBetween(revision, "$Revision:", "$");
 			revision = StringUtils.strip(revision);
 			lyxExportFile.setRevision("Revision: " + revision);
@@ -464,13 +467,13 @@ public class App extends Thread {
 			}
 		}
 	}
-	
+
 	private static String simpleLatexFormat(String text) {
-		//must do '\n' conversion first
+		// must do '\n' conversion first
 		text = text.replace(LF, LYX_NEWLINE);
-		text = text.replace(HTML_STRONG,LYX_BOLD);
-		text = text.replace(HTML_STRONG_END,LYX_UNBOLD);
-		text = text.replace(HTML_EM,LYX_EM);
+		text = text.replace(HTML_STRONG, LYX_BOLD);
+		text = text.replace(HTML_STRONG_END, LYX_UNBOLD);
+		text = text.replace(HTML_EM, LYX_EM);
 		text = text.replace(HTML_EM_END, LYX_UNEM);
 		text = text.replace(HTML_U, LYX_U);
 		text = text.replace(HTML_U_END, LYX_UNU);
