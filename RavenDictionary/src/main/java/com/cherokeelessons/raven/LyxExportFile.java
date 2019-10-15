@@ -2,6 +2,7 @@ package com.cherokeelessons.raven;
 
 import java.io.File;
 import java.io.IOException;
+import java.nio.charset.StandardCharsets;
 import java.text.NumberFormat;
 import java.util.ArrayList;
 import java.util.Arrays;
@@ -204,7 +205,7 @@ public class LyxExportFile {
 
 	public LyxExportFile(List<Entry> entries, String destfile) {
 		this.entries = entries;
-		this.lyxfile = destfile;
+		lyxfile = destfile;
 	}
 
 	public final List<String> maybe_dupe = new ArrayList<>();
@@ -237,10 +238,10 @@ public class LyxExportFile {
 	}
 
 	public void _run() throws IOException {
-		final List<LyxEntry> definitions = new ArrayList<LyxEntry>();
+		final List<LyxEntry> definitions = new ArrayList<>();
 
 		String start = IOUtils
-				.toString(getClass().getResourceAsStream("/net/cherokeedictionary/lyx/LyxDocumentStart.txt"));
+				.toString(getClass().getResourceAsStream("/net/cherokeedictionary/lyx/LyxDocumentStart.txt"), StandardCharsets.UTF_8);
 		start = start.replace("__preface__", preface);
 		start = start.replace("__introduction__", introduction);
 		start = start.replace("__REVISION__", revisionNumber);
@@ -248,7 +249,7 @@ public class LyxExportFile {
 		start = start.replace("ISBN: 978-x-xxx-xxxxx-x", "ISBN: " + formattedIsbn);
 		start = start.replace("__AUTHOR__", author);
 
-		String end = IOUtils.toString(getClass().getResourceAsStream("/net/cherokeedictionary/lyx/LyxDocumentEnd.txt"));
+		String end = IOUtils.toString(getClass().getResourceAsStream("/net/cherokeedictionary/lyx/LyxDocumentEnd.txt"), StandardCharsets.UTF_8);
 		end = end.replace("__grammar__", grammar);
 		end = end.replace("__appendix__", appendix);
 
@@ -411,7 +412,7 @@ public class LyxExportFile {
 				}
 				primary_entry = StringUtils.strip(primary_entry);
 				if (next instanceof HasStemmedForms) {
-					List<StemEntry> stems = (((HasStemmedForms) next).getStems());
+					List<StemEntry> stems = ((HasStemmedForms) next).getStems();
 					if (stems.size() != 0) {
 						list.clear();
 					}
@@ -864,8 +865,8 @@ public class LyxExportFile {
 			}
 		}
 		System.out.println();
-		FileUtils.writeStringToFile(new File("output/corpus.chr3"), corpus_chr.toString());
-		FileUtils.writeStringToFile(new File("output/corpus.en"), corpus_eng.toString());
+		FileUtils.writeStringToFile(new File("output/corpus.chr3"), corpus_chr.toString(), StandardCharsets.UTF_8);
+		FileUtils.writeStringToFile(new File("output/corpus.en"), corpus_eng.toString(), StandardCharsets.UTF_8);
 		corpus_chr.setLength(0);
 		corpus_eng.setLength(0);
 		System.out.println("Finished CORPUS text.");
@@ -873,19 +874,19 @@ public class LyxExportFile {
 	}
 
 	private Collection<? extends DefSyl> pronouns_transitive_a(String str_syl, String subdef) {
-		return new ArrayList<DefSyl>();
+		return new ArrayList<>();
 	}
 
 	private Collection<? extends DefSyl> pronouns_intransitive_a(String str_syl, String subdef) {
-		return new ArrayList<DefSyl>();
+		return new ArrayList<>();
 	}
 
 	private Collection<? extends DefSyl> pronouns_transitive_b(String str_syl, String subdef) {
-		return new ArrayList<DefSyl>();
+		return new ArrayList<>();
 	}
 
 	private Collection<? extends DefSyl> pronouns_intransitive_b(String str_syl, String subdef) {
-		return new ArrayList<DefSyl>();
+		return new ArrayList<>();
 	}
 
 	private final String lyxfile;
@@ -952,11 +953,11 @@ public class LyxExportFile {
 	}
 
 	public void setPreface(String preface_raw_lyx) {
-		this.preface = preface_raw_lyx;
+		preface = preface_raw_lyx;
 	}
 
 	public void setGrammar(String grammar_raw_lyx) {
-		this.grammar = grammar_raw_lyx;
+		grammar = grammar_raw_lyx;
 	}
 
 	public void setRevision(String revisionNumber) {

@@ -32,7 +32,7 @@ public class NounEntry extends LyxEntry {
 		sb.append(lyxSyllabaryPronounceDefinition(id, single, pos, definition));
 		if (isOnlySyllabary(plural.syllabary)) {
 			sb.append("\\begin_deeper\n");
-			sb.append(lyxSyllabaryPronounce(plural));
+			sb.append(lyxSyllabaryPronounce(plural, "Plural"));
 			sb.append("\\end_deeper\n");
 		}
 		if (getNotes().size()!=0) {
