@@ -12,11 +12,6 @@ version = '20160806'
 sourceCompatibility = 1.8
 compileJava.options.encoding = 'UTF-8'
 
-def RTJAR = '/usr/lib/jvm/java-8-openjdk-amd64/jre/lib/rt.jar';
-if (new File(RTJAR).exists()) {
-	compileJava.options.bootClasspath=RTJAR
-}
-
 task fatjar(type: FatCapsule) {
 	//-Dfile.encoding=UTF-8
   	archiveName 'RavenDictionary.jar'
@@ -67,19 +62,8 @@ task sourcesJar(type: Jar, dependsOn: classes) {
     from sourceSets.main.allSource
 }
 
-task javadocJar(type: Jar, dependsOn: javadoc) {
-	javadoc.failOnError=false
-    classifier = 'javadoc'
-    from javadoc.destinationDir
-}
-
 artifacts {
     archives sourcesJar
-    archives javadocJar
-}
-
-configurations.all {
-    resolutionStrategy.cacheChangingModulesFor 30, 'seconds'
 }
 
 eclipseJdt << {
@@ -91,38 +75,14 @@ eclipseJdt << {
     f.append('line.separator=\\n\n')
 }
 
-project.afterEvaluate {
-	// use jre lib matching version used by project, not the workspace default
-	if (sourceCompatibility != null) {
-		def target = project.sourceCompatibility.toString()
-		def containerPrefix = "org.eclipse.jdt.launching.JRE_CONTAINER"
-		def containerSuffix
-		if (target =~ /1.[4-5]/) {
-			containerSuffix = '/org.eclipse.jdt.internal.debug.ui.launcher.StandardVMType/J2SE-' + target
-		} else if (target =~ /1.[6-8]/) {
-			containerSuffix = '/org.eclipse.jdt.internal.debug.ui.launcher.StandardVMType/JavaSE-' + target
-		}
-		if (containerSuffix != null) {
-			project.eclipse.classpath {
-				containers.removeAll { it.startsWith(containerPrefix) }
-				containers.add(containerPrefix + containerSuffix)
-			}
-		}
-	}
-}
-
 eclipse {
 	project {
 		name = 'RavenDictionary'
 		comment = 'The Raven Dictionary Project'
-		natures 'org.eclipse.buildship.core.gradleprojectnature'
-//		referencedProjects 'SHARED-POJOS', 'SHARED-SERVER'
-		//webAppDirName = 'src/main/webapp'
 	}
 
 	classpath {
 		plusConfigurations += [configurations.provided]
-		//noExportConfigurations += [configurations.provided]
 		downloadSources = true
 		downloadJavadoc = true
 	}
@@ -136,7 +96,6 @@ eclipse {
 		facet {
 			facets = []
 			facet name: 'jst.java', version: '1.8'
-			/*facet name: 'jst.web', version: '3.0'*/
 		}
 	}
 }
