@@ -52,9 +52,11 @@ sourceSets {
   }
 }
 
-task "create-dirs" << {
+task "create-dirs" {
+doLast{
 	sourceSets*.java.srcDirs*.each { it.mkdirs() }
 	sourceSets*.resources.srcDirs*.each { it.mkdirs() }
+	}
 }
 
 task sourcesJar(type: Jar, dependsOn: classes) {
@@ -66,13 +68,15 @@ artifacts {
     archives sourcesJar
 }
 
-eclipseJdt << {
+eclipseJdt {
+	doLast {
     File f = file('.settings/org.eclipse.core.resources.prefs')
     f.write('eclipse.preferences.version=1\n')
     f.append('encoding/<project>=utf-8')
     f = file('.settings/org.eclipse.core.runtime.prefs')
     f.write('eclipse.preferences.version=1\n')
     f.append('line.separator=\\n\n')
+    }
 }
 
 eclipse {
