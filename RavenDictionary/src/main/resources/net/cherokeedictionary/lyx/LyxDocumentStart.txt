@@ -6,6 +6,7 @@
 \origin unavailable
 \textclass extbook
 \begin_preamble
+\usepackage{graphicx}
 \usepackage{multicol}
 \widowpenalty=10000
 \clubpenalty=10000 
