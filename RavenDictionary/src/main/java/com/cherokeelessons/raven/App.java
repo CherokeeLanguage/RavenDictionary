@@ -159,12 +159,16 @@ public class App extends Thread {
 					continue;
 				}
 				if (entryMark.isEmpty() && !syllabaryOrNote.isEmpty()) {
-					entry.addSyllabary(syllabaryOrNote);
-					entry.addPronunciation(pronounciation);
+					if (entry!=null) {
+						entry.addSyllabary(syllabaryOrNote);
+						entry.addPronunciation(pronounciation);
+					}
 					continue;
 				}
 				if (entryMark.equalsIgnoreCase("note")) {
-					entry.addNote(syllabaryOrNote);
+					if (entry!=null) {
+						entry.addNote(syllabaryOrNote);
+					}
 					continue;
 				}
 			}
