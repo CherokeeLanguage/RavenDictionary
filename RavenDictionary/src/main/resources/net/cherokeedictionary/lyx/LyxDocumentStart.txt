@@ -1,5 +1,5 @@
-#LyX 2.2 created this file. For more info see http://www.lyx.org/
-\lyxformat 508
+#LyX 2.3 created this file. For more info see http://www.lyx.org/
+\lyxformat 544
 \begin_document
 \begin_header
 \save_transient_properties true
@@ -32,6 +32,8 @@ fixltx2e
 \font_osf false
 \font_sf_scale 100 100
 \font_tt_scale 100 100
+\use_microtype false
+\use_dash_ligatures false
 \graphics none
 \default_output_format pdf4
 \output_sync 1
@@ -74,6 +76,7 @@ fixltx2e
 \suppress_date true
 \justification true
 \use_refstyle 0
+\use_minted 0
 \branch smashwords
 \selected 0
 \filename_suffix 0
@@ -93,7 +96,10 @@ fixltx2e
 \tocdepth 1
 \paragraph_separation skip
 \defskip smallskip
-\quotes_language english
+\is_math_indent 0
+\math_numbering_side default
+\quotes_style english
+\dynamic_quotes 0
 \papercolumns 1
 \papersides 2
 \paperpagestyle plain
@@ -113,82 +119,121 @@ fixltx2e
 \begin_layout Standard
 \begin_inset ERT
 status collapsed
+
 \begin_layout Plain Layout
+
+
 \backslash
 begin{sloppy}
 \end_layout
+
 \end_inset
+
+
 \end_layout
 
 \begin_layout Standard
+
 \lang english
 \begin_inset ERT
 status collapsed
+
 \begin_layout Plain Layout
+
+
 \backslash
 frontmatter{}
 \end_layout
+
 \end_inset
+
+
 \end_layout
 
 \begin_layout Standard
+
 \lang english
 \begin_inset ERT
 status collapsed
+
 \begin_layout Plain Layout
+
+
 \backslash
 pagestyle{empty}
 \end_layout
+
 \end_inset
+
+
 \end_layout
 
 \begin_layout Title
 ᎪᎸᏅᏱ ᏣᎳᎩ-ᏲᏁᎦ ᏗᏕᎶᏆᏍᏙᏗ
 \begin_inset Newline newline
 \end_inset
+
+
 \begin_inset CommandInset line
 LatexCommand rule
 offset "0.5ex"
 width "100line%"
 height "1pt"
+
 \end_inset
+
+
 \begin_inset Newline newline
 \end_inset
+
 Raven Rock Cherokee-English Dictionary
 \end_layout
+
 \begin_layout Author
 Michael Joyner
 \begin_inset Newline newline
 \end_inset
+
 TommyLee Whitlock
 \end_layout
+
 \begin_layout Date
+
 \emph on
 Language and culture which are not shared and taught openly and freely will
  die.
 \begin_inset Newline newline
 \end_inset
+
 If our language and culture die, as a people, so do we.
 \end_layout
 
 \begin_layout Standard
 \begin_inset Newpage cleardoublepage
 \end_inset
+
+
 \end_layout
 
 \begin_layout Standard
 \begin_inset space ~
 \end_inset
+
+
 \end_layout
 
 \begin_layout Standard
 \begin_inset Newpage clearpage
 \end_inset
+
+
 \end_layout
 
 \begin_layout Standard
 \begin_inset VSpace vfill*
 \end_inset
+
+
 \end_layout
 
 \begin_layout Standard
@@ -197,15 +242,20 @@ Raven Rock Cherokee-English Dictionary
 
 \begin_layout Standard
 \begin_inset Branch smashwords
+inverted 0
 status collapsed
+
 \begin_layout Standard
-Published by Michael Joyner, TommyLee Whitlock at Smashwords
+Published by __AUTHOR__ at Smashwords
 \end_layout
+
 \end_inset
+
+
 \end_layout
 
 \begin_layout Standard
-Copyright 2015, __AUTHOR__
+Copyright 2020, __AUTHOR__
 \end_layout
 
 \begin_layout Standard
@@ -237,48 +287,73 @@ Commercial use is permitted.
 \begin_layout Standard
 \begin_inset Newpage cleardoublepage
 \end_inset
+
+
 \end_layout
 
 \begin_layout Standard
 \begin_inset Newpage cleardoublepage
 \end_inset
+
+
 \end_layout
 
 \begin_layout Standard
 \begin_inset CommandInset toc
 LatexCommand tableofcontents
+
 \end_inset
+
+
 \end_layout
+
 \begin_layout Standard
 \begin_inset VSpace vfill
 \end_inset
+
+
 \end_layout
+
 \begin_layout Standard
 \begin_inset Newpage cleardoublepage
 \end_inset
+
+
 \end_layout
 
 \begin_layout Standard
 \begin_inset ERT
 status collapsed
+
 \begin_layout Plain Layout
+
+
 \backslash
 mainmatter{}
 \end_layout
+
 \end_inset
+
+
 \end_layout
 
 \begin_layout Standard
+
 \lang english
 \begin_inset ERT
 status collapsed
+
 \begin_layout Plain Layout
+
+
 \backslash
 pagestyle{plain}
 \end_layout
-\end_inset
-\end_layout
 
+\end_inset
+
+
+\end_layout
 
 __preface__
 

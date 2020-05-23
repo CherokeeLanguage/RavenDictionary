@@ -92,9 +92,12 @@ public class EnglishCherokee implements Comparable<EnglishCherokee> {
 			sb.append("] ");
 			sb.append(stickySpaces("pg "));
 			sb.append("\\begin_inset CommandInset ref\n"
-					+ "LatexCommand pageref\n" + "reference \"");
+					+ "LatexCommand pageref\n" //
+					+ "reference \"");
 			sb.append("_"+Integer.toString(ref.toLabel, Character.MAX_RADIX));
-			sb.append("\"\n" + "\\end_inset\n");
+			sb.append("\"\n" //
+					+ "\n" //
+					+ "\\end_inset\n");
 			sb.append(")\n");
 		}
 		while (irefs.hasNext()) {
@@ -108,7 +111,9 @@ public class EnglishCherokee implements Comparable<EnglishCherokee> {
 			sb.append("\\begin_inset CommandInset ref\n"
 					+ "LatexCommand pageref\n" + "reference \"");
 			sb.append("_"+Integer.toString(ref.toLabel, Character.MAX_RADIX));
-			sb.append("\"\n" + "\\end_inset\n");
+			sb.append("\"\n" //
+					+"\n" //
+					+ "\\end_inset\n");
 			sb.append(")\n");
 		}
 		sb.append("\\end_layout\n\n");

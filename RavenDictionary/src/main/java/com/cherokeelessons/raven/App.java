@@ -171,6 +171,11 @@ public class App extends Thread {
 					}
 					continue;
 				}
+				if (entryMark.equalsIgnoreCase("cf")) {
+					System.out.println("Ignoring CF entry: "+StringEscapeUtils.escapeJava(syllabaryOrNote));
+					continue;
+				}
+				throw new IllegalStateException("ENTRY TYPE NOT HANDLED: "+entryMark);
 			}
 		}
 		return entries;

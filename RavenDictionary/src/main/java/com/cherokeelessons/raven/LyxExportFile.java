@@ -660,8 +660,8 @@ public class LyxExportFile {
 				+ "shadowsize \"4pt\"\n" //
 				+ "framecolor \"black\"\n" //
 				+ "backgroundcolor \"none\"\n" //
-				+ "" //
-				+ "status open\n";
+				+ "status open\n"
+				+ "\n";
 	}
 
 	private String insetBoxFramelessEnd() {

@@ -41,7 +41,7 @@ public class CrossReference {
 		sb.append("LatexCommand pageref\n");
 		sb.append("reference \"");
 		sb.append("_"+Integer.toString(forEntry, Character.MAX_RADIX));
-		sb.append("\"\n");
+		sb.append("\"\n\n");
 		sb.append("\\end_inset\n");
 		sb.append(")\n");
 		if (!nolayout) { 

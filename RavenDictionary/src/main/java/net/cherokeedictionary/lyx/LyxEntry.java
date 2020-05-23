@@ -1027,13 +1027,13 @@ public abstract class LyxEntry implements Comparable<LyxEntry> {
 				"\\end_layout\n" + 
 				"\n" + 
 				"\\end_inset\n");
-		sb.append("\n\n");
-		sb.append(" \\begin_inset CommandInset label\n");
-		sb.append(" LatexCommand label\n");
-		sb.append(" name \"");
+		sb.append("\n");
+		sb.append("\\begin_inset CommandInset label\n");
+		sb.append("LatexCommand label\n");
+		sb.append("name \"");
 		sb.append("_"+Integer.toString(label, Character.MAX_RADIX));
 		sb.append("\"\n\n");
-		sb.append("\\end_inset\n\n\n");
+		sb.append("\\end_inset\n\n");
 		return sb.toString();
 	}
 
