@@ -1,14 +1,39 @@
+*.pydevproject
+.metadata
 .gradle
-build/
+bin/
+tmp/
+*.tmp
+*.bak
+*.swp
+*~.nib
+local.properties
+.settings/
+.loadpath
 
-# Ignore Gradle GUI config
-gradle-app.setting
+# Eclipse Core
+.project
 
-# Avoid ignoring Gradle wrapper jar file (.jar files are usually ignored)
-!gradle-wrapper.jar
+# External tool builders
+.externalToolBuilders/
 
-# Cache of project
-.gradletasknamecache
+# Locally stored "Eclipse launch configurations"
+*.launch
 
-# # Work around https://youtrack.jetbrains.com/issue/IDEA-116898
-# gradle/wrapper/gradle-wrapper.properties
+# CDT-specific
+.cproject
+
+# JDT-specific (Eclipse Java Development Tools)
+.classpath
+
+# PDT-specific
+.buildpath
+
+# sbteclipse plugin
+.target
+
+# TeXlipse plugin
+.texlipse
+/reports/
+/output/
+/build/
