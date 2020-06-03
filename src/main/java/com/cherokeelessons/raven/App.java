@@ -123,7 +123,6 @@ public class App extends Thread {
 
 	private void validateEntries(List<Entry> entries) {
 		int badCount = 0 ;
-		StringBuilder sb = new StringBuilder();
 		for (Entry entry: entries) {
 			String firstEntry = entry.getSyllabary().get(0)+" ("+StringEscapeUtils.escapeJava(entry.getDef())+")";
 			for (String syllabary: entry.getSyllabary()) {
