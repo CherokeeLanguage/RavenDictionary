@@ -84,6 +84,8 @@ public class App extends Thread {
 		writeCsvEditFile(editFile, extractEntriesFromLyxFile(lyxSrcFile));
 
 		List<Entry> entries = extractEntriesFromGoogleCsvFile();
+		
+		validateEntries(entries);
 
 		String destGoogleCsvFile = "raven-dictionary-edit-file-from-google.csv";
 		File googleEditFile = new File(DIR, destGoogleCsvFile);
@@ -119,6 +121,24 @@ public class App extends Thread {
 		log.info("done.");
 	}
 
+	private void validateEntries(List<Entry> entries) {
+		int badCount = 0 ;
+		StringBuilder sb = new StringBuilder();
+		for (Entry entry: entries) {
+			String firstEntry = entry.getSyllabary().get(0)+" ("+StringEscapeUtils.escapeJava(entry.getDef())+")";
+			for (String syllabary: entry.getSyllabary()) {
+				if (!syllabary.matches("[,\\sᎠ-Ᏼ\\-]+")) {
+					badCount++;
+					System.err.println("BAD ENTRY FOR: "+firstEntry);
+					System.err.println(" - "+syllabary);
+				}
+			}
+		}
+		if (badCount>0) {
+			throw new RuntimeException("BAD ENTRIES IN SPREADSHEET");
+		}
+	}
+
 	private List<Entry> extractEntriesFromGoogleCsvFile() throws MalformedURLException, IOException {
 		if (csvLink == null) {
 			return null;
@@ -134,7 +154,7 @@ public class App extends Thread {
 		String csvString = IOUtils.toString(csvFile, StandardCharsets.UTF_8);
 		FileUtils.write(localCopyOfCsv, csvString, StandardCharsets.UTF_8);
 		Entry entry = null;
-		try (CSVParser parser = new CSVParser(new StringReader(csvString), CSVFormat.DEFAULT.withHeader())) {
+		try (CSVParser parser = new CSVParser(new StringReader(csvString), CSVFormat.DEFAULT.withHeader().withAllowMissingColumnNames())) {
 			Iterator<CSVRecord> irec = parser.iterator();
 			while (irec.hasNext()) {
 				CSVRecord next = irec.next();
@@ -172,6 +192,10 @@ public class App extends Thread {
 					continue;
 				}
 				if (entryMark.equalsIgnoreCase("cf")) {
+					System.out.println("Ignoring CF entry: "+StringEscapeUtils.escapeJava(syllabaryOrNote));
+					continue;
+				}
+				if (entryMark.equalsIgnoreCase("label")) {
 					System.out.println("Ignoring CF entry: "+StringEscapeUtils.escapeJava(syllabaryOrNote));
 					continue;
 				}
