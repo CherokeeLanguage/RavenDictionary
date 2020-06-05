@@ -12,10 +12,37 @@ public class RavenEntry implements Entry {
 
 	protected String def;
 	protected final List<String> notes = new ArrayList<>();
-	protected final List<String> pronunciations = new ArrayList<String>();
+	protected final List<String> pronunciations = new ArrayList<>();
 	protected final List<String> syllabary = new ArrayList<>();
 	protected String type;
+	protected List<String> cf = new ArrayList<>();
+	
+	@Override
+	public List<String> getCf() {
+		return cf;
+	}
 
+	@Override
+	public void setCf(List<String> cf) {
+		this.cf = cf;
+	}
+	
+	@Override
+	public void addCf(String cfEntry) {
+		this.cf.add(cfEntry);
+	}
+
+	@Override
+	public String getLabel() {
+		return label;
+	}
+
+	@Override
+	public void setLabel(String label) {
+		this.label = label;
+	}
+
+	protected String label;
 	public RavenEntry() {
 	}
 
@@ -72,7 +99,7 @@ public class RavenEntry implements Entry {
 		String tmpDef = def==null?"":def;
 		tmpDef=tmpDef.trim();
 		tmpDef=tmpDef.replace(";", ";\n").trim();
-		for (String dm: Consts.definitionMarkers) {
+		for (String dm: Consts.DEFINITION_MARKERS) {
 			tmpDef=tmpDef.replace(dm, ";\n").trim();
 		}
 		tmpDef=tmpDef.replaceAll("\\s*\n\\s*", "\n");
@@ -109,10 +136,12 @@ public class RavenEntry implements Entry {
 		return entry;
 	}
 
+	@Override
 	public void addNote(String note) {
 		notes.add(note);
 	}
 
+	@Override
 	public void addPronunciation(String pro) {
 		if (pro == null) {
 			throw new RuntimeException("BAD PRONUNCIATION FOR: " + getDef());
@@ -120,13 +149,15 @@ public class RavenEntry implements Entry {
 		pronunciations.add(StringUtils.defaultString(pro));
 	}
 
-	public void addSyllabary(String syllabary) {
-		if (syllabary == null) {
+	@Override
+	public void addSyllabary(String _syllabary) {
+		if (_syllabary == null) {
 			throw new RuntimeException("BAD SYLLABARY FOR: " + getDef());
 		}
-		this.syllabary.add(StringUtils.defaultString(syllabary));
+		this.syllabary.add(StringUtils.defaultString(_syllabary));
 	}
 
+	@Override
 	public void clearNotes() {
 		notes.clear();
 	}
@@ -134,6 +165,16 @@ public class RavenEntry implements Entry {
 	@Override
 	public int compareTo(Entry o) {
 		return sortKey().compareTo(o.sortKey());
+	}
+
+	@Override
+	public int hashCode() {
+		final int prime = 31;
+		int result = 1;
+		result = prime * result + ((pronunciations == null) ? 0 : pronunciations.hashCode());
+		result = prime * result + ((syllabary == null) ? 0 : syllabary.hashCode());
+		result = prime * result + ((type == null) ? 0 : type.hashCode());
+		return result;
 	}
 
 	@Override
@@ -147,8 +188,7 @@ public class RavenEntry implements Entry {
 	@Override
 	public String formattedDefinition() {
 		StringBuilder sb = new StringBuilder();
-		// String[] subdefs = StringUtils.split(def, ";");
-		String[] subdefs = def.split(Consts.splitRegex);
+		String[] subdefs = def.split(Consts.SPLIT_REGEX);
 		boolean additional = false;
 		int count = 0;
 		for (String subdef : subdefs) {
@@ -159,7 +199,7 @@ public class RavenEntry implements Entry {
 				// sb.append("; ");
 				count++;
 				sb.append(" ");
-				sb.append(Consts.definitionMarkers[count % Consts.definitionMarkers.length]);
+				sb.append(Consts.DEFINITION_MARKERS[count % Consts.DEFINITION_MARKERS.length]);
 				sb.append(" ");
 			}
 			subdef = StringUtils.normalizeSpace(subdef);
@@ -176,29 +216,9 @@ public class RavenEntry implements Entry {
 			sb.append(StringUtils.substring(subdef, 1));
 			additional = true;
 		}
-		// sb.append(def);
-		// if (!StringUtils.isBlank(genus)) {
-		// // sb.append("; ");
-		// count++;
-		// sb.append(" ");
-		// sb.append(Consts.definitionMarkers[count %
-		// Consts.definitionMarkers.length]);
-		// sb.append(" ");
-		// if (genus.startsWith("(")) {
-		// sb.append("Genus: ");
-		// String sub = StringUtils.substringBetween(genus, "(", ")");
-		// sub = WordUtils.capitalizeFully(sub);
-		// sb.append(sub);
-		// if (!StringUtils.endsWithAny(sub, ".", "?", "!")) {
-		// sb.append(".");
-		// }
-		// } else {
-		// sb.append(genus);
-		// }
-		// }
 		if (count > 0) {
 			sb.insert(0, " ");
-			sb.insert(0, Consts.definitionMarkers[0]);
+			sb.insert(0, Consts.DEFINITION_MARKERS[0]);
 		}
 		return StringUtils.strip(sb.toString());
 	}
@@ -208,11 +228,7 @@ public class RavenEntry implements Entry {
 		return def;
 	}
 
-	// @Override
-	// public String getGenus() {
-	// return genus;
-	// }
-
+	@Override
 	public List<String> getNotes() {
 		return notes;
 	}
@@ -227,6 +243,7 @@ public class RavenEntry implements Entry {
 		return syllabary;
 	}
 
+	@Override
 	public String getType() {
 		return type;
 	}
@@ -236,11 +253,7 @@ public class RavenEntry implements Entry {
 		this.def = def;
 	}
 
-	// @Override
-	// public void setGenus(String genus) {
-	// this.genus = genus;
-	// }
-
+	@Override
 	public void setType(String type) {
 		this.type = type;
 	}
@@ -270,7 +283,7 @@ public class RavenEntry implements Entry {
 		Iterator<String> slist = syllabary.iterator();
 		if (ilist.hasNext()) {
 			String pronunciation = ilist.next();
-			String syllabary = slist.next();
+			String _syllabary = slist.next();
 			reformat: {
 				if (pronunciation.startsWith("-")) {
 					sb.append(pronunciation);
@@ -287,7 +300,7 @@ public class RavenEntry implements Entry {
 					sb.append("\n");
 					break reformat;
 				}
-				sb.append(syllabary);
+				sb.append(_syllabary);
 				sb.append(" [");
 				sb.append(pronunciation);
 				sb.append("]");
@@ -315,7 +328,7 @@ public class RavenEntry implements Entry {
 					sb.append("\n");
 					continue;
 				}
-				sb.append(syllabary);
+				sb.append(_syllabary);
 				sb.append(" [");
 				sb.append(pronunciation);
 				sb.append("]");

@@ -908,8 +908,8 @@ public class LyxExportFile {
 		splitAndAdd: {
 			// keep this one first
 			String definition = ec.getDefinition();
-			if (definition.contains(";") || StringUtils.containsAny(definition, Consts.definitionMarkers)) {
-				String defs[] = definition.split(Consts.splitRegex);
+			if (definition.contains(";") || StringUtils.containsAny(definition, Consts.DEFINITION_MARKERS)) {
+				String defs[] = definition.split(Consts.SPLIT_REGEX);
 				for (String adef : defs) {
 					if (StringUtils.isBlank(adef)) {
 						continue;

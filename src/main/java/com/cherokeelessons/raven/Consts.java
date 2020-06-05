@@ -14,10 +14,10 @@ public class Consts {
 	// {"⒈","⒉","⒊","⒋","⒌","⒍","⒎","⒏","⒐","⒑","⒒","⒓","⒔","⒕","⒖","⒗","⒘","⒙","⒚","⒛"};
 	// public static String[] lettersLcParen =
 	// {"⒜","⒝","⒞","⒟","⒠","⒡","⒢","⒣","⒤","⒥","⒦","⒧","⒨","⒩","⒪","⒫","⒬","⒭","⒮","⒯","⒰","⒱","⒲","⒳","⒴","⒵"};
-	public static String[] definitionMarkers = numbersCircled;
-	public static String splitRegex = splitRegex();
+	public static final String[] DEFINITION_MARKERS = numbersCircled;
+	public static final String SPLIT_REGEX = splitRegex();
 
 	private static String splitRegex() {
-		return "\\s*[;" + StringUtils.join(definitionMarkers) + "]\\s*";
+		return "\\s*[;" + StringUtils.join(DEFINITION_MARKERS) + "]\\s*";
 	}
 }

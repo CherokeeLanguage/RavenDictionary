@@ -125,16 +125,59 @@ public class App extends Thread {
 		int badCount = 0 ;
 		for (Entry entry: entries) {
 			String firstEntry = entry.getSyllabary().get(0)+" ("+StringEscapeUtils.escapeJava(entry.getDef())+")";
-			for (String syllabary: entry.getSyllabary()) {
+			if (entry.getSyllabary().size()!=entry.getPronunciations().size()) {
+				badCount++;
+				System.err.println("MISMATCHED SYLLABARY to PRONUNCIATIONS FOR: "+firstEntry);
+				System.err.println(" - "+entry.getSyllabary().toString());
+				System.err.println(" - "+entry.getPronunciations().toString());
+			}
+			
+			Iterator<String> iSyllabary = entry.getSyllabary().iterator();
+			Iterator<String> iPronounce = entry.getPronunciations().iterator();
+			
+			while (iSyllabary.hasNext()) {
+				String syllabary = iSyllabary.next();
+				String pronounce = iPronounce.next();
+				if (syllabary.equals("-")) {
+					if (!pronounce.isEmpty()) {
+						badCount++;
+						System.err.println("UNEXPECTED PRONUNCIATION ENTRY FOR: "+firstEntry);
+						System.err.println("  "+syllabary+" ["+pronounce+"]");
+						continue;
+					}
+					continue;
+				}
 				if (!syllabary.matches("[,\\sᎠ-Ᏼ\\-]+")) {
 					badCount++;
-					System.err.println("BAD ENTRY FOR: "+firstEntry);
-					System.err.println(" - "+syllabary);
+					System.err.println("BAD SYLLABARY ENTRY FOR: "+firstEntry);
+					System.err.println("  "+syllabary+" ["+pronounce+"]");
+					continue;
 				}
+				if (!pronounce.matches( "[ ,¹²³⁴aeiouvạẹịọụṿcdghjklmnstwyɂ]*[¹²³⁴aeiouvdghjklmnstwy]")) {
+					badCount++;
+					System.err.println("BAD PRONUNCIATION ENTRY FOR: "+firstEntry);
+					System.err.println("  "+syllabary+" ["+pronounce+"]");
+					continue;
+				}
+				if (syllabary.contains(",")) {
+					if (!syllabary.contains(", ")||!pronounce.contains(", ")) {
+						badCount++;
+						System.err.println("BAD COMMAND IN ENTRY FOR: "+firstEntry);
+						System.err.println("  "+syllabary+" ["+pronounce+"]");
+						continue;
+					}
+					if (StringUtils.countMatches(syllabary, ",")!=StringUtils.countMatches(pronounce, ",")) {
+						badCount++;
+						System.err.println("SYLLABARY AND PRONOUNCE SUB-ENTRY COMMAS DON'T MATCH: "+firstEntry);
+						System.err.println("  "+syllabary+" ["+pronounce+"]");
+						continue;
+					}
+				}
+				
 			}
 		}
 		if (badCount>0) {
-			throw new RuntimeException("BAD ENTRIES IN SPREADSHEET");
+			throw new RuntimeException(badCount+" BAD ENTRIES IN SPREADSHEET!");
 		}
 	}
 
@@ -191,11 +234,18 @@ public class App extends Thread {
 					continue;
 				}
 				if (entryMark.equalsIgnoreCase("cf")) {
-					System.out.println("Ignoring CF entry: "+StringEscapeUtils.escapeJava(syllabaryOrNote));
+					if (entry!=null) {
+						entry.addCf(syllabaryOrNote);
+					}
 					continue;
 				}
 				if (entryMark.equalsIgnoreCase("label")) {
-					System.out.println("Ignoring CF entry: "+StringEscapeUtils.escapeJava(syllabaryOrNote));
+					if (entry!=null) {
+						if (entry.getLabel()!=null) {
+							throw new IllegalStateException("Already assigned a label: "+entry.getSyllabary()+" "+entry.getDef()+" "+entry.getLabel());
+						}
+						entry.addCf(syllabaryOrNote);
+					}
 					continue;
 				}
 				throw new IllegalStateException("ENTRY TYPE NOT HANDLED: "+entryMark);
