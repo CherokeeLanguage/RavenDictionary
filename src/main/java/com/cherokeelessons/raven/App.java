@@ -52,7 +52,7 @@ public class App extends Thread {
 	private static final String LYX_UNBOLD = "\n\\series default\n";
 	private static final String LYX_BOLD = "\n\\series bold\n";
 	private static final String LYX_NEWLINE = "\n\\begin_inset Newline newline\n\\end_inset\n";
-	private static final String PROPERTIES_FILE = ".RavenDictionaryJava.properties";
+	private static final String PROPERTIES_FILE = "RavenDictionaryJava.properties";
 	private static final String DICTIONARY_SRC_LYX = "raven-cherokee-dictionary-tlw.lyx";
 
 	@Override
