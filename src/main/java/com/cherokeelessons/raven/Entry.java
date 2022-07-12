@@ -1,54 +1,53 @@
-
 package com.cherokeelessons.raven;
-
-import java.util.List;
 
 import com.cherokeelessons.raven.RavenEntry.SpreadsheetEntry;
 
+import java.util.List;
+
 public interface Entry extends Comparable<Entry> {
-	void addNote(String note);
+    void addNote(String note);
 
-	void addPronunciation(String pronounciation);
+    void addPronunciation(String pronounciation);
 
-	void addSyllabary(String syllabary);
+    void addSyllabary(String syllabary);
 
-	void clearNotes();
+    void clearNotes();
 
-	@Override
-	int compareTo(Entry o);
+    @Override
+    int compareTo(Entry o);
 
-	@Override
-	boolean equals(Object obj);
+    @Override
+    boolean equals(Object obj);
 
-	String formattedDefinition();
+    String formattedDefinition();
 
-	String getDef();
+    String getDef();
 
-	List<String> getNotes();
+    void setDef(String def);
 
-	List<String> getPronunciations();
+    List<String> getNotes();
 
-	List<String> getSyllabary();
+    List<String> getPronunciations();
 
-	String getType();
+    List<String> getSyllabary();
 
-	void setDef(String def);
+    String getType();
 
-	void setType(String type);
+    void setType(String type);
 
-	int size();
+    int size();
 
-	String sortKey();
+    String sortKey();
 
-	SpreadsheetEntry spreadsheetEntry();
+    SpreadsheetEntry spreadsheetEntry();
 
-	List<String> getCf();
+    List<String> getCf();
 
-	void setCf(List<String> cf);
+    void setCf(List<String> cf);
 
-	void addCf(String cfEntry);
+    void addCf(String cfEntry);
 
-	String getLabel();
+    String getLabel();
 
-	void setLabel(String label);
+    void setLabel(String label);
 }

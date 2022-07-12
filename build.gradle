@@ -1,10 +1,10 @@
 plugins {
-	id "java"
-	id "idea"
-	id "eclipse"
-	id "eclipse-wtp"
-	id "com.diffplug.eclipse.apt"
-	id 'com.github.johnrengelman.shadow'
+    id "java"
+    id "idea"
+    id "eclipse"
+    id "eclipse-wtp"
+    id "com.diffplug.eclipse.apt"
+    id 'com.github.johnrengelman.shadow'
 }
 
 compileJava.options.encoding = 'UTF-8'
@@ -23,51 +23,53 @@ shadowJar.mergeServiceFiles()
 
 repositories {
     mavenCentral()
-	google()
+    google()
     maven { url "https://jitpack.io/" }
 }
 
 configurations {
-  provided
+    provided
 }
 
 dependencies {
-	implementation 'org.apache.commons:commons-csv:1.9.0'
-	implementation 'org.apache.commons:commons-text:1.9'
-	implementation 'com.fasterxml.jackson.core:jackson-databind:2.13.3'
-	implementation 'commons-io:commons-io:2.11.0'
-	implementation 'org.languagetool:language-en:5.8'
-	implementation 'org.languagetool:languagetool-core:5.8'
-	implementation project(':SimpleTextUi')
-	
-	testImplementation 'org.testng:testng:6.+'
+    implementation 'org.apache.commons:commons-csv:1.9.0'
+    implementation 'org.apache.commons:commons-text:1.9'
+    implementation 'com.fasterxml.jackson.core:jackson-databind:2.13.3'
+    implementation 'commons-io:commons-io:2.11.0'
+    implementation 'org.languagetool:language-en:5.8'
+    implementation 'org.languagetool:languagetool-core:5.8'
+    implementation project(':SimpleTextUi')
+
+    testImplementation 'org.testng:testng:6.+'
 }
- 
+
 sourceSets {
-  main {
-    compileClasspath += configurations.provided
-  }
-  test {
-    compileClasspath += configurations.provided
-    runtimeClasspath += configurations.provided
-  }
+    main {
+        compileClasspath += configurations.provided
+    }
+    test {
+        compileClasspath += configurations.provided
+        runtimeClasspath += configurations.provided
+    }
 }
 
 task "create-dirs" {
-	doLast{
-		sourceSets*.java.srcDirs*.each { it.mkdirs() }
-		sourceSets*.resources.srcDirs*.each { it.mkdirs() }
-	}}
+    doLast {
+        sourceSets*.java.srcDirs*.each { it.mkdirs() }
+        sourceSets*.resources.srcDirs*.each { it.mkdirs() }
+    }
+}
 
 eclipseJdt {
-	doLast{
-		File f = file('.settings/org.eclipse.core.resources.prefs')
-		f.write('eclipse.preferences.version=1\n')
-		f.append('encoding/<project>=utf-8')
-		f = file('.settings/org.eclipse.core.runtime.prefs')
-		f.write('eclipse.preferences.version=1\n')
-		f.append('line.separator=\\n\n')
-	}}
+    doLast {
+        File f = file('.settings/org.eclipse.core.resources.prefs')
+        f.write('eclipse.preferences.version=1\n')
+        f.append('encoding/<project>=utf-8')
+        f = file('.settings/org.eclipse.core.runtime.prefs')
+        f.write('eclipse.preferences.version=1\n')
+        f.append('line.separator=\\n\n')
+    }
+}
 
 // Required for correct setup of APT in Eclipse
 eclipseJdt.dependsOn cleanEclipseJdt, eclipseJdtApt
@@ -75,27 +77,27 @@ eclipseJdtApt.dependsOn cleanEclipseJdtApt, eclipseFactorypath
 eclipseFactorypath.dependsOn cleanEclipseFactorypath, "create-dirs"
 
 eclipse {
-	synchronizationTasks eclipseJdt
-	project {
-		name = 'RavenDictionary'
-		comment = 'The Raven Dictionary Project'
-	}
+    synchronizationTasks eclipseJdt
+    project {
+        name = 'RavenDictionary'
+        comment = 'The Raven Dictionary Project'
+    }
 
-	classpath {
-		plusConfigurations += [configurations.provided]
-		downloadSources = true
-		downloadJavadoc = true
-	}
+    classpath {
+        plusConfigurations += [configurations.provided]
+        downloadSources = true
+        downloadJavadoc = true
+    }
 
-	jdt {
-	}
+    jdt {
+    }
 
-	wtp {
-		facet {
-		}
-	}
+    wtp {
+        facet {
+        }
+    }
 }
 
 test {
-  useTestNG()
+    useTestNG()
 }
