@@ -1,0 +1,3 @@
+[submodule "SimpleTextUi"]
+	path = SimpleTextUi
+	url = ../SimpleTextUi.git

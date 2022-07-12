@@ -1,28 +1,29 @@
 plugins {
-  id "it.gianluz.capsule" version "1.0.3"
+	id "java"
+	id "idea"
+	id "eclipse"
+	id "eclipse-wtp"
+	id "com.diffplug.eclipse.apt"
+	id 'com.github.johnrengelman.shadow'
 }
 
-apply plugin: 'java'
-apply plugin: 'eclipse-wtp'
-apply plugin: 'maven'
-
-group "com.github.michael-joyner"
-version = '20160806'
-
-sourceCompatibility = 1.8
 compileJava.options.encoding = 'UTF-8'
+compileJava.options.release = 17
 
-task fatjar(type: FatCapsule) {
-	//-Dfile.encoding=UTF-8
-  	archiveName 'RavenDictionary.jar'
-	applicationClass 'com.cherokeelessons.raven.Main'
-	capsuleManifest {
-    	jvmArgs = ['-Dfile.encoding=UTF-8']
-	}
-}
+compileTestJava.options.encoding = 'UTF-8'
+compileTestJava.options.release = 17
+
+java.toolchain.languageVersion = JavaLanguageVersion.of(17)
+java.toolchain.vendor = JvmVendorSpec.ADOPTOPENJDK
+
+jar.manifest.attributes "Main-Class": 'com.cherokeelessons.raven.Main'
+
+shadowJar.archiveFileName = 'RavenDictionary.jar'
+shadowJar.mergeServiceFiles()
 
 repositories {
-    jcenter()
+    mavenCentral()
+	google()
     maven { url "https://jitpack.io/" }
 }
 
@@ -31,15 +32,15 @@ configurations {
 }
 
 dependencies {
-	compile 'org.apache.commons:commons-csv:1.+'
-	compile 'org.apache.commons:commons-text:+'
-	compile 'com.fasterxml.jackson.core:jackson-databind:2.8.1'
-	compile 'commons-io:commons-io:+'
-	compile 'org.languagetool:language-en:3.0'
-	compile 'org.languagetool:languagetool-core:3.0'
-	compile 'com.github.CherokeeLanguage:SimpleTextUi:-SNAPSHOT'
+	implementation 'org.apache.commons:commons-csv:1.9.0'
+	implementation 'org.apache.commons:commons-text:1.9'
+	implementation 'com.fasterxml.jackson.core:jackson-databind:2.13.3'
+	implementation 'commons-io:commons-io:2.11.0'
+	implementation 'org.languagetool:language-en:5.8'
+	implementation 'org.languagetool:languagetool-core:5.8'
+	implementation project(':SimpleTextUi')
 	
-	testCompile 'org.testng:testng:6.+'
+	testImplementation 'org.testng:testng:6.+'
 }
  
 sourceSets {
@@ -53,33 +54,28 @@ sourceSets {
 }
 
 task "create-dirs" {
-doLast{
-	sourceSets*.java.srcDirs*.each { it.mkdirs() }
-	sourceSets*.resources.srcDirs*.each { it.mkdirs() }
-	}
-}
-
-task sourcesJar(type: Jar, dependsOn: classes) {
-    classifier = 'sources'
-    from sourceSets.main.allSource
-}
-
-artifacts {
-    archives sourcesJar
-}
+	doLast{
+		sourceSets*.java.srcDirs*.each { it.mkdirs() }
+		sourceSets*.resources.srcDirs*.each { it.mkdirs() }
+	}}
 
 eclipseJdt {
-	doLast {
-    File f = file('.settings/org.eclipse.core.resources.prefs')
-    f.write('eclipse.preferences.version=1\n')
-    f.append('encoding/<project>=utf-8')
-    f = file('.settings/org.eclipse.core.runtime.prefs')
-    f.write('eclipse.preferences.version=1\n')
-    f.append('line.separator=\\n\n')
-    }
-}
+	doLast{
+		File f = file('.settings/org.eclipse.core.resources.prefs')
+		f.write('eclipse.preferences.version=1\n')
+		f.append('encoding/<project>=utf-8')
+		f = file('.settings/org.eclipse.core.runtime.prefs')
+		f.write('eclipse.preferences.version=1\n')
+		f.append('line.separator=\\n\n')
+	}}
+
+// Required for correct setup of APT in Eclipse
+eclipseJdt.dependsOn cleanEclipseJdt, eclipseJdtApt
+eclipseJdtApt.dependsOn cleanEclipseJdtApt, eclipseFactorypath
+eclipseFactorypath.dependsOn cleanEclipseFactorypath, "create-dirs"
 
 eclipse {
+	synchronizationTasks eclipseJdt
 	project {
 		name = 'RavenDictionary'
 		comment = 'The Raven Dictionary Project'
@@ -92,14 +88,10 @@ eclipse {
 	}
 
 	jdt {
-		sourceCompatibility=1.8
-		targetCompatibility=1.8
 	}
 
 	wtp {
 		facet {
-			facets = []
-			facet name: 'jst.java', version: '1.8'
 		}
 	}
 }
