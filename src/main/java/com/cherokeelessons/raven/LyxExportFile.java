@@ -233,7 +233,25 @@ public class LyxExportFile {
         end = end.replace("__appendix__", appendix);
 
         for (Entry entry : entries) {
-            if (entry.getType().startsWith("v")) {
+            final List<String> pronunciations = entry.getPronunciations();
+			final List<String> syllabary = entry.getSyllabary();
+			if (entry.getType().startsWith("v")) {
+				if (pronunciations.size()<6) {
+					System.err.printf("Missing %,d pronunciation stems for %s.\n", 6-pronunciations.size(), entry.getDef());
+					continue;
+				}
+				if (syllabary.size()<6) {
+					System.err.printf("Missing %,d syllabary stems for %s.\n", 6-syllabary.size(), entry.getDef());
+					continue;
+				}
+				if (pronunciations.size()>6) {
+					System.err.printf("%,d too many pronunciation stems for %s.\n", pronunciations.size()-6, entry.getDef());
+					continue;
+				}
+				if (syllabary.size()>6) {
+					System.err.printf("%,d too many syllabary stems for %s.\n", syllabary.size()-6, entry.getDef());
+					continue;
+				}
                 VerbEntry v = new VerbEntry();
                 v.definition = entry.formattedDefinition();
                 v.pos = "v";
@@ -248,14 +266,15 @@ public class LyxExportFile {
                 v.imperative = new DefinitionLine();
                 v.infinitive = new DefinitionLine();
 
-                Iterator<String> ilatin = entry.getPronunciations().iterator();
+                Iterator<String> ilatin = pronunciations.iterator();
                 v.present3rd.pronounce = ilatin.next();
                 v.present1st.pronounce = ilatin.next();
                 v.remotepast.pronounce = ilatin.next();
                 v.habitual.pronounce = ilatin.next();
                 v.imperative.pronounce = ilatin.next();
                 v.infinitive.pronounce = ilatin.next();
-                Iterator<String> isyll = entry.getSyllabary().iterator();
+                
+                Iterator<String> isyll = syllabary.iterator();
                 v.present3rd.syllabary = isyll.next();
                 v.present1st.syllabary = isyll.next();
                 v.remotepast.syllabary = isyll.next();
@@ -273,8 +292,8 @@ public class LyxExportFile {
             MultiEntry multi = new MultiEntry();
             multi.definition = entry.formattedDefinition();
             multi.pos = entry.getType();
-            Iterator<String> ilatin = entry.getPronunciations().iterator();
-            Iterator<String> isyll = entry.getSyllabary().iterator();
+            Iterator<String> ilatin = pronunciations.iterator();
+            Iterator<String> isyll = syllabary.iterator();
             while (ilatin.hasNext() && isyll.hasNext()) {
                 DefinitionLine def = new DefinitionLine();
                 def.pronounce = ilatin.next();

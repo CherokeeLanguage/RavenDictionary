@@ -7,6 +7,8 @@ import net.cherokeedictionary.shared.StemEntry;
 import net.cherokeedictionary.shared.StemType;
 import org.apache.commons.lang3.StringUtils;
 
+import java.text.Normalizer;
+import java.text.Normalizer.Form;
 import java.util.ArrayList;
 import java.util.List;
 
@@ -37,6 +39,8 @@ public class VerbEntry extends LyxEntry implements HasStemmedForms {
         boolean isFemaleOnly = definition.matches(".*?\\bShe\\b.*?");
         boolean let_it = present1st == null || StringUtils.isBlank(present1st.syllabary)
                 || present1st.syllabary.startsWith("-");
+        final String nfdPronounce = Normalizer.normalize(imperative.pronounce, Form.NFD);
+		boolean progressiveImperative = nfdPronounce.replaceAll("(?i)[^a-z]", "").endsWith("esdi");
         String helperVerb1st = "am";
         String helperVerb3rdPast = "did";
         if (helperIsHas) {
@@ -51,7 +55,11 @@ public class VerbEntry extends LyxEntry implements HasStemmedForms {
             sb.append(lyxSyllabaryPronounce(present1st));
             sb.append(lyxSyllabaryPronounce(remotepast, "It " + helperVerb3rdPast + LDOTS));
             sb.append(lyxSyllabaryPronounce(habitual, "It often" + LDOTS));
-            sb.append(lyxSyllabaryPronounce(imperative, "Let it" + LDOTS));
+            if (progressiveImperative) {
+            	sb.append(lyxSyllabaryPronounce(imperative, "It should be" + LDOTS));
+            } else {
+            	sb.append(lyxSyllabaryPronounce(imperative, "Let it" + LDOTS));
+            }
             sb.append(lyxSyllabaryPronounce(infinitive, "For it" + LDOTS));
         } else {
             String subject = isFemaleOnly ? "She" : "He";
@@ -59,7 +67,11 @@ public class VerbEntry extends LyxEntry implements HasStemmedForms {
             sb.append(lyxSyllabaryPronounce(present1st, "I " + helperVerb1st + LDOTS));
             sb.append(lyxSyllabaryPronounce(remotepast, subject + " " + helperVerb3rdPast + LDOTS));
             sb.append(lyxSyllabaryPronounce(habitual, subject + " often" + LDOTS));
-            sb.append(lyxSyllabaryPronounce(imperative, "Let you" + LDOTS));
+            if (progressiveImperative) {
+            	sb.append(lyxSyllabaryPronounce(imperative, "You should be" + LDOTS));
+            } else {
+            	sb.append(lyxSyllabaryPronounce(imperative, "Let you" + LDOTS));
+            }
             sb.append(lyxSyllabaryPronounce(infinitive, "For " + object + LDOTS));
         }
         sb.append("\\end_deeper\n");

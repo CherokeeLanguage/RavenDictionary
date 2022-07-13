@@ -11,6 +11,8 @@ import java.net.MalformedURLException;
 import java.net.URL;
 import java.net.URLConnection;
 import java.nio.charset.StandardCharsets;
+import java.text.Normalizer;
+import java.text.Normalizer.Form;
 import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.Collections;
@@ -200,16 +202,16 @@ public class App extends AbstractApp {
         log.info("loading config...");
         loadConfiguration();
 
-        log.info("parsing lyx file...");
-        File lyxSrcFile = new File(DIR, DICTIONARY_SRC_LYX);
+//        log.info("parsing lyx file...");
+//        File lyxSrcFile = new File(DIR, DICTIONARY_SRC_LYX);
 
-        String destCsvFile = "raven-dictionary-edit-file-from-lyx.csv";
+//        String destCsvFile = "raven-dictionary-edit-file-from-lyx.csv";
 
         File csvDir = new File(DIR, "csv-files");
         csvDir.mkdirs();
 
-        File editFile = new File(DIR, destCsvFile);
-        writeCsvEditFile(editFile, extractEntriesFromLyxFile(lyxSrcFile));
+//        File editFile = new File(DIR, destCsvFile);
+//        writeCsvEditFile(editFile, extractEntriesFromLyxFile(lyxSrcFile));
 
         List<Entry> entries = extractEntriesFromGoogleCsvFile();
 
@@ -265,7 +267,8 @@ public class App extends AbstractApp {
 
             while (iSyllabary.hasNext()) {
                 String syllabary = iSyllabary.next();
-                String pronounce = iPronounce.next();
+                String pronounce = Normalizer.normalize(iPronounce.next(), Form.NFC);
+                pronounce = pronounce.replace(":", "\u02d0");
                 if (syllabary.equals("-")) {
                     if (!pronounce.isEmpty()) {
                         badCount++;
@@ -281,7 +284,8 @@ public class App extends AbstractApp {
                     System.err.println("  " + syllabary + " [" + pronounce + "]");
                     continue;
                 }
-                if (!pronounce.matches("[ ,¹²³⁴aeiouvạẹịọụṿcdghjklmnstwyɂ]*[¹²³⁴aeiouvdghjklmnstwy]")) {
+                String pronounce_match_string = Normalizer.normalize("[*\u02d0:ʔ ,aeiouváéíóúv́àèìòùv̀ǎěǐǒǔv̌âêîôûv̂a̋e̋i̋őűv̋cdghjklmnstwy]*[aeiouvdghjklmnstwy]", Form.NFC);
+                if (!pronounce.matches(pronounce_match_string)) {
                     badCount++;
                     System.err.println("BAD PRONUNCIATION ENTRY FOR: " + firstEntry);
                     System.err.println("  " + syllabary + " [" + pronounce + "]");
@@ -380,6 +384,9 @@ public class App extends AbstractApp {
                         entry.addCf(syllabaryOrNote);
                     }
                     continue;
+                }
+                if (entryMark.equalsIgnoreCase("TLW to here")) {
+                	continue;
                 }
                 System.err.println("ENTRY TYPE NOT HANDLED: " + entryMark);
                 throw new RuntimeException("ENTRY TYPE NOT HANDLED: " + entryMark);
