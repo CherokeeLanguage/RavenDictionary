@@ -56,7 +56,7 @@ public class VerbEntry extends LyxEntry implements HasStemmedForms {
             sb.append(lyxSyllabaryPronounce(remotepast, "It " + helperVerb3rdPast + LDOTS));
             sb.append(lyxSyllabaryPronounce(habitual, "It often" + LDOTS));
             if (progressiveImperative) {
-            	sb.append(lyxSyllabaryPronounce(imperative, "It should be" + LDOTS));
+            	sb.append(lyxSyllabaryPronounce(imperative, "It will be" + LDOTS));
             } else {
             	sb.append(lyxSyllabaryPronounce(imperative, "Let it" + LDOTS));
             }
@@ -68,7 +68,7 @@ public class VerbEntry extends LyxEntry implements HasStemmedForms {
             sb.append(lyxSyllabaryPronounce(remotepast, subject + " " + helperVerb3rdPast + LDOTS));
             sb.append(lyxSyllabaryPronounce(habitual, subject + " often" + LDOTS));
             if (progressiveImperative) {
-            	sb.append(lyxSyllabaryPronounce(imperative, "You should be" + LDOTS));
+            	sb.append(lyxSyllabaryPronounce(imperative, "You will be" + LDOTS));
             } else {
             	sb.append(lyxSyllabaryPronounce(imperative, "Let you" + LDOTS));
             }
