@@ -21,6 +21,7 @@ public class RavenEntry implements Entry {
     }
 
     public RavenEntry(Entry copy) {
+        this();
         if (copy == null) {
             return;
         }
@@ -69,7 +70,7 @@ public class RavenEntry implements Entry {
         Iterator<String> isyll = syllabary.iterator();
         Iterator<String> ipron = pronunciations.iterator();
         Iterator<String> inotes = notes.iterator();
-        /**
+        /*
          * primary entry: flagged in column 1 and starts in column 2
          */
         row = new SpreadsheetRow();
@@ -95,7 +96,7 @@ public class RavenEntry implements Entry {
         tmpDef = tmpDef.replaceAll("\\s*\n\\s*", "\n");
         row.fields.add(tmpDef);
 
-        /**
+        /*
          * all sub entries start in column 2
          */
         while (isyll.hasNext() || ipron.hasNext()) {
@@ -114,7 +115,7 @@ public class RavenEntry implements Entry {
             }
         }
 
-        /**
+        /*
          * all note entries start in column 2
          */
         while (inotes.hasNext()) {
@@ -161,15 +162,15 @@ public class RavenEntry implements Entry {
     public int hashCode() {
         final int prime = 31;
         int result = 1;
-        result = prime * result + ((pronunciations == null) ? 0 : pronunciations.hashCode());
-        result = prime * result + ((syllabary == null) ? 0 : syllabary.hashCode());
+        result = prime * result + pronunciations.hashCode();
+        result = prime * result + syllabary.hashCode();
         result = prime * result + ((type == null) ? 0 : type.hashCode());
         return result;
     }
 
     @Override
     public boolean equals(Object obj) {
-        if (obj == null || !(obj instanceof Entry)) {
+        if (!(obj instanceof Entry)) {
             return false;
         }
         return compareTo((RavenEntry) obj) == 0;
@@ -257,10 +258,10 @@ public class RavenEntry implements Entry {
     public String sortKey() {
         StringBuilder sb = new StringBuilder();
         for (String l : getSyllabary()) {
-            sb.append(l.replaceAll("[^Ꭰ-Ᏼ]", "") + "-");
+            sb.append(l.replaceAll("[^Ꭰ-Ᏼ]", "")).append("-");
         }
         for (String l : getPronunciations()) {
-            sb.append(l + "-");
+            sb.append(l).append("-");
         }
         sb.append(size());
         return sb.toString();
@@ -296,7 +297,7 @@ public class RavenEntry implements Entry {
                 sb.append(pronunciation);
                 sb.append("]");
             }
-            sb.append(" - (" + type + ") ");
+            sb.append(" - (").append(type).append(") ");
             sb.append(formattedDefinition());
             sb.append("\n");
             while (ilist.hasNext()) {

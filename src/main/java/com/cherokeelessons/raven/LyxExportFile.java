@@ -18,149 +18,171 @@ import java.text.NumberFormat;
 import java.util.*;
 
 public class LyxExportFile {
-    private static final String sloppy_begin = "\\begin_layout Standard\n" //
-            + "\\begin_inset ERT\n" //
-            + "status collapsed\n" //
-            + "\n" //
-            + "\\begin_layout Plain Layout\n" //
-            + "\n" //
-            + "\n" //
-            + "\\backslash\n" //
-            + "begin{sloppy}\n" //
-            + "\\end_layout\n" //
-            + "\n" //
-            + "\\end_inset\n" //
-            + "\n" //
-            + "\n" //
-            + "\\end_layout\n\n";
+    private static final String sloppy_begin = """
+            \\begin_layout Standard
+            \\begin_inset ERT
+            status collapsed
 
-    private static final String sloppy_end = "\\begin_layout Standard\n" //
-            + "\\begin_inset ERT\n" //
-            + "status collapsed\n" //
-            + "\n" //
-            + "\\begin_layout Plain Layout\n" //
-            + "\n" //
-            + "\n" //
-            + "\\backslash\n" //
-            + "end{sloppy}\n" //
-            + "\\end_layout\n" //
-            + "\n" //
-            + "\\end_inset\n" //
-            + "\n" //
-            + "\n" //
-            + "\\end_layout\n\n";
+            \\begin_layout Plain Layout
 
-    private static final String columnsep_large = "\\begin_layout Standard\n" //
-            + "\\begin_inset ERT\n" //
-            + "status open\n" //
-            + "\n" //
-            + "\\begin_layout Plain Layout\n" //
-            + "\n" //
-            + "\n" //
-            + "\\backslash\n" //
-            + "setlength{\n" //
-            + "\\backslash\n" //
-            + "columnsep}{20pt}\n" //
-            + "\\end_layout\n" //
-            + "\n" //
-            + "\\end_inset\n" //
-            + "\n" //
-            + "\n" //
-            + "\\end_layout\n" //
-            + "\n";
-    private static final String columnsep_normal = "\\begin_layout Standard\n" //
-            + "\\begin_inset ERT\n" //
-            + "status open\n" //
-            + "\n" //
-            + "\\begin_layout Plain Layout\n" //
-            + "\n" //
-            + "\n" //
-            + "\\backslash\n" //
-            + "setlength{\n" //
-            + "\\backslash\n" //
-            + "columnsep}{10pt}\n" //
-            + "\\end_layout\n" //
-            + "\n" //
-            + "\\end_inset\n" //
-            + "\n" //
-            + "\n" //
-            + "\\end_layout\n" //
-            + "\n";
-    private static final String seprule_on = "\\begin_layout Standard\n" //
-            + "\\begin_inset ERT\n" //
-            + "status open\n" //
-            + "\n" //
-            + "\\begin_layout Plain Layout\n" //
-            + "\n" //
-            + "\n" //
-            + "\\backslash\n" //
-            + "setlength{\n" //
-            + "\\backslash\n" //
-            + "columnseprule}{0.5pt}\n" //
-            + "\\end_layout\n" //
-            + "\n" //
-            + "\\end_inset\n" //
-            + "\n" //
-            + "\n" //
-            + "\\end_layout\n";
-    private static final String seprule_off = "\\begin_layout Standard\n" //
-            + "\\begin_inset ERT\n" //
-            + "status open\n" //
-            + "\n" //
-            + "\\begin_layout Plain Layout\n" //
-            + "\n" //
-            + "\n" //
-            + "\\backslash\n" //
-            + "setlength{\n" //
-            + "\\backslash\n" //
-            + "columnseprule}{0pt}\n" //
-            + "\\end_layout\n" //
-            + "\n" //
-            + "\\end_inset\n" //
-            + "\n" //
-            + "\n" //
-            + "\\end_layout\n";
-    private static final String MULTICOLS_END = "\\begin_layout Standard\n" //
-            + "\\begin_inset ERT\n" //
-            + "status collapsed\n" //
-            + "\n" //
-            + "\\begin_layout Plain Layout\n" //
-            + "\n" //
-            + "\n" //
-            + "\\backslash\n" //
-            + "end{multicols}\n" //
-            + "\\end_layout\n" //
-            + "\n" //
-            + "\\end_inset\n" //
-            + "\n" //
-            + "\n" //
-            + "\\end_layout\n";
-    private static final String MULTICOLS_BEGIN = "\\begin_layout Standard\n" //
-            + "\n" //
-            + "\\lang english\n" //
-            + "\\begin_inset ERT\n" //
-            + "status collapsed\n" //
-            + "\n" //
-            + "\\begin_layout Plain Layout\n" //
-            + "\n" //
-            + "\n" //
-            + "\\backslash\n" //
-            + "begin{multicols}{2}\n" //
-            + "\\end_layout\n" //
-            + "\n" //
-            + "\\end_inset\n" //
-            + "\n" //
-            + "\n" //
-            + "\\end_layout\n";
-    private static final String Chapter_Dictionary = "\\begin_layout Chapter\n" //
-            + "Dictionary\n" //
-            + "\\end_layout\n";
-    private static final String Chapter_WordForms = "\\begin_layout Chapter\n" //
-            + "Word Form Lookup\n" //
-            + "\\end_layout\n";
-    private static final String Chapter_English = "\\begin_layout Chapter\n" //
-            + "English to Cherokee Lookup\n" //
-            + "\\end_layout\n";
+
+            \\backslash
+            begin{sloppy}
+            \\end_layout
+
+            \\end_inset
+
+
+            \\end_layout
+
+            """;
+    private static final String sloppy_end = """
+            \\begin_layout Standard
+            \\begin_inset ERT
+            status collapsed
+
+            \\begin_layout Plain Layout
+
+
+            \\backslash
+            end{sloppy}
+            \\end_layout
+
+            \\end_inset
+
+
+            \\end_layout
+
+            """;
+    private static final String columnsep_large = """
+            \\begin_layout Standard
+            \\begin_inset ERT
+            status open
+
+            \\begin_layout Plain Layout
+
+
+            \\backslash
+            setlength{
+            \\backslash
+            columnsep}{20pt}
+            \\end_layout
+
+            \\end_inset
+
+
+            \\end_layout
+
+            """;
+    private static final String columnsep_normal = """
+            \\begin_layout Standard
+            \\begin_inset ERT
+            status open
+
+            \\begin_layout Plain Layout
+
+
+            \\backslash
+            setlength{
+            \\backslash
+            columnsep}{10pt}
+            \\end_layout
+
+            \\end_inset
+
+
+            \\end_layout
+
+            """;
+    private static final String seprule_on = """
+            \\begin_layout Standard
+            \\begin_inset ERT
+            status open
+
+            \\begin_layout Plain Layout
+
+
+            \\backslash
+            setlength{
+            \\backslash
+            columnseprule}{0.5pt}
+            \\end_layout
+
+            \\end_inset
+
+
+            \\end_layout
+            """;
+    private static final String seprule_off = """
+            \\begin_layout Standard
+            \\begin_inset ERT
+            status open
+
+            \\begin_layout Plain Layout
+
+
+            \\backslash
+            setlength{
+            \\backslash
+            columnseprule}{0pt}
+            \\end_layout
+
+            \\end_inset
+
+
+            \\end_layout
+            """;
+    private static final String MULTICOLS_END = """
+            \\begin_layout Standard
+            \\begin_inset ERT
+            status collapsed
+
+            \\begin_layout Plain Layout
+
+
+            \\backslash
+            end{multicols}
+            \\end_layout
+
+            \\end_inset
+
+
+            \\end_layout
+            """;
+    private static final String MULTICOLS_BEGIN = """
+            \\begin_layout Standard
+
+            \\lang english
+            \\begin_inset ERT
+            status collapsed
+
+            \\begin_layout Plain Layout
+
+
+            \\backslash
+            begin{multicols}{2}
+            \\end_layout
+
+            \\end_inset
+
+
+            \\end_layout
+            """;
+    private static final String Chapter_Dictionary = """
+            \\begin_layout Chapter
+            Dictionary
+            \\end_layout
+            """;
+    private static final String Chapter_WordForms = """
+            \\begin_layout Chapter
+            Word Form Lookup
+            \\end_layout
+            """;
+    private static final String Chapter_English = """
+            \\begin_layout Chapter
+            English to Cherokee Lookup
+            \\end_layout
+            """;
     public final List<String> maybe_dupe = new ArrayList<>();
     private final List<Entry> entries;
     private final String lyxfile;
@@ -234,24 +256,24 @@ public class LyxExportFile {
 
         for (Entry entry : entries) {
             final List<String> pronunciations = entry.getPronunciations();
-			final List<String> syllabary = entry.getSyllabary();
-			if (entry.getType().startsWith("v")) {
-				if (pronunciations.size()<6) {
-					System.err.printf("Missing %,d pronunciation stems for %s.\n", 6-pronunciations.size(), entry.getDef());
-					continue;
-				}
-				if (syllabary.size()<6) {
-					System.err.printf("Missing %,d syllabary stems for %s.\n", 6-syllabary.size(), entry.getDef());
-					continue;
-				}
-				if (pronunciations.size()>6) {
-					System.err.printf("%,d too many pronunciation stems for %s.\n", pronunciations.size()-6, entry.getDef());
-					continue;
-				}
-				if (syllabary.size()>6) {
-					System.err.printf("%,d too many syllabary stems for %s.\n", syllabary.size()-6, entry.getDef());
-					continue;
-				}
+            final List<String> syllabary = entry.getSyllabary();
+            if (entry.getType().startsWith("v")) {
+                if (pronunciations.size() < 6) {
+                    System.err.printf("Missing %,d pronunciation stems for %s.\n", 6 - pronunciations.size(), entry.getDef());
+                    continue;
+                }
+                if (syllabary.size() < 6) {
+                    System.err.printf("Missing %,d syllabary stems for %s.\n", 6 - syllabary.size(), entry.getDef());
+                    continue;
+                }
+                if (pronunciations.size() > 6) {
+                    System.err.printf("%,d too many pronunciation stems for %s.\n", pronunciations.size() - 6, entry.getDef());
+                    continue;
+                }
+                if (syllabary.size() > 6) {
+                    System.err.printf("%,d too many syllabary stems for %s.\n", syllabary.size() - 6, entry.getDef());
+                    continue;
+                }
                 VerbEntry v = new VerbEntry();
                 v.definition = entry.formattedDefinition();
                 v.pos = "v";
@@ -273,7 +295,7 @@ public class LyxExportFile {
                 v.habitual.pronounce = ilatin.next();
                 v.imperative.pronounce = ilatin.next();
                 v.infinitive.pronounce = ilatin.next();
-                
+
                 Iterator<String> isyll = syllabary.iterator();
                 v.present3rd.syllabary = isyll.next();
                 v.present1st.syllabary = isyll.next();
@@ -524,7 +546,7 @@ public class LyxExportFile {
                     sb1.append("cf: \n");
                     sb1.append("\\emph default\n");
                     // sb1.append("\\end_layout\n");
-                    sb.append(sb1.toString());
+                    sb.append(sb1);
                     sb.append(icross.next().getLyxCode(true));
                     while (icross.hasNext()) {
                         sb.append(", " + icross.next().getLyxCode(true));
@@ -680,7 +702,6 @@ public class LyxExportFile {
         StringBuilder corpus_chr = new StringBuilder();
         List<String> mdef = new ArrayList<>();
         Set<String> already = new HashSet<>();
-        already.clear();
         int count = definitions.size();
         int percent = -1;
         int counter = 0;
@@ -897,7 +918,7 @@ public class LyxExportFile {
             // keep this one first
             String definition = ec.getDefinition();
             if (definition.contains(";") || StringUtils.containsAny(definition, Consts.DEFINITION_MARKERS)) {
-                String defs[] = definition.split(Consts.SPLIT_REGEX);
+                String[] defs = definition.split(Consts.SPLIT_REGEX);
                 for (String adef : defs) {
                     if (StringUtils.isBlank(adef)) {
                         continue;
@@ -954,9 +975,6 @@ public class LyxExportFile {
     public static class DefSyl {
         public String syl;
         public String def;
-
-        public DefSyl() {
-        }
 
         public DefSyl(String syl, String def) {
             this.syl = syl;

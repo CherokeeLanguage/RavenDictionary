@@ -65,8 +65,8 @@ public class JsonConverter {
         reader = mapper.readerFor(classOfT);
         try {
             result = reader.readValue(json);
-        } catch (JsonProcessingException e) {
         } catch (IOException e) {
+            //
         }
         return result;
     }

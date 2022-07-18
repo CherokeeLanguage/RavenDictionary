@@ -17,7 +17,6 @@ java.toolchain.languageVersion = JavaLanguageVersion.of(17)
 java.toolchain.vendor = JvmVendorSpec.ADOPTOPENJDK
 
 jar.manifest.attributes "Main-Class": 'com.cherokeelessons.raven.Main'
-
 shadowJar.archiveFileName = 'RavenDictionary.jar'
 shadowJar.mergeServiceFiles()
 
@@ -40,7 +39,7 @@ dependencies {
     implementation 'org.languagetool:languagetool-core:5.8'
     implementation project(':SimpleTextUi')
 
-    testImplementation 'org.testng:testng:6.+'
+    testImplementation 'org.testng:testng:7.6.0'
 }
 
 sourceSets {

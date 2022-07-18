@@ -516,7 +516,7 @@ public class ParseDictionary implements Runnable {
                     }
                 }
                 tmp.append("<hr style=\"border-style: solid;");
-                tmp.append(style.toString());
+                tmp.append(style);
                 tmp.append("\"/>");
                 break parseert;
             }

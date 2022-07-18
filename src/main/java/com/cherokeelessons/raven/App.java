@@ -1,29 +1,10 @@
 package com.cherokeelessons.raven;
 
-import java.io.File;
-import java.io.FileInputStream;
-import java.io.FileNotFoundException;
-import java.io.FileOutputStream;
-import java.io.IOException;
-import java.io.OutputStreamWriter;
-import java.io.StringReader;
-import java.net.MalformedURLException;
-import java.net.URL;
-import java.net.URLConnection;
-import java.nio.charset.StandardCharsets;
-import java.text.Normalizer;
-import java.text.Normalizer.Form;
-import java.util.ArrayList;
-import java.util.Arrays;
-import java.util.Collections;
-import java.util.Date;
-import java.util.Iterator;
-import java.util.List;
-import java.util.ListIterator;
-import java.util.Properties;
-import java.util.TimeZone;
-import java.util.logging.Logger;
-
+import com.cherokeelessons.gui.AbstractApp;
+import com.cherokeelessons.gui.MainWindow.Config;
+import com.cherokeelessons.log.Log;
+import com.cherokeelessons.raven.RavenEntry.SpreadsheetEntry;
+import com.cherokeelessons.raven.RavenEntry.SpreadsheetEntry.SpreadsheetRow;
 import org.apache.commons.csv.CSVFormat;
 import org.apache.commons.csv.CSVParser;
 import org.apache.commons.csv.CSVPrinter;
@@ -34,20 +15,18 @@ import org.apache.commons.lang3.StringUtils;
 import org.apache.commons.lang3.time.FastDateFormat;
 import org.apache.commons.text.StringEscapeUtils;
 
-import com.cherokeelessons.gui.AbstractApp;
-import com.cherokeelessons.gui.MainWindow.Config;
-import com.cherokeelessons.log.Log;
-import com.cherokeelessons.raven.RavenEntry.SpreadsheetEntry;
-import com.cherokeelessons.raven.RavenEntry.SpreadsheetEntry.SpreadsheetRow;
+import java.io.*;
+import java.net.URL;
+import java.net.URLConnection;
+import java.nio.charset.StandardCharsets;
+import java.text.Normalizer;
+import java.text.Normalizer.Form;
+import java.util.*;
+import java.util.logging.Logger;
 
 public class App extends AbstractApp {
 
-    public App(Config config, String[] args) {
-		super(config, args);
-		// TODO Auto-generated constructor stub
-	}
-
-	private static final String HTML_U_END = "</u>";
+    private static final String HTML_U_END = "</u>";
     private static final String HTML_U = "<u>";
     private static final String HTML_EM_END = "</em>";
     private static final String HTML_EM = "<em>";
@@ -66,6 +45,10 @@ public class App extends AbstractApp {
     private static final String SUBDIR = "Documents/ᏣᎳᎩ/Lessons/Raven-Cherokee-English-Dictionary";
     private final Logger log = Log.getLogger(this);
     private String csvLink;
+    public App(Config config, String[] args) {
+        super(config, args);
+        // TODO Auto-generated constructor stub
+    }
 
     private static String simpleLatexFormat(String text) {
         // must do '\n' conversion first
@@ -120,9 +103,9 @@ public class App extends AbstractApp {
         /*
          * assume 'u' should always be inside 'emph' or 'strong', etc.
          */
-        text = text.replace("<u><em>", "<u><em>");
+        // text = text.replace("<u><em>", "<u><em>");
         text = text.replace("</em></u>", "</u></em>");
-        text = text.replace("<u><strong>", "<u><strong>");
+        // text = text.replace("<u><strong>", "<u><strong>");
         text = text.replace("</strong></u>", "</u></strong>");
 
         /*
@@ -160,7 +143,7 @@ public class App extends AbstractApp {
                 break u_balance;
             }
         }
-        /**
+        /*
          * strip out leading and trailing space on full lines of text
          */
         text = text.replaceAll("(?s)\\s*\n\\s*", LF);
@@ -214,7 +197,6 @@ public class App extends AbstractApp {
 //        writeCsvEditFile(editFile, extractEntriesFromLyxFile(lyxSrcFile));
 
         List<Entry> entries = extractEntriesFromGoogleCsvFile();
-
         validateEntries(entries);
 
         String destGoogleCsvFile = "raven-dictionary-edit-file-from-google.csv";
@@ -265,10 +247,9 @@ public class App extends AbstractApp {
             Iterator<String> iSyllabary = entry.getSyllabary().iterator();
             Iterator<String> iPronounce = entry.getPronunciations().iterator();
 
-            while (iSyllabary.hasNext()) {
+            entry_scan: while (iSyllabary.hasNext()) {
                 String syllabary = iSyllabary.next();
                 String pronounce = Normalizer.normalize(iPronounce.next(), Form.NFC);
-                pronounce = pronounce.replace(":", "\u02d0");
                 if (syllabary.equals("-")) {
                     if (!pronounce.isEmpty()) {
                         badCount++;
@@ -284,13 +265,20 @@ public class App extends AbstractApp {
                     System.err.println("  " + syllabary + " [" + pronounce + "]");
                     continue;
                 }
-                String pronounce_match_string = Normalizer.normalize("[*\u02d0:ʔ ,aeiouváéíóúv́àèìòùv̀ǎěǐǒǔv̌âêîôûv̂a̋e̋i̋őűv̋cdghjklmnstwy]*[aeiouvdghjklmnstwy]", Form.NFC);
-                if (!pronounce.matches(pronounce_match_string)) {
-                    badCount++;
-                    System.err.println("BAD PRONUNCIATION ENTRY FOR: " + firstEntry);
-                    System.err.println("  " + syllabary + " [" + pronounce + "]");
-                    continue;
+                String pronounce_match_string = Normalizer.normalize("[*\u02d0:ʔ ,aeiouváéíóúv́àèìòùv̀ǎěǐǒǔv̌âêîôûv̂a̋e̋i̋őűv̋cdghjklmnstwy]*[aeiouváéíóúv́àèìòùv̀ǎěǐǒǔv̌âêîôûv̂a̋e̋i̋őűv̋cdghjklmnstwy][\u02d0:]?", Form.NFC);
+
+                String[] pronounceEntries = pronounce.split(";\\s*");
+                if (pronounceEntries.length>0) {
+                    for (String subentry: pronounceEntries) {
+                        if (!subentry.matches(pronounce_match_string)) {
+                            badCount++;
+                            System.err.println("BAD PRONUNCIATION ENTRY FOR: " + firstEntry + "<"+subentry+">");
+                            System.err.println("  " + syllabary + " [" + pronounce + "]");
+                            continue entry_scan;
+                        }
+                    }
                 }
+
                 if (syllabary.contains(",")) {
                     if (!syllabary.contains(", ") || !pronounce.contains(", ")) {
                         badCount++;
@@ -313,7 +301,17 @@ public class App extends AbstractApp {
         }
     }
 
-    private List<Entry> extractEntriesFromGoogleCsvFile() throws MalformedURLException, IOException {
+    private static String easternFormat(String pronounce) {
+        return pronounce //
+                .replace("j", "ts") //
+                .replace("ch", "tsh") //
+                .replace("J", "Ts") //
+                .replace("Ch", "Tsh") //
+                .replace("CH", "Tsh");
+    }
+
+
+    private List<Entry> extractEntriesFromGoogleCsvFile() throws IOException {
         if (csvLink == null) {
             return null;
         }
@@ -330,7 +328,7 @@ public class App extends AbstractApp {
         String csvString = IOUtils.toString(csvFile, StandardCharsets.UTF_8);
         log.info("Retrieved Google CSV file...");
         FileUtils.write(localCopyOfCsv, csvString, StandardCharsets.UTF_8);
-        log.info("Saving Google CSV file... "+localCopyOfCsv.getPath());
+        log.info("Saving Google CSV file... " + localCopyOfCsv.getPath());
         Entry entry = null;
         try (CSVParser parser = new CSVParser(new StringReader(csvString), CSVFormat.DEFAULT.withHeader().withAllowMissingColumnNames())) {
             Iterator<CSVRecord> irec = parser.iterator();
@@ -341,14 +339,17 @@ public class App extends AbstractApp {
                     continue;
                 }
                 String syllabaryOrNote = StringUtils.strip(next.get(1));
-                String pronounciation = StringUtils.strip(next.get(2));
+                String pronounce = StringUtils.strip(next.get(2));
+                pronounce = pronounce.replace(":", "\u02d0");
+                pronounce = easternFormat(pronounce);
+
                 String pos = StringUtils.strip(next.get(3));
                 String def = StringUtils.strip(next.get(4));
                 if (entryMark.equalsIgnoreCase("ENTRY")) {
                     entry = new RavenEntry();
                     entries.add(entry);
                     entry.addSyllabary(syllabaryOrNote);
-                    entry.addPronunciation(pronounciation);
+                    entry.addPronunciation(pronounce);
                     entry.setDef(def);
                     entry.setType(pos);
                     continue;
@@ -359,7 +360,7 @@ public class App extends AbstractApp {
                 if (entryMark.isEmpty() && !syllabaryOrNote.isEmpty()) {
                     if (entry != null) {
                         entry.addSyllabary(syllabaryOrNote);
-                        entry.addPronunciation(pronounciation);
+                        entry.addPronunciation(pronounce);
                     }
                     continue;
                 }
@@ -378,7 +379,7 @@ public class App extends AbstractApp {
                 if (entryMark.equalsIgnoreCase("label")) {
                     if (entry != null) {
                         if (entry.getLabel() != null) {
-                        	System.err.println("Already assigned a label: " + entry.getSyllabary() + " " + entry.getDef() + " " + entry.getLabel());
+                            System.err.println("Already assigned a label: " + entry.getSyllabary() + " " + entry.getDef() + " " + entry.getLabel());
                             throw new RuntimeException("Already assigned a label: " + entry.getSyllabary() + " " + entry.getDef() + " " + entry.getLabel());
                         }
                         entry.addCf(syllabaryOrNote);
@@ -386,19 +387,12 @@ public class App extends AbstractApp {
                     continue;
                 }
                 if (entryMark.equalsIgnoreCase("TLW to here")) {
-                	continue;
+                    continue;
                 }
                 System.err.println("ENTRY TYPE NOT HANDLED: " + entryMark);
                 throw new RuntimeException("ENTRY TYPE NOT HANDLED: " + entryMark);
             }
         }
-        return entries;
-    }
-
-    private List<Entry> extractEntriesFromLyxFile(File lyxSrcFile) {
-        ParseDictionary parseDictionary = new ParseDictionary(lyxSrcFile);
-        parseDictionary.run();
-        List<Entry> entries = parseDictionary.getEntries();
         return entries;
     }
 
@@ -643,27 +637,27 @@ public class App extends AbstractApp {
         lyxExportFile.setDocorpus(false);
         lyxExportFile.setDoWordForms(false);
         try {
-            String preface = FileUtils.readFileToString(new File(DIR,  "includes/preface.lyx"), StandardCharsets.UTF_8);
+            String preface = FileUtils.readFileToString(new File(DIR, "includes/preface.lyx"), StandardCharsets.UTF_8);
             lyxExportFile.setPreface(StringUtils.substringBetween(preface, "\\begin_body", "\\end_body"));
         } catch (IOException e2) {
             throw new RuntimeException(e2);
         }
         try {
-            String appendix = FileUtils.readFileToString(new File(DIR,  "includes/appendix.lyx"),
+            String appendix = FileUtils.readFileToString(new File(DIR, "includes/appendix.lyx"),
                     StandardCharsets.UTF_8);
             lyxExportFile.setAppendix(StringUtils.substringBetween(appendix, "\\begin_body", "\\end_body"));
         } catch (IOException e2) {
             throw new RuntimeException(e2);
         }
         try {
-            String intro = FileUtils.readFileToString(new File(DIR,  "includes/introduction.lyx"),
+            String intro = FileUtils.readFileToString(new File(DIR, "includes/introduction.lyx"),
                     StandardCharsets.UTF_8);
             lyxExportFile.setIntroduction(StringUtils.substringBetween(intro, "\\begin_body", "\\end_body"));
         } catch (IOException e2) {
             throw new RuntimeException(e2);
         }
         try {
-            String grammar = FileUtils.readFileToString(new File(DIR,  "grammar.lyx"), StandardCharsets.UTF_8);
+            String grammar = FileUtils.readFileToString(new File(DIR, "grammar.lyx"), StandardCharsets.UTF_8);
             lyxExportFile.setGrammar(StringUtils.substringBetween(grammar, "\\begin_body", "\\end_body"));
         } catch (IOException e2) {
             throw new RuntimeException(e2);
@@ -671,7 +665,7 @@ public class App extends AbstractApp {
 
         String revision;
         try {
-            revision = FileUtils.readFileToString(new File(DIR,  DICTIONARY_SRC_LYX), StandardCharsets.UTF_8);
+            revision = FileUtils.readFileToString(new File(DIR, DICTIONARY_SRC_LYX), StandardCharsets.UTF_8);
             revision = StringUtils.substringBetween(revision, "$Revision:", "$");
             revision = StringUtils.strip(revision);
             lyxExportFile.setRevision("Revision: " + revision);
@@ -689,20 +683,20 @@ public class App extends AbstractApp {
         // Date());
         lyxExportFile.setDateModified(dateModified);
 
-        lyxExportFile.setAuthor("Michael Joyner, TommyLee Whitlock");
+        lyxExportFile.setAuthor("Michael Conrad, TommyLee Whitlock");
         lyxExportFile.setIsbn("978-1-329-78831-2");
 
         lyxExportFile.process();
         return lyxExportFile.maybe_dupe;
     }
 
-    private void writeCsvEditFile(File editFile, List<Entry> entries) throws FileNotFoundException, IOException {
+    private void writeCsvEditFile(File editFile, List<Entry> entries) throws IOException {
         log.info("writing csv edit file from lyx file...");
         FileUtils.deleteQuietly(editFile);
         editFile.getParentFile().mkdirs();
         OutputStreamWriter os = new OutputStreamWriter(new FileOutputStream(editFile), StandardCharsets.UTF_8);
-        CSVFormat withHeader = CSVFormat.DEFAULT.withHeader("ENTRY_MARK", "SYLLABARY", "PRONUNCIATION", "POS",
-                "DEFINITIONS");
+        CSVFormat withHeader = CSVFormat.Builder.create().setHeader("ENTRY_MARK", "SYLLABARY", "PRONUNCIATION", "POS",
+                "DEFINITIONS").build();
         List<Entry> copy = new ArrayList<>(entries);
         Collections.sort(copy);
         try (CSVPrinter printer = withHeader.print(os)) {
@@ -725,9 +719,9 @@ public class App extends AbstractApp {
         }
     }
 
-	@Override
-	protected void parseArgs(Iterator<String> iargs) {
-		// TODO Auto-generated method stub
-		
-	}
+    @Override
+    protected void parseArgs(Iterator<String> iargs) {
+        // TODO Auto-generated method stub
+
+    }
 }

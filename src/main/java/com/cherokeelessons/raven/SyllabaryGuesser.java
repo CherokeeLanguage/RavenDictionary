@@ -7,7 +7,7 @@ import java.util.*;
 public class SyllabaryGuesser {
 
     private final static Set<String> unhandled = new HashSet<>();
-    private static boolean rawforms = false;
+    private static final boolean rawforms = false;
     private final Map<String, String> lat2chr = new HashMap<String, String>();
 
     public SyllabaryGuesser() {

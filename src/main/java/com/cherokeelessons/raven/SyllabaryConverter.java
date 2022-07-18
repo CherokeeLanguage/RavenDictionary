@@ -18,7 +18,7 @@ public class SyllabaryConverter {
     private final static String dquo = "\"";
     private final static String lsquo = "\u2018";
     private final static String rsquo = "\u2019";
-    private static Comparator<String> descending = new Comparator<String>() {
+    private static final Comparator<String> descending = new Comparator<String>() {
 
         @Override
         public int compare(String arg0, String arg1) {
